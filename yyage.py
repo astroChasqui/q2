@@ -11,7 +11,7 @@ import os
 logger = logging.getLogger(__name__)
 
 class YYagePars:
-    def __init__(self, db='yy02.sql3', nsigma=5, window_len=11):
+    def __init__(self, db='yy02.sql3', nsigma=5, window_len=13):
         self.get_isochrone_points_db = db
         self.get_isochrone_points_nsigma = nsigma
         self.smooth_window_len = window_len
@@ -28,21 +28,76 @@ def calculate_age(Star, YYagePars):
            np.exp(-1*((ips['logg']-Star.logg)/(1.414214*Star.err_logg))**2)*\
            np.exp(-1*((ips['feh']-Star.feh)/(1.414214*Star.err_feh))**2)
 
+
+    
+    masses = 0.4+np.arange(211)*0.01 # mass between 0.4 and 2.5 in 0.01 steps
+    masses = masses[np.logical_and(masses >= min(ips['mass'])-0.02,
+                                   masses <= max(ips['mass'])+0.02)]
+    probs = []
+    for mass in masses:
+        probs.append(sum(prob[np.logical_and(ips['mass'] >= mass-0.005,
+                                             ips['mass'] <  mass+0.005)]))
+    probs = np.array(probs)
+    probs = probs/simps(probs,masses)
+
+    mass = {}
+    mass['most_probable'] = \
+      round(np.array(masses)[probs == max(probs)],3)
+    mass['n_yy_points'] = len(ips['mass'])
+
+    mass['mean'] = round(simps(probs*masses,masses),3)
+    mass['std']  = round(np.sqrt(simps(probs*(masses-mass['mean'])**2,
+                         masses)),3)
+
+    Star.yymass = mass
+
+    plt.figure(figsize=(7, 4))
+    plt.rc("axes", labelsize=15, titlesize=12)
+    plt.rc("xtick", labelsize=14)
+    plt.rc("ytick", labelsize=14)
+    plt.rc("lines", markersize=10, markeredgewidth=2)
+    plt.rc("lines", linewidth=2)
+    #plt.xlim([0,2])
+    plt.xlabel('Mass ($M_\odot$)')
+    plt.ylabel('Probability density')
+    #k2 = np.logical_and(masses >= mass['lower_limit_2sigma'],
+    #                    masses <= mass['upper_limit_2sigma'])
+    #k1 = np.logical_and(masses >= mass['lower_limit_1sigma'],
+    #                    masses <= mass['upper_limit_1sigma'])
+    #plt.fill_between(masses[k2], 0 , probs[k2], color='0.8', hatch="/")
+    #plt.fill_between(masses[k1], 0 , probs[k1], color='0.6', hatch="X")
+    plt.plot([mass['most_probable'], mass['most_probable']],
+             [0,max(probs)], 'g--')
+    plt.plot(masses, probs, 'g')
+    #plt.text(14.2, 0.86*plt.ylim()[1], Star.name,
+    #         horizontalalignment='right', size=16)
+    fig_name = Star.name.replace(' ', '_')+'_yymass'
+    plt.savefig(fig_name, bbox_inches='tight')
+    plt.close()
+
+    #del(ips)
+    #return None
+
+
     ages = np.array(sorted(set(ips['age'])))
     probs = []
     for age in ages:
         probs.append(sum(prob[ips['age'] == age]))
     probs = np.array(probs)
-    del(ips)
+    probs = probs/simps(probs,ages)
+
     try:
         probs_smooth = smooth(probs, YYagePars.smooth_window_len)
     except:
         logger.warning('Unable to smooth age PDF')
         return None
-    age = {}
-    age['age'] = round(np.array(ages)[probs_smooth == max(probs_smooth)],2)
 
-    k = ages <= age['age']
+    age = {}
+    age['most_probable'] = \
+      round(np.array(ages)[probs_smooth == max(probs_smooth)],2)
+    age['n_yy_points'] = len(ips['age'])
+
+    k = ages <= age['most_probable']
     probs_sn_left = 0.5*probs_smooth[k]/simps(probs_smooth[k],ages[k])
     ages_left = ages[k]
     areas_left = []
@@ -51,7 +106,7 @@ def calculate_age(Star, YYagePars):
                                 ages_left[ages_left <= agel]))
     areas_left = np.array(areas_left)
 
-    k = ages >= age['age']
+    k = ages >= age['most_probable']
     probs_sn_right = 0.5*probs_smooth[k]/simps(probs_smooth[k],ages[k])
     ages_right = ages[k]
     areas_right = []
@@ -69,37 +124,8 @@ def calculate_age(Star, YYagePars):
     age['upper_limit_2sigma'] = \
       round(griddata(areas_right, ages_right, 0.477),1)
 
-    Star.age = age
-    print(age)
+    Star.yyage = age
 
-    plt.figure(figsize=(7, 4))
-    plt.rc("axes", labelsize=15, titlesize=12)
-    plt.rc("xtick", labelsize=14)
-    plt.rc("ytick", labelsize=14)
-    plt.rc("lines", markersize=10, markeredgewidth=2)
-    plt.rc("lines", linewidth=3)
-    plt.xlim([0,15])
-    plt.xlabel('age (Gyr)')
-    plt.ylabel('Relative probability')
-    #plt.plot(ages, probs, color='0.9')
-    k2 = np.logical_and(ages >= age['lower_limit_2sigma'],
-                        ages <= age['upper_limit_2sigma'])
-    k1 = np.logical_and(ages >= age['lower_limit_1sigma'],
-                        ages <= age['upper_limit_1sigma'])
-    plt.fill_between(ages[k2], 0 , probs_smooth[k2], color='0.9', hatch="/")
-    plt.fill_between(ages[k1], 0 , probs_smooth[k1], color='0.7', hatch="X")
-    plt.plot([age['age'], age['age']], [0,max(probs_smooth)], 'g--')
-    plt.plot(ages, probs_smooth, 'g')
-    plt.text(14.2, 0.86*plt.ylim()[1], Star.name,
-             horizontalalignment='right', size=16)
-    plt.savefig(Star.name+"_age.eps", bbox_inches='tight')
-    plt.close()
-
-
-    #print(min(ips['mass']))
-    #print(max(ips['mass']))
-
-    '''
     plt.figure(figsize=(7, 5))
     plt.rc("axes", labelsize=15, titlesize=12)
     plt.rc("xtick", labelsize=14)
@@ -107,21 +133,49 @@ def calculate_age(Star, YYagePars):
     plt.rc("lines", markersize=10, markeredgewidth=2)
     plt.rc("lines", linewidth=3)
     plt.plot(ips_t, ips['logg'], 'y,')
-    plt.xlim(Star.teff+4*Star.err_teff, Star.teff-4*Star.err_teff)
-    plt.ylim(Star.logg+4*Star.err_logg, Star.logg-4*Star.err_logg)
+    plt.xlim(Star.teff+6*Star.err_teff, Star.teff-6*Star.err_teff)
+    plt.ylim(Star.logg+6*Star.err_logg, Star.logg-6*Star.err_logg)
     plt.xlabel('$T_\mathrm{eff}$ (K)')
     plt.ylabel('log g [cgs]')
     plt.errorbar(Star.teff, Star.logg, Star.err_logg, Star.err_teff, 'green')
-    plt.savefig(Star.name, bbox_inches='tight')
+    fig_name = Star.name.replace(' ', '_')+'_yyhr'
+    plt.savefig(fig_name, bbox_inches='tight')
     plt.close()
-    '''
+
+    plt.figure(figsize=(7, 4))
+    plt.rc("axes", labelsize=15, titlesize=12)
+    plt.rc("xtick", labelsize=14)
+    plt.rc("ytick", labelsize=14)
+    plt.rc("lines", markersize=10, markeredgewidth=2)
+    plt.rc("lines", linewidth=2)
+    plt.xlim([0,15])
+    plt.xlabel('age (Gyr)')
+    plt.ylabel('Probability density')
+    #plt.plot(ages, probs, color='0.9')
+    k2 = np.logical_and(ages >= age['lower_limit_2sigma'],
+                        ages <= age['upper_limit_2sigma'])
+    k1 = np.logical_and(ages >= age['lower_limit_1sigma'],
+                        ages <= age['upper_limit_1sigma'])
+    plt.fill_between(ages[k2], 0 , probs_smooth[k2], color='0.8', hatch="/")
+    plt.fill_between(ages[k1], 0 , probs_smooth[k1], color='0.6', hatch="X")
+    plt.plot([age['most_probable'], age['most_probable']],
+             [0,max(probs_smooth)], 'g--')
+    plt.plot(ages, probs_smooth, 'g')
+    plt.text(14.2, 0.86*plt.ylim()[1], Star.name,
+             horizontalalignment='right', size=16)
+    fig_name = Star.name.replace(' ', '_')+'_yyage'
+    plt.savefig(fig_name, bbox_inches='tight')
+    plt.close()
+
+
+    del(ips)
+
 
 def get_isochrone_points(Star, db, nsigma):
     '''Looks in a database db for isochrone points within nsigma from
     the mean parameters of the Star and returns those values in a dict.
     '''
-    path = ISOCHRONES_PATH
-    conn = sqlite3.connect(os.path.join(path, db))
+    conn = sqlite3.connect(os.path.join(ISOCHRONES_PATH, db))
     conn.row_factory = sqlite3.Row
     logtm = np.log10(Star.teff-nsigma*Star.err_teff)
     logtp = np.log10(Star.teff+nsigma*Star.err_teff)
