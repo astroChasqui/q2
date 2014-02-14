@@ -72,7 +72,7 @@ def calculate_age(Star, YYagePars):
     Star.age = age
     print(age)
 
-    plt.figure(figsize=(7, 5))
+    plt.figure(figsize=(7, 4))
     plt.rc("axes", labelsize=15, titlesize=12)
     plt.rc("xtick", labelsize=14)
     plt.rc("ytick", labelsize=14)
@@ -80,10 +80,18 @@ def calculate_age(Star, YYagePars):
     plt.rc("lines", linewidth=3)
     plt.xlim([0,15])
     plt.xlabel('age (Gyr)')
-    plt.ylabel('P')
-    plt.plot(ages, probs, 'g')
-    plt.plot([age['age'], age['age']], [0,max(probs_smooth)], 'm')
-    plt.plot(ages, probs_smooth, 'b')
+    plt.ylabel('Relative probability')
+    #plt.plot(ages, probs, color='0.9')
+    k2 = np.logical_and(ages >= age['lower_limit_2sigma'],
+                        ages <= age['upper_limit_2sigma'])
+    k1 = np.logical_and(ages >= age['lower_limit_1sigma'],
+                        ages <= age['upper_limit_1sigma'])
+    plt.fill_between(ages[k2], 0 , probs_smooth[k2], color='0.9', hatch="/")
+    plt.fill_between(ages[k1], 0 , probs_smooth[k1], color='0.7', hatch="X")
+    plt.plot([age['age'], age['age']], [0,max(probs_smooth)], 'g--')
+    plt.plot(ages, probs_smooth, 'g')
+    plt.text(14.2, 0.86*plt.ylim()[1], Star.name,
+             horizontalalignment='right', size=16)
     plt.savefig(Star.name+"_age.eps", bbox_inches='tight')
     plt.close()
 
