@@ -16,7 +16,7 @@ import specpars
 import errors
 import abundances
 import grids
-import yyage
+import yypars
 import logging
 
 
