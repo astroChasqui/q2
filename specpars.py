@@ -159,7 +159,9 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
             if not os.path.exists(PlotPars.directory):
                 os.mkdir(PlotPars.directory)
             plot = PlotPars.directory+'/'+plot
-        plt.savefig(plot+'.'+PlotPars.figure_format)
+        if hasattr(PlotPars, 'figure_format'):
+            plot = plot+'.'+PlotPars.figure_format
+        plt.savefig(plot)
         plt.close()
 
     if hasattr(Ref, 'name'):
