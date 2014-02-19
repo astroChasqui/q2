@@ -28,6 +28,7 @@ class PlotPars:
         self.afe = None
         self.wavelength_range = None
         self.make_figure = True
+        self.figure_format = 'png'
 
 def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
     if hasattr(Ref, 'name'):
@@ -158,7 +159,7 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
             if not os.path.exists(PlotPars.directory):
                 os.mkdir(PlotPars.directory)
             plot = PlotPars.directory+'/'+plot
-        plt.savefig(plot)
+        plt.savefig(plot+'.'+PlotPars.figure_format)
         plt.close()
 
     if hasattr(Ref, 'name'):

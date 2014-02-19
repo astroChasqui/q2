@@ -22,12 +22,14 @@ class SolvePars:
         self.smooth_window_len_r = 0
 
 class PlotPars:
-    def __init__(self):
+    def __init__(self, figure_format='png', directory=""):
         self.age_xlim = [0, 14]
-        self.mass_xlim = [0.7, 1.2]
-        self.logl_xlim = [-0.5, 0.5]
-        self.mv_xlim = [4.2, 5.5]
-        self.r_xlim = [0.5, 1.8]
+        self.mass_xlim = None
+        self.logl_xlim = None
+        self.mv_xlim = None
+        self.r_xlim = None
+        self.directory = directory
+        self.figure_format = figure_format
 
 def pdf(pdf_x, ips, prob, par, smooth_window_len):
     '''Calculates a probability distribution function (PDF) for parameter par
@@ -185,39 +187,46 @@ def solve_one(Star, SolvePars, PlotPars):
               pdf_age_x, pdf_age_y, pdf_age_y_smooth
             par = Star.yyage
             ax.set_xlabel('Age (Gyr)')
-            ax.set_xlim(PlotPars.age_xlim)
+            if PlotPars.age_xlim:
+                ax.set_xlim(PlotPars.age_xlim)
         if panel == 2:
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_mass_x, pdf_mass_y, pdf_mass_y_smooth
             par = Star.yymass
             ax.set_xlabel('Mass ($M_\odot$)')
-            ax.set_xlim(PlotPars.mass_xlim)
+            if PlotPars.mass_xlim:
+                ax.set_xlim(PlotPars.mass_xlim)
         if panel == 3:
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_logl_x, pdf_logl_y, pdf_logl_y_smooth
             par = Star.yylogl
             ax.set_xlabel('$\log\,(L/L_\odot)$')
-            ax.set_xlim(PlotPars.logl_xlim)
+            if PlotPars.logl_xlim:
+                ax.set_xlim(PlotPars.logl_xlim)
         if panel == 4:
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_mv_x, pdf_mv_y, pdf_mv_y_smooth
             par = Star.yymv
             ax.set_xlabel('$M_V$')
-            ax.set_xlim(PlotPars.mv_xlim)
+            if PlotPars.mv_xlim:
+                ax.set_xlim(PlotPars.mv_xlim)
         if panel == 5:
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_r_x, pdf_r_y, pdf_r_y_smooth
             par = Star.yyr
             ax.set_xlabel('Radius ($R_\odot$)')
-            ax.set_xlim(PlotPars.r_xlim)
-        #ax.set_ylabel('Probability density')
+            if PlotPars.r_xlim:
+                ax.set_xlim(PlotPars.r_xlim)
         ax.plot(pdf_x, pdf_y, color='0.9')
         ax.plot([par['most_probable'], par['most_probable']],
                 [0, max(pdf_y_smooth)], 'g--')
         ax.plot(pdf_x, pdf_y_smooth, 'g')
 
-    fig_name = Star.name.replace(' ', '_')+'_yypars'
-    plt.savefig(fig_name, bbox_inches='tight')
+    if not os.path.exists(PlotPars.directory) and PlotPars.directory != "":
+        os.mkdir(PlotPars.directory)
+    fig_name = os.path.join(PlotPars.directory,
+                            Star.name.replace(' ', '_')+'_yypars')
+    plt.savefig(fig_name+'.'+PlotPars.figure_format, bbox_inches='tight')
     plt.close()
 
 def get_isochrone_points(Star, db, nsigma):
