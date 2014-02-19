@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 
 class SolvePars:
-    def __init__(self):
+    def __init__(self, grid='odfnew'):
         self.step_teff = 32
         self.step_logg = 0.32
         self.step_vt = 0.32
         self.niter = 50
-        self.grid = 'odfnew'
+        self.grid = grid
         self.solar_afe = 7.45
         self.errors = False
 
