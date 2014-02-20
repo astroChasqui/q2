@@ -109,6 +109,8 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
         plt.rc("axes", labelsize=15, titlesize=12)
         plt.rc("xtick", labelsize=14)
         plt.rc("ytick", labelsize=14)
+        plt.rc("xtick.major", size=6, width=1)
+        plt.rc("ytick.major", size=6, width=1)
         plt.rc("lines", markersize=10, markeredgewidth=2)
         #plt.rc("font", family='Verdana')
         plt.rc("lines", linewidth=3)
