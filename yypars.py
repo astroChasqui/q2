@@ -45,9 +45,7 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
                                              ips[par] <  x+dx)]))
     pdf_y = np.array(pdf_y)
     pdf_y = pdf_y/simps(pdf_y, pdf_x)
-    #print(len(pdf_y))
-    #if len(pdf_y) <= smooth_window_len*4:
-    #    smooth_window_len = 0
+
     try:
         pdf_y_smooth = smooth(pdf_y, smooth_window_len)
         pdf_y_smooth = pdf_y_smooth/simps(pdf_y_smooth, pdf_x)
@@ -55,6 +53,11 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
         pdf_y_smooth = pdf_y
         logger.warning('Unable to smooth '+par+' PDF.')
 
+    stats = get_stats(pdf_x, pdf_y_smooth)
+
+    return pdf_y, pdf_y_smooth, stats
+
+def get_stats(pdf_x, pdf_y_smooth):
     stats = {}
     stats['most_probable'] = \
       np.mean(np.array(pdf_x)[pdf_y_smooth == max(pdf_y_smooth)])
@@ -81,15 +84,15 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
     areas_right = np.array(areas_right)
 
     stats['lower_limit_1sigma'] = \
-      griddata(areas_left, pdf_x_left, 0.158)
+      np.mean(griddata(areas_left, pdf_x_left, 0.158))
     stats['lower_limit_2sigma'] = \
-      griddata(areas_left, pdf_x_left, 0.022)
+      np.mean(griddata(areas_left, pdf_x_left, 0.022))
     stats['upper_limit_1sigma'] = \
-      griddata(areas_right, pdf_x_right, 0.341)
+      np.mean(griddata(areas_right, pdf_x_right, 0.341))
     stats['upper_limit_2sigma'] = \
-      griddata(areas_right, pdf_x_right, 0.477)
+      np.mean(griddata(areas_right, pdf_x_right, 0.477))
 
-    return pdf_y, pdf_y_smooth, stats
+    return stats
 
 def solve_one(Star, SolvePars, PlotPars):
     '''Calculates most likely parameters of Star using YY isochrone points
@@ -111,6 +114,7 @@ def solve_one(Star, SolvePars, PlotPars):
                                    ages <= max(ips['age'])+0.2)]
     pdf_age_y, pdf_age_y_smooth, Star.yyage = \
       pdf(pdf_age_x, ips, prob, 'age', SolvePars.smooth_window_len_age)
+    Star.yypdf_age = {'x': pdf_age_x, 'y': pdf_age_y, 'ys': pdf_age_y_smooth}
 
     #mass
     masses = 0.4+np.arange(211)*0.01
@@ -139,10 +143,9 @@ def solve_one(Star, SolvePars, PlotPars):
                                 rs <= max(ips['r'])+0.02)]
     pdf_r_y, pdf_r_y_smooth, Star.yyr = \
       pdf(pdf_r_x, ips, prob, 'r', SolvePars.smooth_window_len_r)
-    #r = 10**(0.5*(np.log10(Star.yymass['most_probable'])-Star.logg+4.437))
-    #err_r = r*np.sqrt((2.0*Star.err_teff/Star.teff)**2+\
-    #                  (0.5*Star.yylogl['std'])**2)
-    #print(r, err_r)
+
+    if not os.path.exists(PlotPars.directory) and PlotPars.directory != "":
+        os.mkdir(PlotPars.directory)
 
     plt.figure(figsize=(7, 4))
     plt.rc("axes", labelsize=15, titlesize=12)
@@ -150,10 +153,11 @@ def solve_one(Star, SolvePars, PlotPars):
     plt.rc("ytick", labelsize=14)
     plt.rc("lines", markersize=10, markeredgewidth=2)
     plt.rc("lines", linewidth=2)
+    plt.rc("xtick.major", size=6, width=1)
+    plt.rc("ytick.major", size=6, width=1)
     plt.xlim([0,15])
-    plt.xlabel('age (Gyr)')
+    plt.xlabel('Age (Gyr)')
     plt.ylabel('Probability density')
-    #plt.plot(pdf_age_x, pdf_age_y, color='0.9')
     k2 = np.logical_and(pdf_age_x >= Star.yyage['lower_limit_2sigma'],
                         pdf_age_x <= Star.yyage['upper_limit_2sigma'])
     k1 = np.logical_and(pdf_age_x >= Star.yyage['lower_limit_1sigma'],
@@ -167,8 +171,9 @@ def solve_one(Star, SolvePars, PlotPars):
     plt.plot(pdf_age_x, pdf_age_y_smooth, 'g')
     plt.text(14.2, 0.86*plt.ylim()[1], Star.name,
              horizontalalignment='right', size=16)
-    fig_name = Star.name.replace(' ', '_')+'_yyage'
-    #plt.savefig(fig_name, bbox_inches='tight')
+    fig_name = os.path.join(PlotPars.directory,
+                            Star.name.replace(' ', '_')+'_yyage')
+    plt.savefig(fig_name+'.'+PlotPars.figure_format, bbox_inches='tight')
     plt.close()
 
     plt.figure(figsize=(6, 12))
@@ -177,6 +182,8 @@ def solve_one(Star, SolvePars, PlotPars):
     plt.rc("ytick", labelsize=14)
     plt.rc("lines", markersize=10, markeredgewidth=2)
     plt.rc("lines", linewidth=2)
+    plt.rc("xtick.major", size=6, width=1)
+    plt.rc("ytick.major", size=6, width=1)
     plt.subplots_adjust(hspace=0.4)
 
     for panel in np.arange(5)+1:
@@ -222,8 +229,6 @@ def solve_one(Star, SolvePars, PlotPars):
                 [0, max(pdf_y_smooth)], 'g--')
         ax.plot(pdf_x, pdf_y_smooth, 'g')
 
-    if not os.path.exists(PlotPars.directory) and PlotPars.directory != "":
-        os.mkdir(PlotPars.directory)
     fig_name = os.path.join(PlotPars.directory,
                             Star.name.replace(' ', '_')+'_yypars')
     plt.savefig(fig_name+'.'+PlotPars.figure_format, bbox_inches='tight')
