@@ -2,6 +2,7 @@ from astropy.io import ascii
 import matplotlib.pyplot as plt
 import logging
 import tools
+import os
 from config import *
 from scipy.integrate import simps
 import numpy as np
@@ -20,9 +21,9 @@ def get_from_file(teff, logg, feh, grid):
 
     # location of model files
     if grid == 'marcs':
-        path = MODATM_PATH+'marcs/'
+        path = os.path.join(MODATM_PATH, 'marcs')
     else:
-        path = MODATM_PATH+'kurucz/'
+        path = os.path.join(MODATM_PATH, 'kurucz')
 
     # determine filename from input parameters
     logg = float(logg)
@@ -36,13 +37,13 @@ def get_from_file(teff, logg, feh, grid):
 
     # if file doesn't exists return None
     try:
-        with open(path+file_name): pass
+        with open(os.path.join(path, file_name)): pass
     except IOError:
         logger.warning('Model file not found: '+file_name)
         return None, None
 
     logger.info('Model found: '+file_name)
-    x = ascii.read(path+file_name,
+    x = ascii.read(os.path.join(path, file_name),
                    names=('RHOX', 'T', 'P', 'XNE', 'ABROSS'))
 
     # calculate tauRoss scale

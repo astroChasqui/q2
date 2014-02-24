@@ -5,6 +5,8 @@ import datetime
 import logging
 from astropy.io import ascii
 from scipy import interpolate
+import os
+from config import *
 
 
 logger = logging.getLogger(__name__)
@@ -211,7 +213,7 @@ def getsp(species_id):
 
 
 def nlte_triplet(teff, logg, feh, ao):
-    grid = ascii.read('/home/ivan/Dropbox/Code/python/nlte_triplet.csv')
+    grid = ascii.read(os.path.join(OTHER_PATH ,'nlte_triplet.csv'))
 
     t,g,f,dao0,dao1,dao2=[],[],[],[],[],[]
     for i in range(640):

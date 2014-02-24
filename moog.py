@@ -67,11 +67,12 @@ def create_model_in(Star, file_name='model.in'):
     f = open('tail.tmp', 'w')
     f.write('%5.2F\n' %Star.vt)
     if Star.model_atmosphere_grid != 'marcs':
-        path = MODATM_PATH+'kurucz/'
-        fabund = open(path+'p00.'+Star.model_atmosphere_grid, 'r')
+        path = os.path.join(MODATM_PATH, 'kurucz')
+        fabund = open(os.path.join(path, 'p00.'+Star.model_atmosphere_grid),
+                      'r')
     else:
-        path = MODATM_PATH+'marcs/'
-        fabund = open(path+'z+0.00', 'r')
+        path = os.path.join(MODATM_PATH, 'marcs')
+        fabund = open(os.path.join(path, 'z+0.00'), 'r')
 
     line = fabund.readline()
     f.write(line[0:12]+' '+str(Star.feh)+'\n')

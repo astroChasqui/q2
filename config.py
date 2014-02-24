@@ -1,9 +1,13 @@
 import platform
+import os
 
 
 if platform.system() == 'Windows':
-    MODATM_PATH = 'C:\Users\Ivan\Documents\Dropbox\Code\python\q2\Data\ModelAtmospheres\\'
-    ISOCHRONES_PATH = 'C:\Users\Ivan\Documents\Dropbox\Code\python\q2\Data\Isochrones\\'
+    system_path = 'C:\Users\Ivan\Documents\Dropbox\Code\python\q2\Data'
 if platform.system() == 'Linux':
-    MODATM_PATH = '/home/ivan/Dropbox/Code/python/q2/Data/ModelAtmospheres/'
-    ISOCHRONES_PATH = '/home/ivan/Dropbox/Code/python/q2/Data/Isochrones/'
+    system_path = '/home/ivan/Dropbox/Code/python/q2/Data'
+
+COLORTEFF_PATH  = os.path.join(system_path, 'ColorTeff')
+MODATM_PATH     = os.path.join(system_path, 'ModelAtmospheres')
+ISOCHRONES_PATH = os.path.join(system_path, 'Isochrones')
+OTHER_PATH      = os.path.join(system_path, 'Other')
