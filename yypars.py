@@ -11,8 +11,9 @@ import os
 logger = logging.getLogger(__name__)
 
 class SolvePars:
-    def __init__(self, db='yy02.sql3', nsigma=5,
-                 window_len_age=13):
+    def __init__(self, key_parameter_known='plx', db='yy02.sql3',
+                 nsigma=5, window_len_age=13):
+        self.key_parameter_known = key_parameter_known
         self.get_isochrone_points_db = db
         self.get_isochrone_points_nsigma = nsigma
         self.smooth_window_len_age = window_len_age
@@ -99,14 +100,31 @@ def solve_one(Star, SolvePars, PlotPars):
     '''
     ips = get_isochrone_points(Star,
                                SolvePars.get_isochrone_points_db,
-                               SolvePars.get_isochrone_points_nsigma)
+                               SolvePars.get_isochrone_points_nsigma,
+                               SolvePars.key_parameter_known)
+    if ips == None:
+        logger.warning('Could not get any isochrone points.')
+        return None
     logger.info('Using {0} Y2 isochrone points'.format(len(ips['age'])))
-    Star.n_yy_points = len(ips['age'])
+    Star.yykeyparameterknown = SolvePars.key_parameter_known
+    Star.yynpoints = len(ips['age'])
     ips['t'] = 10**ips['logt']
     ips['r'] = 10**(0.5*(np.log10(ips['mass'])-ips['logg']+4.437))
-    prob = np.exp(-1*((ips['t']-Star.teff)/(1.414214*Star.err_teff))**2)*\
-           np.exp(-1*((ips['logg']-Star.logg)/(1.414214*Star.err_logg))**2)*\
-           np.exp(-1*((ips['feh']-Star.feh)/(1.414214*Star.err_feh))**2)
+
+    if SolvePars.key_parameter_known == 'logg':
+        prob = np.exp(-1*((ips['t']-Star.teff)/          \
+                          (1.414214*Star.err_teff))**2)* \
+               np.exp(-1*((ips['logg']-Star.logg)/       \
+                          (1.414214*Star.err_logg))**2)* \
+               np.exp(-1*((ips['feh']-Star.feh)/         \
+                          (1.414214*Star.err_feh))**2)
+    if SolvePars.key_parameter_known == 'plx':
+        prob = np.exp(-1*((ips['t']-Star.teff)/          \
+                          (1.414214*Star.err_teff))**2)* \
+               np.exp(-1*((ips['mv']-Star.M_V)/       \
+                          (1.414214*Star.err_M_V))**2)* \
+               np.exp(-1*((ips['feh']-Star.feh)/         \
+                          (1.414214*Star.err_feh))**2)
 
     #age
     ages = 0.1+np.arange(150)*0.1
@@ -172,7 +190,8 @@ def solve_one(Star, SolvePars, PlotPars):
     plt.text(14.2, 0.86*plt.ylim()[1], Star.name,
              horizontalalignment='right', size=16)
     fig_name = os.path.join(PlotPars.directory,
-                            Star.name.replace(' ', '_')+'_yyage')
+                            Star.name.replace(' ', '_')+\
+                            '_yyage_'+SolvePars.key_parameter_known)
     plt.savefig(fig_name+'.'+PlotPars.figure_format, bbox_inches='tight')
     plt.close()
 
@@ -224,17 +243,18 @@ def solve_one(Star, SolvePars, PlotPars):
             ax.set_xlabel('Radius ($R_\odot$)')
             if PlotPars.r_xlim:
                 ax.set_xlim(PlotPars.r_xlim)
-        ax.plot(pdf_x, pdf_y, color='0.9')
+        ax.plot(pdf_x, pdf_y, color='0.8')
         ax.plot([par['most_probable'], par['most_probable']],
                 [0, max(pdf_y_smooth)], 'g--')
         ax.plot(pdf_x, pdf_y_smooth, 'g')
 
     fig_name = os.path.join(PlotPars.directory,
-                            Star.name.replace(' ', '_')+'_yypars')
+                            Star.name.replace(' ', '_')+\
+                            '_yypar_'+SolvePars.key_parameter_known)
     plt.savefig(fig_name+'.'+PlotPars.figure_format, bbox_inches='tight')
     plt.close()
 
-def get_isochrone_points(Star, db, nsigma):
+def get_isochrone_points(Star, db, nsigma, key_parameter_known):
     '''Looks in the db database for isochrone points within nsigma from
     the mean parameters of the Star and returns those values in a dict.
     '''
@@ -243,17 +263,44 @@ def get_isochrone_points(Star, db, nsigma):
     logtm = np.log10(Star.teff-nsigma*Star.err_teff)
     logtp = np.log10(Star.teff+nsigma*Star.err_teff)
     c = conn.cursor()
-    x = c.execute('SELECT feh, age, mass, logt, logl, logg, mv ' +\
-                  'FROM  fa, mtlgv ON fa.fa = mtlgv.fa WHERE '   +\
-                  'logt >= ? AND logt <= ? AND '   +\
-                  'feh  >= ? AND feh  <= ? AND '   +\
-                  'logg >= ? AND logg <= ? ',
-                  (logtm, logtp,
-                   Star.feh-nsigma*Star.err_feh,
-                   Star.feh+nsigma*Star.err_feh,
-                   Star.logg-nsigma*Star.err_logg,
-                   Star.logg+nsigma*Star.err_logg)
-                 )
+    if key_parameter_known != 'logg' and key_parameter_known != 'plx':
+        logger.warning(key_parameter_known+\
+                       ' is no a valid key parameter (use logg or plx).')
+        return None
+    if key_parameter_known == 'logg':
+        x = c.execute('SELECT feh, age, mass, logt, logl, logg, mv ' +\
+                      'FROM  fa, mtlgv ON fa.fa = mtlgv.fa WHERE '   +\
+                      'logt >= ? AND logt <= ? AND '   +\
+                      'feh  >= ? AND feh  <= ? AND '   +\
+                      'logg >= ? AND logg <= ? ',
+                      (logtm, logtp,
+                       Star.feh-nsigma*Star.err_feh,
+                       Star.feh+nsigma*Star.err_feh,
+                       Star.logg-nsigma*Star.err_logg,
+                       Star.logg+nsigma*Star.err_logg)
+                     )
+    if key_parameter_known == 'plx':
+        try:
+            Star.M_V = Star.v - 5 * np.log10(1000/Star.plx) + 5.
+            Star.err_M_V = np.sqrt(Star.err_v**2 + \
+              (np.log10(np.exp(1))**2)*25*(Star.err_plx/Star.plx)**2)
+            logger.info('Absolute magnitude and error attributes '+\
+                        'added to star object')
+        except:
+            logger.warning('Could not calculate absolute magnitude. '+\
+                           'Star must have v and err_v attributes (vmag).')
+            return None
+        x = c.execute('SELECT feh, age, mass, logt, logl, logg, mv ' +\
+                      'FROM  fa, mtlgv ON fa.fa = mtlgv.fa WHERE '   +\
+                      'logt >= ? AND logt <= ? AND '   +\
+                      'feh  >= ? AND feh  <= ? AND '   +\
+                      'mv >= ? AND mv <= ? ',
+                      (logtm, logtp,
+                       Star.feh-nsigma*Star.err_feh,
+                       Star.feh+nsigma*Star.err_feh,
+                       Star.M_V-nsigma*Star.err_M_V,
+                       Star.M_V+nsigma*Star.err_M_V)
+                     )
     feh, age = [], []
     mass, logt, logl, logg, mv = [], [], [], [], []
     for xx in x.fetchall():

@@ -73,6 +73,17 @@ class Star:
         if hasattr(self, 'err_teff'):
             logger.info('Attributes err_teff, err_logg, err_feh added to star object.')
 
+        additional_parameters = ['v', 'err_v', 'plx', 'err_plx']
+        msg = []
+        for ap in additional_parameters:
+            if ap in Data.star_data.keys():
+                if Data.star_data[ap][idx[0][0]]:
+                    setattr(self, ap, Data.star_data[ap][idx[0][0]])
+                    msg.append(ap)
+        if msg:
+            logger.info('Additional attribute(s) '+','.join(msg)+\
+                        ' added to star object.')
+
         # gets ews; excludes cells with no ew:
         if hasattr(Data, 'lines'):
             idx = np.where(((Data.lines['wavelength'] > -10000) &
