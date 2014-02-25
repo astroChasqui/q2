@@ -172,7 +172,7 @@ def abfind(Star, species, species_id,):
     found_lines = create_lines_in(Star, species=species)
     if not found_lines:
         logger.warning('Did not run abfind (no lines found)')
-        return None
+        return False
     os.system('MOOGSILENT > moog.log')
     f = open(MD.summary_out, 'r')
     line=''
@@ -208,3 +208,4 @@ def abfind(Star, species, species_id,):
     x['difab'] = difab
     setattr(Star, species_id, x)
     logger.info('Successfully ran abfind')
+    return True

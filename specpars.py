@@ -8,6 +8,7 @@ import errors
 from tools import linfit
 from star import Star
 import datetime
+from scipy import ma
 
 
 logger = logging.getLogger(__name__)
@@ -42,12 +43,15 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
                  'err_slope_rew': 0,
                  'rank': 0,
                  'reference': Ref.name}
-            Star.iron_stats = x        
+            Star.iron_stats = x
             return None
     logger.info('Begin iron_stats for '+Star.name)
     logger.info('Calculating abundances for '+Star.name)
-    moog.abfind(Star, 26.0, 'fe1')
-    moog.abfind(Star, 26.1, 'fe2')
+    fe1_done = moog.abfind(Star, 26.0, 'fe1')
+    fe2_done = moog.abfind(Star, 26.1, 'fe2')
+    if not fe1_done and not fe2_done:
+        logger.warning('No fe1/fe2 attribute(s) added to '+Star.name)
+        return None
     if hasattr(Ref, 'name'):
         logger.info('Differential analysis. Reference star is '+Ref.name)
         if not (hasattr(Ref, 'fe1')):
@@ -271,7 +275,8 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
         else:
             plot = None
 
-        iron_stats(Star, Ref=Ref, plot=plot, PlotPars=PlotPars)
+        is_done = iron_stats(Star, Ref=Ref, plot=plot, PlotPars=PlotPars)
+
         print ("{0:2d} {1:4d} {2:4.2f} {3:6.3f} {4:4.2f} ---> {5:6.3f}".
                 format(i, Star.teff, Star.logg, Star.feh, Star.vt,
                           Star.iron_stats['afe']))
@@ -385,6 +390,9 @@ def solve_all(Data, SolveParsInit, output_file, reference_star=None,
                   ",,,,,,,,".\
                   format(s.name),
                   file=fout)
+            continue
+        if ma.count(Data.lines[star_id]) == 0:
+            print('Line data not found.')
             continue
         sp = SolvePars()
         sp.__dict__ = SolveParsInit.__dict__.copy()
