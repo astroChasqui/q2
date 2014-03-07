@@ -160,6 +160,7 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
 
         panel_c.plot(w1, afe1, 'b+')
         panel_c.plot(w2, afe2, 'go')
+        panel_c.plot([4000, 8000], [mafe, mafe], 'black')
 
         if hasattr(PlotPars, 'directory'):
             if not os.path.exists(PlotPars.directory):
@@ -221,8 +222,8 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
     if sp.niter == 0:
         Star.converged = True
 
-    print('it Teff logg [Fe/H]  vt')
-    print('-- ---- ---- ------ ----')
+    print('it Teff logg [Fe/H]  vt           [Fe/H]')
+    print('-- ---- ---- ------ ----      --------------')
 
     for i in range(sp.niter+1):
         if sp.step_teff <= 1 and sp.step_logg <= 0.01 \
@@ -277,9 +278,9 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
 
         is_done = iron_stats(Star, Ref=Ref, plot=plot, PlotPars=PlotPars)
 
-        print ("{0:2d} {1:4d} {2:4.2f} {3:6.3f} {4:4.2f} ---> {5:6.3f}".
+        print ("{0:2d} {1:4d} {2:4.2f} {3:6.3f} {4:4.2f} ---> {5:6.3f}+/-{6:5.3f}".
                 format(i, Star.teff, Star.logg, Star.feh, Star.vt,
-                          Star.iron_stats['afe']))
+                          Star.iron_stats['afe'], Star.iron_stats['err_afe']))
 
         dtv.append(Star.teff)
         dgv.append(Star.logg)
