@@ -1,11 +1,8 @@
-import platform
+#import platform
 import os
 
 
-if platform.system() == 'Windows':
-    system_path = 'C:\Users\Ivan\Documents\Dropbox\Code\python\q2\Data'
-if platform.system() == 'Linux':
-    system_path = '/home/ivan/Dropbox/Code/python/q2/Data'
+system_path = os.path.dirname(os.path.realpath(__file__))
 
 COLORTEFF_PATH  = os.path.join(system_path, 'ColorTeff')
 MODATM_PATH     = os.path.join(system_path, 'ModelAtmospheres')
