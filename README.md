@@ -21,7 +21,7 @@ Folder Moog contains files that you should replace in your MOOG installation in 
 Data
 ----
 
-You wont be able to use all the package features without the associated data, particularly the model atmospheres and isochrone grids. These files are large and I haven't yet figured out the best way of sharing them. In the meantime send me an email and ask me for a zip or tar file with the Data folder.
+You wont be able to use all the package features without the associated data, particularly the model atmospheres and isochrone grids. Use <a href="http://astro.astrochasqui.webfactional.com/">this link</a> to download the data and make sure it is extracted into the q2/Data folder.
 
 Contact info
 ------------
