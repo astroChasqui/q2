@@ -187,7 +187,11 @@ def solve_one(Star, SolvePars, PlotPars):
     plt.plot([Star.yyage['most_probable'], Star.yyage['most_probable']],
              [0, max(pdf_age_y_smooth)], 'g--')
     plt.plot(pdf_age_x, pdf_age_y_smooth, 'g')
-    plt.text(14.2, 0.86*plt.ylim()[1], Star.name,
+
+    #exclude eveything after __ in Star.name in legend:
+    starname = Star.name.split("__")[0]
+
+    plt.text(14.2, 0.86*plt.ylim()[1], starname,
              horizontalalignment='right', size=16)
     fig_name = os.path.join(PlotPars.directory,
                             Star.name.replace(' ', '_')+\
