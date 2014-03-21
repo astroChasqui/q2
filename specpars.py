@@ -461,17 +461,20 @@ def make_single_solution_table(solution_files, single_solution_file):
     for line in lines:
         sid = line[0:line.index(',')]
         if 'True' in line or 'id,teff' in line:
-            nline = line[0:line.rfind(',')]
-            linew = nline[0:nline.rfind(',')]
-            fout.write(linew+'\n')
+            #nline = line[0:line.rfind('\n')]
+            #linew = nline[0:nline.rfind('\n')]
+            #fout.write(linew+'\n')
+            #print(line)
+            fout.write(line)
         else:
             for i in range(1, len(solution_files)):
                 with open(solution_files[i], 'r') as f2:
                     lines2 = f2.readlines()
                 for line2 in lines2:
                     sid2 = line2[0:line2.index(',')]
-                    nline2 = line2[0:line2.rfind(',')]
-                    line2w = nline2[0:nline2.rfind(',')]
+                    #nline2 = line2[0:line2.rfind(',')]
+                    #line2w = nline2[0:nline2.rfind(',')]
                     if 'True' in line2 and sid == sid2:
-                        fout.write(line2w+'\n')
+                        #fout.write(line2w+'\n')
+                        fout.write(line2)
     fout.close()
