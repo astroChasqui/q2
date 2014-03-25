@@ -168,7 +168,7 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
             plot = PlotPars.directory+'/'+plot
         if hasattr(PlotPars, 'figure_format'):
             plot = plot+'.'+PlotPars.figure_format
-        plt.savefig(plot)
+        plt.savefig(plot, bbox_inches='tight')
         plt.close()
 
     if hasattr(Ref, 'name'):
