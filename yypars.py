@@ -6,6 +6,8 @@ from scipy.integrate import simps
 from scipy.interpolate import griddata
 from config import *
 import os
+import datetime
+from star import Star
 
 
 logger = logging.getLogger(__name__)
@@ -21,6 +23,7 @@ class SolvePars:
         self.smooth_window_len_logl = 0
         self.smooth_window_len_mv = 0
         self.smooth_window_len_r = 0
+        self.smooth_window_len_logg = 0
 
 class PlotPars:
     def __init__(self, figure_format='png', directory=""):
@@ -29,6 +32,7 @@ class PlotPars:
         self.logl_xlim = None
         self.mv_xlim = None
         self.r_xlim = None
+        self.logg_xlim = None
         self.directory = directory
         self.figure_format = figure_format
 
@@ -74,6 +78,9 @@ def get_stats(pdf_x, pdf_y_smooth):
         areas_left.append(simps(pdf_y_left[pdf_x_left <= x],
                                 pdf_x_left[pdf_x_left <= x]))
     areas_left = np.array(areas_left)
+    if np.mean(areas_left) == 0:
+        logger.warning("Left side of distribution is empty")
+        return None
 
     k = pdf_x >= stats['most_probable']
     pdf_y_right = 0.5*pdf_y_smooth[k]/simps(pdf_y_smooth[k], pdf_x[k])
@@ -162,44 +169,52 @@ def solve_one(Star, SolvePars, PlotPars):
     pdf_r_y, pdf_r_y_smooth, Star.yyr = \
       pdf(pdf_r_x, ips, prob, 'r', SolvePars.smooth_window_len_r)
 
+    #logg
+    loggs = np.arange(501)*0.01
+    pdf_logg_x = loggs[np.logical_and(loggs >= min(ips['logg'])-0.05,
+                                      loggs <= max(ips['logg'])+0.05)]
+    pdf_logg_y, pdf_logg_y_smooth, Star.yylogg = \
+      pdf(pdf_logg_x, ips, prob, 'logg', SolvePars.smooth_window_len_logg)
+
     if not os.path.exists(PlotPars.directory) and PlotPars.directory != "":
         os.mkdir(PlotPars.directory)
+  
+    if Star.yyage:
+        plt.figure(figsize=(7, 4))
+        plt.rc("axes", labelsize=15, titlesize=12)
+        plt.rc("xtick", labelsize=14)
+        plt.rc("ytick", labelsize=14)
+        plt.rc("lines", markersize=10, markeredgewidth=2)
+        plt.rc("lines", linewidth=2)
+        plt.rc("xtick.major", size=6, width=1)
+        plt.rc("ytick.major", size=6, width=1)
+        plt.xlim([0,15])
+        plt.xlabel('Age (Gyr)')
+        plt.ylabel('Probability density')
+        k2 = np.logical_and(pdf_age_x >= Star.yyage['lower_limit_2sigma'],
+                            pdf_age_x <= Star.yyage['upper_limit_2sigma'])
+        k1 = np.logical_and(pdf_age_x >= Star.yyage['lower_limit_1sigma'],
+                            pdf_age_x <= Star.yyage['upper_limit_1sigma'])
+        plt.fill_between(pdf_age_x[k2], 0 , pdf_age_y_smooth[k2],
+                         color='0.8', hatch="/")
+        plt.fill_between(pdf_age_x[k1], 0 , pdf_age_y_smooth[k1],
+                         color='0.6', hatch="X")
+        plt.plot([Star.yyage['most_probable'], Star.yyage['most_probable']],
+                 [0, max(pdf_age_y_smooth)], 'g--')
+        plt.plot(pdf_age_x, pdf_age_y_smooth, 'g')
 
-    plt.figure(figsize=(7, 4))
-    plt.rc("axes", labelsize=15, titlesize=12)
-    plt.rc("xtick", labelsize=14)
-    plt.rc("ytick", labelsize=14)
-    plt.rc("lines", markersize=10, markeredgewidth=2)
-    plt.rc("lines", linewidth=2)
-    plt.rc("xtick.major", size=6, width=1)
-    plt.rc("ytick.major", size=6, width=1)
-    plt.xlim([0,15])
-    plt.xlabel('Age (Gyr)')
-    plt.ylabel('Probability density')
-    k2 = np.logical_and(pdf_age_x >= Star.yyage['lower_limit_2sigma'],
-                        pdf_age_x <= Star.yyage['upper_limit_2sigma'])
-    k1 = np.logical_and(pdf_age_x >= Star.yyage['lower_limit_1sigma'],
-                        pdf_age_x <= Star.yyage['upper_limit_1sigma'])
-    plt.fill_between(pdf_age_x[k2], 0 , pdf_age_y_smooth[k2],
-                     color='0.8', hatch="/")
-    plt.fill_between(pdf_age_x[k1], 0 , pdf_age_y_smooth[k1],
-                     color='0.6', hatch="X")
-    plt.plot([Star.yyage['most_probable'], Star.yyage['most_probable']],
-             [0, max(pdf_age_y_smooth)], 'g--')
-    plt.plot(pdf_age_x, pdf_age_y_smooth, 'g')
+        #exclude eveything after __ in Star.name in legend:
+        starname = Star.name.split("__")[0]
 
-    #exclude eveything after __ in Star.name in legend:
-    starname = Star.name.split("__")[0]
+        plt.text(14.2, 0.86*plt.ylim()[1], starname,
+                 horizontalalignment='right', size=16)
+        fig_name = os.path.join(PlotPars.directory,
+                                Star.name.replace(' ', '_')+\
+                                '_yyage_'+SolvePars.key_parameter_known)
+        plt.savefig(fig_name+'.'+PlotPars.figure_format, bbox_inches='tight')
+        plt.close()
 
-    plt.text(14.2, 0.86*plt.ylim()[1], starname,
-             horizontalalignment='right', size=16)
-    fig_name = os.path.join(PlotPars.directory,
-                            Star.name.replace(' ', '_')+\
-                            '_yyage_'+SolvePars.key_parameter_known)
-    plt.savefig(fig_name+'.'+PlotPars.figure_format, bbox_inches='tight')
-    plt.close()
-
-    plt.figure(figsize=(6, 12))
+    plt.figure(figsize=(6, 14))
     plt.rc("axes", labelsize=15, titlesize=12)
     plt.rc("xtick", labelsize=14)
     plt.rc("ytick", labelsize=14)
@@ -209,8 +224,8 @@ def solve_one(Star, SolvePars, PlotPars):
     plt.rc("ytick.major", size=6, width=1)
     plt.subplots_adjust(hspace=0.4)
 
-    for panel in np.arange(5)+1:
-        ax = plt.subplot(5,1,panel)
+    for panel in np.arange(6)+1:
+        ax = plt.subplot(6,1,panel)
         ax.get_yaxis().set_visible(False)
         if panel == 1:
             pdf_x, pdf_y, pdf_y_smooth = \
@@ -247,9 +262,17 @@ def solve_one(Star, SolvePars, PlotPars):
             ax.set_xlabel('Radius ($R_\odot$)')
             if PlotPars.r_xlim:
                 ax.set_xlim(PlotPars.r_xlim)
+        if panel == 6:
+            pdf_x, pdf_y, pdf_y_smooth = \
+              pdf_logg_x, pdf_logg_y, pdf_logg_y_smooth
+            par = Star.yylogg
+            ax.set_xlabel('$\log g$ [cgs]')
+            if PlotPars.logg_xlim:
+                ax.set_xlim(PlotPars.logg_xlim)
         ax.plot(pdf_x, pdf_y, color='0.8')
-        ax.plot([par['most_probable'], par['most_probable']],
-                [0, max(pdf_y_smooth)], 'g--')
+        if par:
+            ax.plot([par['most_probable'], par['most_probable']],
+                    [0, max(pdf_y_smooth)], 'g--')
         ax.plot(pdf_x, pdf_y_smooth, 'g')
 
     fig_name = os.path.join(PlotPars.directory,
@@ -257,6 +280,39 @@ def solve_one(Star, SolvePars, PlotPars):
                             '_yypar_'+SolvePars.key_parameter_known)
     plt.savefig(fig_name+'.'+PlotPars.figure_format, bbox_inches='tight')
     plt.close()
+
+def solve_all(Data, SolvePars, PlotPars, output_file):
+    print('------------------------------------------------------')
+    print('Initializing ...')
+    start_time = datetime.datetime.now()
+    print('- Date and time: '+start_time.strftime('%d-%b-%Y, %H:%M:%S'))
+    print('- Star data: '+Data.star_data_fname)
+    print('------------------------------------------------------')
+    fout = open(output_file, 'wb')
+    fout.write('id,yylogg,err_yylogg')
+    for star_id in Data.star_data['id']:
+        print('')
+        print('*'*len(star_id))
+        print(star_id)
+        print('*'*len(star_id))
+        s = Star(star_id)
+        s.get_data_from(Data)
+        solve_one(s, SolvePars, PlotPars)
+        fout.write("{0},{1:.2f},{2:.2f}".
+                   format(s.name, s.yylogg['most_probable'], s.yylogg['std']))
+    fout.close()
+
+    print('')
+    print('------------------------------------------------------')
+    end_time = datetime.datetime.now()
+    print('- Date and time: '+end_time.strftime('%d-%b-%Y, %H:%M:%S'))
+    delta_t = (end_time - start_time).seconds
+    hours, remainder = divmod(delta_t, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    print('- Time elapsed: %sH %sM %sS' % (hours, minutes, seconds))
+    print('Done!')
+    print('------------------------------------------------------')
+    print('')
 
 def get_isochrone_points(Star, db, nsigma, key_parameter_known):
     '''Looks in the db database for isochrone points within nsigma from
