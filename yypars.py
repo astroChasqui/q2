@@ -135,6 +135,7 @@ def solve_one(Star, SolvePars, PlotPars):
     if ips == None:
         logger.warning('Could not get any isochrone points.')
         return None
+    print('Using {0} Y2 isochrone points'.format(len(ips['age'])))
     logger.info('Using {0} Y2 isochrone points'.format(len(ips['age'])))
     Star.yykeyparameterknown = SolvePars.key_parameter_known
     Star.yynpoints = len(ips['age'])
