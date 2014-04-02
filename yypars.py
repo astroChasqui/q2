@@ -60,6 +60,24 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
 
     stats = get_stats(pdf_x, pdf_y_smooth)
 
+    if stats['most_probable']:
+        print("{0:10s} = {1:6.3f} | {2:6.3f} - {3:6.3f} | "\
+              "{4:6.3f} - {5:6.3f} | {6:6.3f} +/- {7:6.3f}"\
+              .format(par,
+                      stats['most_probable'],
+                      stats['lower_limit_1sigma'],
+                      stats['upper_limit_1sigma'],
+                      stats['lower_limit_2sigma'],
+                      stats['upper_limit_2sigma'],
+                      stats['mean'], stats['std'])
+              )
+    else:
+        print("{0:10s} =        |        -        |  "\
+              "      -        | {1:6.3f} +/- {2:6.3f}"\
+              .format(par, stats['mean'], stats['std'])
+              )
+        logger.warning("--- Unable to calculate PDF stats for "+par)
+
     return pdf_y, pdf_y_smooth, stats
 
 def get_stats(pdf_x, pdf_y_smooth):
@@ -80,7 +98,12 @@ def get_stats(pdf_x, pdf_y_smooth):
     areas_left = np.array(areas_left)
     if np.mean(areas_left) == 0:
         logger.warning("Left side of distribution is empty")
-        return None
+        stats['most_probable'] = None
+        stats['lower_limit_1sigma'] = None
+        stats['lower_limit_2sigma'] = None
+        stats['upper_limit_1sigma'] = None
+        stats['upper_limit_2sigma'] = None
+        return stats
 
     k = pdf_x >= stats['most_probable']
     pdf_y_right = 0.5*pdf_y_smooth[k]/simps(pdf_y_smooth[k], pdf_x[k])
@@ -170,11 +193,12 @@ def solve_one(Star, SolvePars, PlotPars):
       pdf(pdf_r_x, ips, prob, 'r', SolvePars.smooth_window_len_r)
 
     #logg
-    loggs = np.arange(501)*0.01
-    pdf_logg_x = loggs[np.logical_and(loggs >= min(ips['logg'])-0.05,
-                                      loggs <= max(ips['logg'])+0.05)]
-    pdf_logg_y, pdf_logg_y_smooth, Star.yylogg = \
-      pdf(pdf_logg_x, ips, prob, 'logg', SolvePars.smooth_window_len_logg)
+    if SolvePars.key_parameter_known == 'plx':
+        loggs = np.arange(501)*0.01
+        pdf_logg_x = loggs[np.logical_and(loggs >= min(ips['logg'])-0.05,
+                                          loggs <= max(ips['logg'])+0.05)]
+        pdf_logg_y, pdf_logg_y_smooth, Star.yylogg = \
+          pdf(pdf_logg_x, ips, prob, 'logg', SolvePars.smooth_window_len_logg)
 
     if not os.path.exists(PlotPars.directory) and PlotPars.directory != "":
         os.mkdir(PlotPars.directory)
@@ -224,8 +248,12 @@ def solve_one(Star, SolvePars, PlotPars):
     plt.rc("ytick.major", size=6, width=1)
     plt.subplots_adjust(hspace=0.4)
 
-    for panel in np.arange(6)+1:
-        ax = plt.subplot(6,1,panel)
+    npanels = 5
+    if SolvePars.key_parameter_known == 'plx':
+        npanels += 1
+
+    for panel in np.arange(npanels)+1:
+        ax = plt.subplot(npanels, 1, panel)
         ax.get_yaxis().set_visible(False)
         if panel == 1:
             pdf_x, pdf_y, pdf_y_smooth = \
@@ -289,7 +317,15 @@ def solve_all(Data, SolvePars, PlotPars, output_file):
     print('- Star data: '+Data.star_data_fname)
     print('------------------------------------------------------')
     fout = open(output_file, 'wb')
-    fout.write('id,yylogg,err_yylogg')
+    pars = ['age', 'mass', 'logl', 'mv', 'r']
+    if SolvePars.key_parameter_known == 'plx':
+        pars.append('logg')
+    values = ['mp', 'll1s', 'ul1s', 'll2s', 'ul2s', 'mean', 'std']
+    hd = 'id'
+    for par in pars:
+        for value in values:
+            hd += ','+par+'_'+value
+    fout.write(hd+'\n')
     for star_id in Data.star_data['id']:
         print('')
         print('*'*len(star_id))
@@ -298,8 +334,20 @@ def solve_all(Data, SolvePars, PlotPars, output_file):
         s = Star(star_id)
         s.get_data_from(Data)
         solve_one(s, SolvePars, PlotPars)
-        fout.write("{0},{1:.2f},{2:.2f}".
-                   format(s.name, s.yylogg['most_probable'], s.yylogg['std']))
+        string = "{0}".format(s.name)
+        for par in pars:
+            keys = ['most_probable',
+                    'lower_limit_1sigma', 'upper_limit_1sigma',
+                    'lower_limit_2sigma', 'upper_limit_2sigma']
+            try:
+                for key in keys:
+                      string += ",{0:.3f}".format(getattr(s, 'yy'+par)[key])
+            except:
+                string += ",,,,,"
+            string += ",{0:.3f},{1:.3f}".\
+                      format(getattr(s, 'yy'+par)['mean'],\
+                             getattr(s, 'yy'+par)['std'])
+        fout.write(string+"\n")
     fout.close()
 
     print('')
