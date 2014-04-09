@@ -49,11 +49,14 @@ class Star:
             self.teff = Data.star_data['teff_out'][idx[0][0]]
             self.logg = Data.star_data['logg_out'][idx[0][0]]
             self.feh = Data.star_data['feh_out'][idx[0][0]]
-            self.vt = Data.star_data['vt_out'][idx[0][0]]
             self.err_teff = Data.star_data['err_teff_out'][idx[0][0]]
             self.err_logg = Data.star_data['err_logg_out'][idx[0][0]]
             self.err_feh = Data.star_data['err_feh_out'][idx[0][0]]
-            self.converged = Data.star_data['converged'][idx[0][0]]
+            try:
+                self.vt = Data.star_data['vt_out'][idx[0][0]]
+                self.vt = Data.star_data['err_vt_out'][idx[0][0]]
+            except:
+                logger.warning('No vt_out for this star.')
         except:
             self.teff = Data.star_data['teff_in'][idx[0][0]]
             self.logg = Data.star_data['logg_in'][idx[0][0]]
@@ -61,7 +64,7 @@ class Star:
             try:
                 self.vt = Data.star_data['vt_in'][idx[0][0]]
             except:
-                logger.warning('No vt for this star.')
+                logger.warning('No vt_in for this star.')
             try:
                 self.err_teff = Data.star_data['err_teff_in'][idx[0][0]]
                 self.err_logg = Data.star_data['err_logg_in'][idx[0][0]]
@@ -73,7 +76,7 @@ class Star:
         if hasattr(self, 'err_teff'):
             logger.info('Attributes err_teff, err_logg, err_feh added to star object.')
 
-        additional_parameters = ['v', 'err_v', 'plx', 'err_plx']
+        additional_parameters = ['v', 'err_v', 'plx', 'err_plx', 'converged']
         msg = []
         for ap in additional_parameters:
             if ap in Data.star_data.keys():
