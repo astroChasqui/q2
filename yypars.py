@@ -215,6 +215,8 @@ def solve_one(Star, SolvePars, PlotPars):
         plt.rc("ytick.major", size=6, width=1)
         plt.xlim([0,15])
         plt.xlabel('Age (Gyr)')
+        if PlotPars.age_xlim:
+            plt.xlim(PlotPars.age_xlim)
         plt.ylabel('Probability density')
         k2 = np.logical_and(pdf_age_x >= Star.yyage['lower_limit_2sigma'],
                             pdf_age_x <= Star.yyage['upper_limit_2sigma'])
@@ -231,7 +233,7 @@ def solve_one(Star, SolvePars, PlotPars):
         #exclude eveything after __ in Star.name in legend:
         starname = Star.name.split("__")[0]
 
-        plt.text(14.2, 0.86*plt.ylim()[1], starname,
+        plt.text(0.92*plt.xlim()[1], 0.86*plt.ylim()[1], starname,
                  horizontalalignment='right', size=16)
         fig_name = os.path.join(PlotPars.directory,
                                 Star.name.replace(' ', '_')+\
