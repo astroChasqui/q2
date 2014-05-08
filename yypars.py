@@ -35,6 +35,7 @@ class PlotPars:
         self.logg_xlim = None
         self.directory = directory
         self.figure_format = figure_format
+        self.title_inside = None
 
 def pdf(pdf_x, ips, prob, par, smooth_window_len):
     '''Calculates a probability distribution function (PDF) for parameter par
@@ -232,6 +233,9 @@ def solve_one(Star, SolvePars, PlotPars):
 
         #exclude eveything after __ in Star.name in legend:
         starname = Star.name.split("__")[0]
+
+        if PlotPars.title_inside != None:
+            starname = PlotPars.title_inside
 
         plt.text(0.92*plt.xlim()[1], 0.86*plt.ylim()[1], starname,
                  horizontalalignment='right', size=16)

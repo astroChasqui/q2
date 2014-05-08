@@ -30,6 +30,8 @@ class PlotPars:
         self.wavelength_range = None
         self.make_figure = True
         self.figure_format = 'png'
+        self.title = None
+        self.title_inside = None
 
 def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
     if hasattr(Ref, 'name'):
@@ -108,6 +110,8 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
                 +str(round(Star.feh,3))+', '+str(Star.vt)
         if hasattr(Ref, 'name'):
             title += ' ['+Ref.name+']'
+        if PlotPars.title != None:
+            title = PlotPars.title
         plt.suptitle(title, fontsize=16)
         plt.subplots_adjust(hspace=0.35, top=0.93, left=0.2)
         plt.rc("axes", labelsize=15, titlesize=12)
@@ -133,7 +137,11 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
         plt.ylabel(ylabel)
         plt.xlim(-0.2, 5.2)
         plt.ylim(ylim)
-
+        if PlotPars.title_inside != None:
+            plt.text(2.5, 0.8*plt.ylim()[1],
+                     PlotPars.title_inside,
+                     horizontalalignment='center',
+                     size=15)
         panel_b = plt.subplot(312)
         plt.xlabel('REW = log (EW/$\lambda$)')
         plt.ylabel(ylabel)
