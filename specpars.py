@@ -74,7 +74,8 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
         rew2 = np.log10(1e-3*Star.fe2['ew'][k2]/w2)
         ep1, ep2 = Star.fe1['ep'][k1], Star.fe2['ep'][k2]
         if plot:
-            ylabel = '$\Delta$[Fe/H]'
+            #ylabel = '$\Delta$[Fe/H]'
+            ylabel = '[Fe/H]'
     else:
         logger.info('Working with absolute abundances')
         w1, w2 = Star.fe1['ww'], Star.fe2['ww']
