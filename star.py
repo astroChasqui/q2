@@ -54,7 +54,7 @@ class Star:
             self.err_feh = Data.star_data['err_feh_out'][idx[0][0]]
             try:
                 self.vt = Data.star_data['vt_out'][idx[0][0]]
-                self.vt = Data.star_data['err_vt_out'][idx[0][0]]
+                self.err_vt = Data.star_data['err_vt_out'][idx[0][0]]
             except:
                 logger.warning('No vt_out for this star.')
         except:
