@@ -188,6 +188,7 @@ def getsp(species_id):
          'MgI' : 12.0,
          'AlI' : 13.0,
          'SiI' : 14.0,
+         'SI'  : 16.0,
          'CaI' : 20.0,
          'ScI' : 21.0,
          'ScII': 21.1,
@@ -201,7 +202,11 @@ def getsp(species_id):
          'FeII': 26.1,
          'CoI' : 27.0,
          'NiI' : 28.0,
+         'CuI' : 29.0,
+         'ZnI' : 30.0,
+         'SrI' : 38.0,
          'YII' : 39.1,
+         'ZrII': 40.1,
          'BaII': 56.1
          }
     try:

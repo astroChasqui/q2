@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 class Data:
     def __init__(self, fname_star_data, fname_lines=None):
         # need checks: star data must have id, teff_in, etc
+        # id cannot be duplicated!
         # also lines must have wave, ew, gf, etc.
         try:
             self.star_data = ascii.read(fname_star_data,
@@ -21,7 +22,7 @@ class Data:
         if fname_lines:
             try:
                 self.lines = ascii.read(fname_lines,
-                                            fill_values=[('', '-9999')])
+                                        fill_values=[('', '-9999')])
                 self.lines_fname = fname_lines
             except:
                 logger.error('Lines file not found.')
@@ -33,42 +34,53 @@ class Data:
 
 
 class Star:
-    def __init__(self, name='Unnamed star'):
+    def __init__(self, name='Unnamed star',
+                       teff=None, logg=None, feh=None, vt=None):
         self.name = name
+        self.teff = teff
+        self.logg = logg
+        self.feh = feh
+        self.vt = vt
         logger.info('Star object successfully created.')
 
+    def parameters(self):
+        print(self.teff)
+        print(self.logg)
+        print(self.feh)
+        print(self.vt)
+
     def get_data_from(self, Data):
-        idx = np.where(Data.star_data['id'] == self.name)
+        #idx must correspond to a unique id; hence the [0][0]
         try:
-            idx[0][0]
+            idx = np.where(Data.star_data['id'] == self.name)[0][0]
             logger.info("Star '"+self.name+"' found in data object.")
         except:
             logger.error("Star '"+self.name+"' not found in data object.")
             return None
         try:
-            self.teff = Data.star_data['teff_out'][idx[0][0]]
-            self.logg = Data.star_data['logg_out'][idx[0][0]]
-            self.feh = Data.star_data['feh_out'][idx[0][0]]
-            self.err_teff = Data.star_data['err_teff_out'][idx[0][0]]
-            self.err_logg = Data.star_data['err_logg_out'][idx[0][0]]
-            self.err_feh = Data.star_data['err_feh_out'][idx[0][0]]
+            self.teff = Data.star_data['teff_out'][idx]
+            self.logg = Data.star_data['logg_out'][idx]
+            self.feh = Data.star_data['feh_out'][idx]
+            self.err_teff = Data.star_data['err_teff_out'][idx]
+            self.err_logg = Data.star_data['err_logg_out'][idx]
+            self.err_feh = Data.star_data['err_feh_out'][idx]
             try:
-                self.vt = Data.star_data['vt_out'][idx[0][0]]
-                self.err_vt = Data.star_data['err_vt_out'][idx[0][0]]
+                self.vt = Data.star_data['vt_out'][idx]
+                self.err_vt = Data.star_data['err_vt_out'][idx]
             except:
                 logger.warning('No vt_out for this star.')
         except:
-            self.teff = Data.star_data['teff_in'][idx[0][0]]
-            self.logg = Data.star_data['logg_in'][idx[0][0]]
-            self.feh = Data.star_data['feh_in'][idx[0][0]]
+            self.teff = Data.star_data['teff_in'][idx]
+            self.logg = Data.star_data['logg_in'][idx]
+            self.feh = Data.star_data['feh_in'][idx]
             try:
-                self.vt = Data.star_data['vt_in'][idx[0][0]]
+                self.vt = Data.star_data['vt_in'][idx]
             except:
                 logger.warning('No vt_in for this star.')
             try:
-                self.err_teff = Data.star_data['err_teff_in'][idx[0][0]]
-                self.err_logg = Data.star_data['err_logg_in'][idx[0][0]]
-                self.err_feh = Data.star_data['err_feh_in'][idx[0][0]]
+                self.err_teff = Data.star_data['err_teff_in'][idx]
+                self.err_logg = Data.star_data['err_logg_in'][idx]
+                self.err_feh = Data.star_data['err_feh_in'][idx]
             except:
                 logger.info('No errors in _in parameters.')
 
@@ -80,8 +92,8 @@ class Star:
         msg = []
         for ap in additional_parameters:
             if ap in Data.star_data.keys():
-                if Data.star_data[ap][idx[0][0]]:
-                    setattr(self, ap, Data.star_data[ap][idx[0][0]])
+                if Data.star_data[ap][idx]:
+                    setattr(self, ap, Data.star_data[ap][idx])
                     msg.append(ap)
         if msg:
             logger.info('Additional attribute(s) '+','.join(msg)+\

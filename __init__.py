@@ -21,7 +21,8 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.ERROR)
+#logging.basicConfig(level=logging.ERROR)
+logger.setLevel('ERROR')
 #to change level interactively: q2.logger.setLevel('DEBUG')
 
 __author__ = 'Ivan Ramirez (UT Austin)'
