@@ -108,7 +108,7 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
     print('')
 
 
-def one(Star, species_ids, Ref=object):
+def one(Star, species_ids, Ref=object, silent=True):
     logger.info('Working on: '+Star.name)
     for species_id in species_ids:
         species = getsp(species_id)
@@ -122,8 +122,9 @@ def one(Star, species_ids, Ref=object):
             continue
 
         if species_id == 'OI':
-            print('')
-            print('777 nm oxygen abundances will be NLTE corrected')
+            if not silent:
+                print('')
+                print('777 nm oxygen abundances will be NLTE corrected')
             ao = []
             for wx in [7771.94, 7774.16, 7775.39]:
                 k = np.where(abs(Star.OI['ww']-wx) < 0.05)
@@ -131,7 +132,8 @@ def one(Star, species_ids, Ref=object):
                     ao.append(np.mean(Star.OI['ab'][k]))
                 else:
                     ao.append(0)
-            aon = nlte_triplet(Star.teff, Star.logg, Star.feh, ao)
+            aon = nlte_triplet(Star.teff, Star.logg, Star.feh, ao,
+                               silent=silent)
             k= np.where(np.array(ao) > 0)
             getattr(Star, species_id)['ab'] = aon[k]
 
@@ -145,9 +147,10 @@ def one(Star, species_ids, Ref=object):
                 moog.abfind(Ref, species, species_id)
 
                 if species_id == 'OI':
-                    print('')
-                    print('777 nm oxygen abundances will be NLTE corrected '\
-                          +'(Reference)')
+                    if not silent:
+                        print('')
+                        print('777 nm oxygen abundances will be NLTE '\
+                              +'corrected (Reference)')
                     ao = []
                     for wx in [7771.94, 7774.16, 7775.39]:
                         k = np.where(abs(Ref.OI['ww']-wx) < 0.05)
@@ -217,7 +220,7 @@ def getsp(species_id):
     return species
 
 
-def nlte_triplet(teff, logg, feh, ao):
+def nlte_triplet(teff, logg, feh, ao, silent=True):
     grid = ascii.read(os.path.join(OTHER_PATH ,'nlte_triplet.csv'))
 
     t,g,f,dao0,dao1,dao2=[],[],[],[],[],[]
@@ -283,18 +286,22 @@ def nlte_triplet(teff, logg, feh, ao):
     x1 = x1 - 0.0180
     x2 = x2 - 0.0000
     
-    print('Wavelength (A) | A(O) LTE | Correction | A(O) NLTE')
-    print("   7771.9      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".
-          format(ao[0], x0, ao[0]-x0))
-    print("   7774.2      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".
-          format(ao[1], x1, ao[1]-x1))
-    print("   7775.4      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".
-          format(ao[2], x2, ao[2]-x2))
+    if not silent:
+        print('Wavelength (A) | A(O) LTE | Correction | A(O) NLTE')
+        print("   7771.9      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".
+              format(ao[0], x0, ao[0]-x0))
+        print("   7774.2      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".
+              format(ao[1], x1, ao[1]-x1))
+        print("   7775.4      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".
+              format(ao[2], x2, ao[2]-x2))
     ax = [ao[0]-x0, ao[1]-x1, ao[2]-x2]
 
     aon = np.ma.masked_array(ax,np.isnan(ax))
 
-    print("A(O) LTE  = {0:6.3f} +/- {1:5.3f}".format(np.mean(ao), np.std(ao)))
-    print("A(O) NLTE = {0:6.3f} +/- {1:5.3f}".format(np.mean(aon), np.std(aon)))
+    if not silent:
+        print("A(O) LTE  = {0:6.3f} +/- {1:5.3f}".
+              format(np.mean(ao), np.std(ao)))
+        print("A(O) NLTE = {0:6.3f} +/- {1:5.3f}".
+              format(np.mean(aon), np.std(aon)))
 
     return aon
