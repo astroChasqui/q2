@@ -12,7 +12,7 @@ from config import *
 logger = logging.getLogger(__name__)
 
 
-def all(Data, species_ids, grid, output_file, reference=None):
+def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
     print('------------------------------------------------------')
     print('Initializing ...')
     start_time = datetime.datetime.now()
