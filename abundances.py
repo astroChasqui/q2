@@ -181,6 +181,10 @@ def one(Star, species_ids, Ref=object, silent=True):
                 else:
                     ax.append(None)
             getattr(Star, species_id)['difab'] = ax
+        if not silent and len(species_ids) > 1:
+            print(species_id + ' done')
+    if not silent and len(species_ids) > 1:
+        print('All species completed')
 
 
 def getsp(species_id):
