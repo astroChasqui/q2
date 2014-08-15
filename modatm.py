@@ -35,7 +35,7 @@ def get_from_file(teff, logg, feh, grid):
         f='m'+str(abs(feh)).replace('.', '')
     file_name = 't'+str(teff)+g+f+'.'+grid
 
-    # if file doesn't exists return None
+    # if file doesn't exist return None
     try:
         with open(os.path.join(path, file_name)): pass
     except IOError:
@@ -43,8 +43,21 @@ def get_from_file(teff, logg, feh, grid):
         return None, None
 
     logger.info('Model found: '+file_name)
+
     x = ascii.read(os.path.join(path, file_name),
                    names=('RHOX', 'T', 'P', 'XNE', 'ABROSS'))
+
+    #---NO-ASTROPY---
+    #f = open(os.path.join(path, file_name), 'r')
+    #xf = f.readlines()
+    #f.close()
+    #keys = ['RHOX', 'T', 'P', 'XNE', 'ABROSS']
+    #x = {'RHOX': [], 'T': [], 'P': [], 'XNE': [], 'ABROSS': []}
+    #for xfi in xf:
+    #    for key, xfij in zip(keys,xfi.split(",")):
+    #        x[key].append(float(xfij.strip("\n")))
+    #for key in keys:
+    #    x[key] = np.array(x[key])    
 
     # calculate tauRoss scale
     tau0 = x['RHOX'][0]*x['ABROSS'][0]
