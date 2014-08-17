@@ -30,7 +30,7 @@ def linfit(x, y):
     #return b, a, sigma, err_b, err_a
     return a, b, err_b
 
-def read_csv(csv_file):
+def read_csv(csv_file, is_lines_file=False):
     """Reads CSV file with header and sends data to dictionary
     
     This routine was written specifically for q2 and is not meant 
@@ -40,21 +40,33 @@ def read_csv(csv_file):
     data rows will be read as None. The output is a dictionary of numpy
     arrays.
     """
-    f = open(csv_file)
-    x = f.readlines()
-    f.close()
-    keys = x[0].split(",")
+    with open(csv_file) as f:
+        x = f.readlines()
+
+    keys = [key.strip("\n") for key in x[0].split(",")]
+    if (len(keys) != len(set(keys))):
+        logger.error("First row of CSV file (keys in "+csv_file+\
+                     ") has duplicates.")
+        return None
     if "" in keys:
-        logger.error("First row of CSV file (keys) has an empty column.")
+        logger.error("First row of CSV file (keys in "+csv_file+\
+                     ") has empty columns.")
         return None
-    if "id" not in keys:
-        logger.error("CSV file must have an 'id' column.")
+    if "id" not in keys and is_lines_file==False:
+        logger.error("Stars CSV file must have an 'id' column.")
         return None
+    if ("wavelength" not in keys or "species" not in keys\
+        or "ep" not in keys or "gf" not in keys) and is_lines_file:
+        logger.error("Lines CSV file must have all of these columns: "+\
+                     "'wavelength', 'species', 'ep', and 'gf'.")
+        return None
+
     dictionary = {}
     for key in keys:
         dictionary[key] = []
     for xi in x[1:]:
         for key, xij in zip(keys,xi.split(",")):
+            xij = xij.strip("\n")
             if xij == "":
                 xij = None
             if "teff" in key and xij != None:
@@ -62,12 +74,15 @@ def read_csv(csv_file):
             if ("logg" in key or "feh" in key or "vt" in key)\
                and xij != None:
                 xij = float(xij)
+            if is_lines_file and xij != None and key != "comments":
+                xij = float(xij)
             dictionary[key].append(xij)
     for key in keys:
         dictionary[key] = np.array(dictionary[key])
-    ambiguous_ids = [idx for idx in dictionary["id"]\
-                    if len(dictionary["id"][dictionary["id"]==idx]) > 1]
-    if len(ambiguous_ids) > 1:
-        logger.error("There are duplicates in 'id' column.")
-        return None
+    if not is_lines_file:
+        ambiguous_ids = [idx for idx in dictionary["id"]\
+                        if len(dictionary["id"][dictionary["id"]==idx]) > 1]
+        if len(ambiguous_ids) > 1:
+            logger.error("There are duplicates in 'id' column.")
+            return None
     return dictionary

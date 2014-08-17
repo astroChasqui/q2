@@ -1,31 +1,27 @@
-from astropy.io import ascii
 import numpy as np
 import logging
 import modatm
 from config import *
+from tools import read_csv
 
 logger = logging.getLogger(__name__)
 
 
 class Data:
     def __init__(self, fname_star_data, fname_lines=None):
-        # need checks: star data must have id, teff_in, etc
-        # id cannot be duplicated!
-        # also lines must have wave, ew, gf, etc.
         try:
-            self.star_data = ascii.read(fname_star_data,
-                                        fill_values=[('', '-9999')])
+            self.star_data = read_csv(fname_star_data)
             self.star_data_fname = fname_star_data
         except:
             logger.error('Star data file not found.')
             return None
+
         if fname_lines:
             try:
-                self.lines = ascii.read(fname_lines,
-                                        fill_values=[('', '-9999')])
+                self.lines = read_csv(fname_lines, is_lines_file=True)
                 self.lines_fname = fname_lines
             except:
-                logger.error('Lines file not found.')
+                logger.error('Lines file not found or could not be read.')
                 return None
         else:
             logger.warning('No lines data. Wont be able to MOOG.')
@@ -99,15 +95,15 @@ class Star:
             logger.info('Additional attribute(s) '+','.join(msg)+\
                         ' added to star object.')
 
-        # gets ews; excludes cells with no ew:
+        # gets line data excluding cells with no ew:
         if hasattr(Data, 'lines'):
-            idx = np.where(((Data.lines['wavelength'] > -10000) &
-                            (Data.lines[self.name] != '')))
-            self.linelist = {'wavelength': Data.lines[idx]['wavelength'],
-                             'species': Data.lines[idx]['species'],
-                             'ep': Data.lines[idx]['ep'],
-                             'gf': Data.lines[idx]['gf'],
-                             'ew': Data.lines[idx][self.name]}
+            idx = np.where(Data.lines[self.name] != None and\
+                           Data.lines[self.name] > -100000)
+            self.linelist = {'wavelength': Data.lines['wavelength'][idx],
+                             'species': Data.lines['species'][idx],
+                             'ep': Data.lines['ep'][idx],
+                             'gf': Data.lines['gf'][idx],
+                             'ew': Data.lines[self.name][idx]}
             logger.info('Attribute linelist added to star object.')
         else:
             logger.warning('There is no line data to attach to Star object.')
