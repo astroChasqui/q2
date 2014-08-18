@@ -5,15 +5,14 @@ logger = logging.getLogger(__name__)
 
 
 def linterp(m0, m1, p0, p1, p):
-    """Interpolates linearly recarrays m0 and m1
+    """Interpolates linearly dictionaries of numpy arrays m0 and m1
 
     m0, m1 correspond to variables p0, p1
-    Result is a recarray interpolated to the variable p (p0 < p < p1)
+    Result is a dictionary interpolated to the variable p (p0 < p < p1)
     """
-
     s = 1.*(p-p0)/(p1-p0)
-    m = np.recarray(len(m0), dtype=m0.dtype)
-    for col in m0.dtype.names:
+    m = {}
+    for col in m0.keys():
         m[col] = (1.-s)*m0[col] + s*m1[col]
     return m
 

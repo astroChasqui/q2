@@ -108,7 +108,7 @@ class Star:
         else:
             logger.warning('There is no line data to attach to Star object.')
 
-    def get_model_atmosphere(self, grid):
+    def get_model_atmosphere(self, grid='odfnew'):
         try:
             self.teff
             self.logg

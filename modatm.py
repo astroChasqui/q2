@@ -1,4 +1,3 @@
-from astropy.io import ascii
 import matplotlib.pyplot as plt
 import logging
 import tools
@@ -44,20 +43,15 @@ def get_from_file(teff, logg, feh, grid):
 
     logger.info('Model found: '+file_name)
 
-    x = ascii.read(os.path.join(path, file_name),
-                   names=('RHOX', 'T', 'P', 'XNE', 'ABROSS'))
-
-    #---NO-ASTROPY---
-    #f = open(os.path.join(path, file_name), 'r')
-    #xf = f.readlines()
-    #f.close()
-    #keys = ['RHOX', 'T', 'P', 'XNE', 'ABROSS']
-    #x = {'RHOX': [], 'T': [], 'P': [], 'XNE': [], 'ABROSS': []}
-    #for xfi in xf:
-    #    for key, xfij in zip(keys,xfi.split(",")):
-    #        x[key].append(float(xfij.strip("\n")))
-    #for key in keys:
-    #    x[key] = np.array(x[key])    
+    with open(os.path.join(path, file_name), 'r') as f:
+        xf = f.readlines()
+    keys = ['RHOX', 'T', 'P', 'XNE', 'ABROSS']
+    x = {'RHOX': [], 'T': [], 'P': [], 'XNE': [], 'ABROSS': []}
+    for xfi in xf:
+        for key, xfij in zip(keys,xfi.split(",")):
+            x[key].append(float(xfij.strip("\n")))
+    for key in keys:
+        x[key] = np.array(x[key])
 
     # calculate tauRoss scale
     tau0 = x['RHOX'][0]*x['ABROSS'][0]
@@ -164,7 +158,8 @@ def interpolate(teff, logg, feh, grid, plot=''):
     tau = tau000[(tau000 >= tau_min) & (tau000 <= tau_max)]
     tau_new = griddata(np.array(range(len(tau))), tau,
                        np.array(range(n+1))*np.array(float(len(tau)-1))/n)
-    for name in T0G0F0.dtype.names:
+    #for name in T0G0F0.dtype.names:
+    for name in T0G0F0.keys():
         T0G0F0[name] = griddata(tau000, T0G0F0[name], tau_new)
         T0G0F1[name] = griddata(tau001, T0G0F1[name], tau_new)
         T0G1F0[name] = griddata(tau010, T0G1F0[name], tau_new)

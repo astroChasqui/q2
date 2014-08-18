@@ -1,4 +1,3 @@
-from astropy.io import ascii
 import numpy as np
 import os
 import logging
@@ -16,7 +15,7 @@ class Driver:
         self.plot = 0
         self.hfs_species = None
 
-    def create_file(self, file_name):
+    def create_file(self, file_name="batch.par"):
         self.file_name = file_name
         f = open(file_name, 'w')
         if self.hfs_species:
@@ -52,58 +51,62 @@ def create_model_in(Star, file_name='model.in'):
         logger.error('No model data to write to moog model_in file.')
         return None
 
-    f = open('head.tmp', 'w')
-    f.write('KURUCZ\n')
-    f.write('TEFF='+str(Star.teff)+',LOGG='+str(Star.logg)+
-            ',[FE/H]='+str(Star.feh)+','+Star.model_atmosphere_grid+'\n')
-    nd = len(Star.model_atmosphere)
-    f.write('ND=       '+str(nd)+'\n')
-    f.close()
+    with open('head.tmp', 'w') as f:
+        f.write('KURUCZ\n')
+        f.write('TEFF='+str(Star.teff)+',LOGG='+str(Star.logg)+
+                ',[FE/H]='+str(Star.feh)+','+Star.model_atmosphere_grid+'\n')
+        nd = len(Star.model_atmosphere['T'])
+        f.write('ND=       '+str(nd)+'\n')
 
-    ascii.write(Star.model_atmosphere, 'body.tmp', Writer=ascii.NoHeader,
-                formats={'RHOX':'%.8E','T':'%.1F','P':'%.3E',
-                'XNE':'%.3E','ABROSS':'%.3E'})
+    with open('body.tmp', 'w') as f:
+        for idx in range(nd):
+            f.write("{0:.8E} {1:.1F} {2:.3E} {3:.3E} {4:.3E}\n".format(\
+                    Star.model_atmosphere['RHOX'][idx],\
+                    Star.model_atmosphere['T'][idx],\
+                    Star.model_atmosphere['P'][idx],\
+                    Star.model_atmosphere['XNE'][idx],\
+                    Star.model_atmosphere['ABROSS'][idx])
+                   )
 
-    f = open('tail.tmp', 'w')
-    f.write('%5.2F\n' %Star.vt)
-    if Star.model_atmosphere_grid != 'marcs':
-        path = os.path.join(MODATM_PATH, 'kurucz')
-        fabund = open(os.path.join(path, 'p00.'+Star.model_atmosphere_grid),
-                      'r')
-    else:
-        path = os.path.join(MODATM_PATH, 'marcs')
-        fabund = open(os.path.join(path, 'z+0.00'), 'r')
-
-    line = fabund.readline()
-    f.write(line[0:12]+' '+str(Star.feh)+'\n')
-    line = fabund.readline()
-    while line:
-        species = line[0:2]
-        if Star.model_atmosphere_grid == 'marcs':
-            abund = float(line[3:9])+Star.feh
-            #alpha-element enhancement
-            if species==' 8' or species=='10' or species=='12' or \
-               species=='14' or species=='16' or species=='18' or \
-               species=='20' or species=='22':
-                afe = -0.4*Star.feh
-                if Star.feh >=  0: afe=0.0
-                if Star.feh <= -1: afe=0.4
-                abund = abund+afe
+    with open('tail.tmp', 'w') as f:
+        f.write('%5.2F\n' %Star.vt)
+        if Star.model_atmosphere_grid != 'marcs':
+            path = os.path.join(MODATM_PATH, 'kurucz')
+            fabund = open(os.path.join(path, 'p00.'+Star.model_atmosphere_grid),
+                          'r')
         else:
-            abund = 12.+np.log10(np.power(10, float(line[3:9]))/0.92040)+ \
-                    Star.feh
-        abund = str('%5.2F' %abund)
-        f.write(species+' '+abund+'\n')
+            path = os.path.join(MODATM_PATH, 'marcs')
+            fabund = open(os.path.join(path, 'z+0.00'), 'r')
+
         line = fabund.readline()
-    fabund.close()
-    f.write('NMOL      22\n')
-    f.write('  101.0   106.0   107.0   108.0   112.0  126.0\n')
-    f.write('  606.0   607.0   608.0\n')
-    f.write('  707.0   708.0\n')
-    f.write('  808.0   812.0   822.0\n')
-    f.write('  10108.0 60808.0\n')
-    f.write('  6.1     7.1     8.1   12.1  22.1  26.1\n')
-    f.close()
+        f.write(line[0:12]+' '+str(Star.feh)+'\n')
+        line = fabund.readline()
+        while line:
+            species = line[0:2]
+            if Star.model_atmosphere_grid == 'marcs':
+                abund = float(line[3:9])+Star.feh
+                #alpha-element enhancement
+                if species==' 8' or species=='10' or species=='12' or \
+                   species=='14' or species=='16' or species=='18' or \
+                   species=='20' or species=='22':
+                    afe = -0.4*Star.feh
+                    if Star.feh >=  0: afe=0.0
+                    if Star.feh <= -1: afe=0.4
+                    abund = abund+afe
+            else:
+                abund = 12.+np.log10(np.power(10, float(line[3:9]))/0.92040)+ \
+                        Star.feh
+            abund = str('%5.2F' %abund)
+            f.write(species+' '+abund+'\n')
+            line = fabund.readline()
+        fabund.close()
+        f.write('NMOL      22\n')
+        f.write('  101.0   106.0   107.0   108.0   112.0  126.0\n')
+        f.write('  606.0   607.0   608.0\n')
+        f.write('  707.0   708.0\n')
+        f.write('  808.0   812.0   822.0\n')
+        f.write('  10108.0 60808.0\n')
+        f.write('  6.1     7.1     8.1   12.1  22.1  26.1\n')
 
     file_list = ['head.tmp', 'body.tmp', 'tail.tmp']
     with open(file_name, 'w') as outfile:
@@ -136,15 +139,18 @@ def create_lines_in(Star, species=0, file_name='lines.in'):
     if len(gf10) == len(Star.linelist['gf'][idx]):
         logger.info('all gf values for this species are positive --> 10^gf')
         gf_values = gf10
-    ll_data = {'wavelength': Star.linelist['wavelength'][idx],
-               'species': Star.linelist['species'][idx],
-               'ep': Star.linelist['ep'][idx],
-               'gf': gf_values,
-               'damp': 3+np.zeros(nlines),
-               'zero': np.zeros(nlines),
-               'ew': Star.linelist['ew'][idx]}
-    ascii.write(ll_data, file_name, Writer=ascii.CommentedHeader,
-                names=['wavelength', 'species', 'ep', 'gf', 'damp', 'zero', 'ew'])
+
+    with open(file_name, 'w') as f:
+        f.write("MOOG linelist created by q2\n")
+        for lidx in range(nlines):
+            f.write("{0:10.4f} {1:4.1f} {2:6.3f} {3:5.3f} 3 0 {4:5.1f}\n".format(\
+                    Star.linelist['wavelength'][lidx],\
+                    Star.linelist['species'][lidx],\
+                    Star.linelist['ep'][lidx],\
+                    Star.linelist['gf'][lidx],\
+                    Star.linelist['ew'][lidx])
+                   )
+
     logger.info('Moog line list created: '+file_name)
     return True
 
