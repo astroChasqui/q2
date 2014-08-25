@@ -57,7 +57,8 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
     if hasattr(Ref, 'name'):
         logger.info('Differential analysis. Reference star is '+Ref.name)
         if not (hasattr(Ref, 'fe1')):
-            logger.info('Reference star does not have abundances as attributes')
+            logger.info('Reference star does not have abundances as '+\
+                        'attributes')
             logger.info('Calculating abundances for reference star')
             moog.abfind(Ref, 26.0, 'fe1')
             moog.abfind(Ref, 26.1, 'fe2')
@@ -70,6 +71,7 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
         k2r = [i for i, w in zip(range(len(ww2r)), ww2r) if w in w2]
         afe1 = Star.fe1['ab'][k1] - Ref.fe1['ab'][k1r]
         afe2 = Star.fe2['ab'][k2] - Ref.fe2['ab'][k2r]
+        Star.fe1['difab'], Star.fe2['difab'] = afe1, afe2
         rew1 = np.log10(1e-3*Star.fe1['ew'][k1]/w1)
         rew2 = np.log10(1e-3*Star.fe2['ew'][k2]/w2)
         ep1, ep2 = Star.fe1['ep'][k1], Star.fe2['ep'][k2]
@@ -87,17 +89,13 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
         if plot:
             ylabel = 'A(Fe)'
 
-    mfe1, efe1 = np.mean(afe1), np.std(afe1)
-    mfe2, efe2 = np.mean(afe2), np.std(afe2)
+    mfe1, efe1 = np.mean(afe1), np.std(afe1, ddof=1)
+    mfe2, efe2 = np.mean(afe2), np.std(afe2, ddof=1)
     mafe = np.mean(list(afe1)+list(afe2))
     eafe = np.std(list(afe1)+list(afe2))
     nfe1, nfe2 = len(afe1), len(afe2)
  
-    #slope_ep, zero_ep = np.polyfit(ep1, afe1, 1)
-    #x, cov = np.polyfit(ep1, afe1, 1, cov=True)
-    #err_slope_ep = cov[0][0] #!!!
     zero_ep, slope_ep, err_slope_ep = linfit(ep1, afe1)
-    #slope_rew, zero_rew = np.polyfit(rew1, afe1, 1)
     zero_rew, slope_rew, err_slope_rew = linfit(rew1, afe1)
     x_epfit = np.array([min(ep1), max(ep1)])
     y_epfit = zero_ep + slope_ep*x_epfit
@@ -111,8 +109,9 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
                 +str(round(Star.feh,3))+', '+str(Star.vt)
         if hasattr(Ref, 'name'):
             title += ' ['+Ref.name+']'
-        if PlotPars.title != None:
-            title = PlotPars.title
+        if hasattr(PlotPars, 'title'):
+            if PlotPars.title != None:
+                title = PlotPars.title
         plt.suptitle(title, fontsize=16)
         plt.subplots_adjust(hspace=0.35, top=0.93, left=0.2)
         plt.rc("axes", labelsize=15, titlesize=12)
@@ -121,7 +120,6 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
         plt.rc("xtick.major", size=6, width=1)
         plt.rc("ytick.major", size=6, width=1)
         plt.rc("lines", markersize=10, markeredgewidth=2)
-        #plt.rc("font", family='Verdana')
         plt.rc("lines", linewidth=3)
 
         try:
@@ -138,11 +136,12 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
         plt.ylabel(ylabel)
         plt.xlim(-0.2, 5.2)
         plt.ylim(ylim)
-        if PlotPars.title_inside != None:
-            plt.text(2.5, 0.8*plt.ylim()[1],
-                     PlotPars.title_inside,
-                     horizontalalignment='center',
-                     size=15)
+        if hasattr(PlotPars, 'title_inside'):
+            if PlotPars.title_inside != None:
+                plt.text(2.5, 0.8*plt.ylim()[1],
+                         PlotPars.title_inside,
+                         horizontalalignment='center',
+                         size=15)
         panel_b = plt.subplot(312)
         plt.xlabel('REW = log (EW/$\lambda$)')
         plt.ylabel(ylabel)
@@ -242,7 +241,7 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
                 if SolveParsInit.niter > 0:
                     print('-- Begin final loop')
             stop_iter = True
-        
+             
         if i > 0:
             if Star.iron_stats['slope_ep'] > 0:
                 Star.teff += sp.step_teff

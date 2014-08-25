@@ -119,16 +119,15 @@ def create_model_in(Star, file_name='model.in'):
 
 
 def create_lines_in(Star, species=0, file_name='lines.in'):
-    #species = 0 means all species
     if species > 0:
-        #idx = np.where(Star.linelist['species'] == species)
-        idx = np.logical_and(Star.linelist['species'] == species,
-                             Star.linelist['ew'] >= 0)
+        idx = np.where(np.logical_and(Star.linelist['species'] == species,\
+                                       Star.linelist['ew'] >= 0))[0]
     else:
-        idx = np.logical_and(Star.linelist['species'] > 0,
-                             Star.linelist['ew'] >= 0)
+        #species = 0 means all species
+        idx = np.where(np.logical_and(Star.linelist['species'] > species,\
+                                       Star.linelist['ew'] >= 0))[0]
 
-    nlines = len(idx[idx==True])
+    nlines = len(idx)
     if nlines == 0:
         logger.warning('No lines found for '+Star.name)
         return False
@@ -139,10 +138,11 @@ def create_lines_in(Star, species=0, file_name='lines.in'):
     if len(gf10) == len(Star.linelist['gf'][idx]):
         logger.info('all gf values for this species are positive --> 10^gf')
         gf_values = gf10
+    Star.linelist['gf'][idx] = gf_values
 
     with open(file_name, 'w') as f:
         f.write("MOOG linelist created by q2\n")
-        for lidx in range(nlines):
+        for lidx in idx:
             f.write("{0:10.4f} {1:4.1f} {2:6.3f} {3:5.3f} 3 0 {4:5.1f}\n".format(\
                     Star.linelist['wavelength'][lidx],\
                     Star.linelist['species'][lidx],\
@@ -155,7 +155,7 @@ def create_lines_in(Star, species=0, file_name='lines.in'):
     return True
 
 
-def abfind(Star, species, species_id,):
+def abfind(Star, species, species_id):
     """Runs MOOG with abfind driver for a given Star and species
     
     Star is a star object; must have all attributes in place
@@ -182,7 +182,7 @@ def abfind(Star, species, species_id,):
     os.system('MOOGSILENT > moog.log')
     f = open(MD.summary_out, 'r')
     line=''
-    while line[0:20] != 'wavelength        EP':
+    while line[0:21] != 'wavelength         ID':
         line = f.readline()
     ww, ep, ew, rew, ab, difab = [], [], [], [], [], []
     while line:
@@ -190,11 +190,11 @@ def abfind(Star, species, species_id,):
         if line[0:3] == 'ave': break
         if float(line[50:60]) > 999.: #exclude dummies (hfs)
             continue
-        ww.append(line[0:10])
-        ep.append(float(line[10:20]))
-        ew.append(float(line[30:40]))
-        rew.append(np.log10(0.001*float(line[30:40])/float(line[0:10])))
-        ab.append(float(line[50:60]))
+        ww.append(float(line[0:10]))
+        ep.append(float(line[22:29]))
+        ew.append(float(line[38:46]))
+        rew.append(float(line[47:56]))
+        ab.append(float(line[57:66]))
         difab.append(None)
     f.close()
     os.unlink(MD.file_name)
@@ -203,15 +203,9 @@ def abfind(Star, species, species_id,):
     os.unlink(MD.summary_out)
     os.unlink(MD.standard_out)
     os.unlink('moog.log')
-    x = np.zeros((len(ww),), dtype=[('ww', 'f8'), ('ep', 'f8'), ('ew', 'f8'),
-                                    ('rew', 'f8'), ('ab', 'f8'),
-                                    ('difab', 'f8')])
-    x['ww'] = ww
-    x['ep'] = ep
-    x['ew'] = ew
-    x['rew'] = rew
-    x['ab'] = ab
-    x['difab'] = difab
+
+    x = {'ww': np.array(ww), 'ep': np.array(ep), 'ew': np.array(ew),\
+         'rew': np.array(rew), 'ab': np.array(ab), 'difab': np.array(difab)}
     setattr(Star, species_id, x)
     logger.info('Successfully ran abfind')
     return True
