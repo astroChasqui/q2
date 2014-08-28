@@ -16,7 +16,7 @@ q2.specpars.solve_all(data, sp, 'solution.csv', 'Sun')
 MOOG
 ----
 
-Folder Moog contains files that you should replace in your MOOG installation in order to use q2. Copy them into your computer and re-compile MOOG.
+q2 works only with the 2014 version of MOOGSILENT.
 
 Data
 ----
