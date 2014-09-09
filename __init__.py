@@ -9,6 +9,8 @@ This package is part of the q2 project: http://inti.as.utexas.edu/q2.
 """
 
 from __future__ import print_function
+import matplotlib
+matplotlib.use('Agg')
 from config import *
 from star import *
 import moog

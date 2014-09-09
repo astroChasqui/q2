@@ -230,9 +230,12 @@ def nlte_triplet(teff, logg, feh, ao, silent=True):
     t,g,f,dao0,dao1,dao2=[],[],[],[],[],[]
     for i in range(640):
         rg = range(i*7, i*7+7)
-        x0 = interpolate.griddata(grid['ao'][rg], grid['dao0'][rg], ao[0], method='cubic')
-        x1 = interpolate.griddata(grid['ao'][rg], grid['dao1'][rg], ao[1], method='cubic')
-        x2 = interpolate.griddata(grid['ao'][rg], grid['dao2'][rg], ao[2], method='cubic')
+        x0 = interpolate.griddata(grid['ao'][rg], grid['dao0'][rg],\
+                                  ao[0], method='cubic')
+        x1 = interpolate.griddata(grid['ao'][rg], grid['dao1'][rg],\
+                                  ao[1], method='cubic')
+        x2 = interpolate.griddata(grid['ao'][rg], grid['dao2'][rg],\
+                                  ao[2], method='cubic')
         x0, x1, x2 = float(x0), float(x1), float(x2)
         t.append(grid['teff'][rg[0]])
         g.append(grid['logg'][rg[0]])

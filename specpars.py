@@ -187,9 +187,9 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
     dfe = mfe1 - mfe2
     edfe = np.sqrt(efe1**2/nfe1+efe2**2/nfe2)
 
-    x = {'afe': mafe, 'err_afe': eafe,
-         'afe1': mfe1, 'err_afe1': efe1, 'nfe1': nfe1,
-         'afe2': mfe2, 'err_afe2': efe2, 'nfe2': nfe2,
+    x = {'afe': round(mafe, 3), 'err_afe': round(eafe, 3),
+         'afe1': round(mfe1, 3), 'err_afe1': round(efe1, 3), 'nfe1': nfe1,
+         'afe2': round(mfe2, 3), 'err_afe2': round(efe2, 3), 'nfe2': nfe2,
          'slope_ep': slope_ep,
          'err_slope_ep': err_slope_ep,
          'slope_rew': slope_rew,
