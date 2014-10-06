@@ -115,14 +115,20 @@ def get_stats(pdf_x, pdf_y_smooth):
                                  pdf_x_right[pdf_x_right <= x]))
     areas_right = np.array(areas_right)
 
-    stats['lower_limit_1sigma'] = \
-      np.mean(griddata(areas_left, pdf_x_left, 0.158))
-    stats['lower_limit_2sigma'] = \
-      np.mean(griddata(areas_left, pdf_x_left, 0.022))
-    stats['upper_limit_1sigma'] = \
-      np.mean(griddata(areas_right, pdf_x_right, 0.341))
-    stats['upper_limit_2sigma'] = \
-      np.mean(griddata(areas_right, pdf_x_right, 0.477))
+    try:
+        stats['lower_limit_1sigma'] = \
+          np.mean(griddata(areas_left, pdf_x_left, 0.158))
+        stats['lower_limit_2sigma'] = \
+          np.mean(griddata(areas_left, pdf_x_left, 0.022))
+        stats['upper_limit_1sigma'] = \
+          np.mean(griddata(areas_right, pdf_x_right, 0.341))
+        stats['upper_limit_2sigma'] = \
+          np.mean(griddata(areas_right, pdf_x_right, 0.477))
+    except:
+        stats['lower_limit_1sigma'] = -9.999
+        stats['lower_limit_2sigma'] = -9.999
+        stats['upper_limit_1sigma'] = -9.999
+        stats['upper_limit_2sigma'] = -9.999
 
     return stats
 
@@ -351,9 +357,12 @@ def solve_all(Data, SolvePars, PlotPars, output_file):
                       string += ",{0:.3f}".format(getattr(s, 'yy'+par)[key])
             except:
                 string += ",,,,,"
-            string += ",{0:.3f},{1:.3f}".\
-                      format(getattr(s, 'yy'+par)['mean'],\
-                             getattr(s, 'yy'+par)['std'])
+            try:
+                string += ",{0:.3f},{1:.3f}".\
+                          format(getattr(s, 'yy'+par)['mean'],\
+                                 getattr(s, 'yy'+par)['std'])
+            except:
+                string += ",,"
         fout.write(string+"\n")
     fout.close()
 

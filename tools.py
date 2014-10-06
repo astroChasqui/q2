@@ -73,6 +73,9 @@ def read_csv(csv_file, is_lines_file=False):
             if ("logg" in key or "feh" in key or "vt" in key)\
                and xij != None:
                 xij = float(xij)
+            if (key == "v" or "err" in key or "plx" in key)\
+               and xij != None:
+                xij = float(xij)
             if is_lines_file and xij != None and key != "comments":
                 xij = float(xij)
             dictionary[key].append(xij)

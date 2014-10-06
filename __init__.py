@@ -16,7 +16,7 @@ from star import *
 import moog
 import specpars
 import errors
-import abundances
+#import abundances ##temporarily out until astropy is removed
 import grids
 import yypars
 import logging
