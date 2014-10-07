@@ -66,7 +66,7 @@ def get_from_file(teff, logg, feh, grid):
     return x, tau
 
 
-def interpolate(teff, logg, feh, grid, plot=''):
+def interpolate(teff, logg, feh, grid):
     """Interpolates within Kurucz or MARCS model atmosphere grids
 
     Returns original (not interpolated) model if it exists (grid node).
@@ -187,51 +187,6 @@ def interpolate(teff, logg, feh, grid, plot=''):
     T1 = tools.linterp(T1G0, T1G1, gx[0], gx[1], logg)
     #teff-interpolate
     model = tools.linterp(T0, T1, tx[0], tx[1], teff)
-
-    if plot:
-        logger.info('Making figure')
-        xPar='RHOX'
-        yPar='T'
-        fig = plt.clf()
-        plt.subplots_adjust(hspace=0.1, wspace=0.1)
-
-        panelA = plt.subplot(221)
-        panelA.tick_params(labelbottom='off')
-        plt.ylabel(yPar)
-        panelA.plot(T0G0F0[xPar], T0G0F0[yPar], 'b')
-        panelA.plot(T0G0F1[xPar], T0G0F1[yPar], 'b')
-        panelA.plot(T0G0[xPar], T0G0[yPar], 'bo', markersize=3)
-        panelA.plot(T0G1F0[xPar], T0G1F0[yPar], 'g')
-        panelA.plot(T0G1F1[xPar], T0G1F1[yPar], 'g')
-        panelA.plot(T0G1[xPar], T0G1[yPar], 'go', markersize=3)
-
-        panelB = plt.subplot(222, sharex=panelA, sharey=panelA)
-        panelB.tick_params(labelbottom='off', labelleft='off')
-        panelB.plot(T1G0F0[xPar], T1G0F0[yPar], 'b')
-        panelB.plot(T1G0F1[xPar], T1G0F1[yPar], 'b')
-        panelB.plot(T1G0[xPar], T1G0[yPar], 'b--')
-        panelB.plot(T1G1F0[xPar], T1G1F0[yPar], 'g')
-        panelB.plot(T1G1F1[xPar], T1G1F1[yPar], 'g')
-        panelB.plot(T1G1[xPar], T1G1[yPar], 'g--')
-
-        panelC = plt.subplot(223, sharex=panelA, sharey=panelA)
-        plt.xlabel(xPar)
-        plt.ylabel(yPar)
-        panelC.plot(T0G0[xPar], T0G0[yPar], 'bo', markersize=3)
-        panelC.plot(T0G1[xPar], T0G1[yPar], 'go', markersize=3)
-        panelC.plot(T0[xPar], T0[yPar], 'ro', markersize=3)
-        panelC.plot(T1G0[xPar], T1G0[yPar], 'b--')
-        panelC.plot(T1G1[xPar], T1G1[yPar], 'g--')
-        panelC.plot(T1[xPar], T1[yPar], 'r--')
-
-        panelD = plt.subplot(224, sharex=panelA, sharey=panelA)
-        panelD.tick_params(labelleft='off')
-        plt.xlabel(xPar)
-        panelD.plot(T0[xPar], T0[yPar], 'ro', markersize=3)
-        panelD.plot(T1[xPar], T1[yPar], 'r--')
-        panelD.plot(model[xPar], model[yPar], color='black')
-        plt.savefig(plot+'.jpg')
-        logger.info('Figure '+plot+'.jpg successfully made.')
 
     logger.info('Model interpolation was successful.')
     return model

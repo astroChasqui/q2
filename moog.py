@@ -179,7 +179,7 @@ def abfind(Star, species, species_id):
     if not found_lines:
         logger.warning('Did not run abfind (no lines found)')
         return False
-    os.system('MOOGSILENT > moog.log')
+    os.system('MOOGSILENT > moog.log 2>&1')
     f = open(MD.summary_out, 'r')
     line=''
     while line[0:21] != 'wavelength         ID':

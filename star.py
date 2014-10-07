@@ -97,8 +97,7 @@ class Star:
 
         # gets line data excluding cells with no ew:
         if hasattr(Data, 'lines'):
-            idx = np.where(Data.lines[self.name] != None and\
-                           Data.lines[self.name] > -100000)
+            idx = np.where(Data.lines[self.name] > 0)
             self.linelist = {'wavelength': Data.lines['wavelength'][idx],
                              'species': Data.lines['species'][idx],
                              'ep': Data.lines['ep'][idx],
