@@ -16,13 +16,14 @@ from star import *
 import moog
 import specpars
 import errors
-#import abundances ##temporarily out until astropy is removed
+import abundances
 import grids
 import yypars
 import logging
 
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.ERROR)
 logger.setLevel('ERROR')
 
 __author__ = 'Ivan Ramirez (UT Austin)'

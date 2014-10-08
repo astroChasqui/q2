@@ -3,10 +3,10 @@ from star import Star
 import numpy as np
 import datetime
 import logging
-from astropy.io import ascii
 from scipy import interpolate
 import os
 from config import *
+from tools import read_csv
 
 
 logger = logging.getLogger(__name__)
@@ -225,7 +225,7 @@ def getsp(species_id):
 
 
 def nlte_triplet(teff, logg, feh, ao, silent=True):
-    grid = ascii.read(os.path.join(OTHER_PATH ,'nlte_triplet.csv'))
+    grid = read_csv(os.path.join(OTHER_PATH ,'nlte_triplet.csv'))
 
     t,g,f,dao0,dao1,dao2=[],[],[],[],[],[]
     for i in range(640):

@@ -29,16 +29,24 @@ def linfit(x, y):
     #return b, a, sigma, err_b, err_a
     return a, b, err_b
 
-def read_csv(csv_file, is_lines_file=False):
+def read_csv(csv_file, file_type=None):
     """Reads CSV file with header and sends data to dictionary
     
+    file_type = None, 'stars', 'lines'
+
     This routine was written specifically for q2 and is not meant 
-    to be a generic CSV file reader. The CSV files that q2 reads must
-    have an 'id' column. The first row must be a header column and it
-    must not have empty cells. No commented rows are allowed. Empty
+    to be a generic CSV file reader. The first row must be a header column
+    and it must not have empty cells. No commented rows are allowed. Empty
     data rows will be read as None. The output is a dictionary of numpy
     arrays.
+    
+    If file_type is None, it does not matter what the header contains,
+    however, all data must be numbers.
+    If file_type is 'stars', the CSV file must have an 'id' column.
+    If file_type is 'lines', the CSV file must have at least these colums:
+    'wavelength', 'species', 'ep', and 'gf'.
     """
+
     with open(csv_file) as f:
         x = f.readlines()
 
@@ -51,11 +59,12 @@ def read_csv(csv_file, is_lines_file=False):
         logger.error("First row of CSV file (keys in "+csv_file+\
                      ") has empty columns.")
         return None
-    if "id" not in keys and is_lines_file==False:
+
+    if "id" not in keys and file_type=="stars":
         logger.error("Stars CSV file must have an 'id' column.")
         return None
     if ("wavelength" not in keys or "species" not in keys\
-        or "ep" not in keys or "gf" not in keys) and is_lines_file:
+        or "ep" not in keys or "gf" not in keys) and file_type=="lines":
         logger.error("Lines CSV file must have all of these columns: "+\
                      "'wavelength', 'species', 'ep', and 'gf'.")
         return None
@@ -76,12 +85,14 @@ def read_csv(csv_file, is_lines_file=False):
             if (key == "v" or "err" in key or "plx" in key)\
                and xij != None:
                 xij = float(xij)
-            if is_lines_file and xij != None and key != "comments":
+            if file_type == "lines" and xij != None and key != "comments":
+                xij = float(xij)
+            if file_type == None:
                 xij = float(xij)
             dictionary[key].append(xij)
     for key in keys:
         dictionary[key] = np.array(dictionary[key])
-    if not is_lines_file:
+    if file_type == "stars":
         ambiguous_ids = [idx for idx in dictionary["id"]\
                         if len(dictionary["id"][dictionary["id"]==idx]) > 1]
         if len(ambiguous_ids) > 1:

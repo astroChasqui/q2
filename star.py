@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class Data:
     def __init__(self, fname_star_data, fname_lines=None):
         try:
-            self.star_data = read_csv(fname_star_data)
+            self.star_data = read_csv(fname_star_data, file_type='stars')
             self.star_data_fname = fname_star_data
         except:
             logger.error('Star data file not found.')
@@ -18,7 +18,7 @@ class Data:
 
         if fname_lines:
             try:
-                self.lines = read_csv(fname_lines, is_lines_file=True)
+                self.lines = read_csv(fname_lines, file_type='lines')
                 self.lines_fname = fname_lines
             except:
                 logger.error('Lines file not found or could not be read.')
