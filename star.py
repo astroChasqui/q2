@@ -21,12 +21,20 @@ class Data:
                 self.lines = read_csv(fname_lines, file_type='lines')
                 self.lines_fname = fname_lines
             except:
+                self.lines_fname = None
                 logger.error('Lines file not found or could not be read.')
                 return None
         else:
+            self.lines_fname = None
             logger.warning('No lines data. Wont be able to MOOG.')
 
         logger.info('Data object successfully created.')
+
+    def __repr__(self):
+        return "Data object built from:\n"\
+               "  stars file = {0}\n"\
+               "  lines file = {1}".\
+               format(self.star_data_fname, self.lines_fname)
 
 
 class Star:
@@ -39,11 +47,10 @@ class Star:
         self.vt = vt
         logger.info('Star object successfully created.')
 
-    def parameters(self):
-        print(self.teff)
-        print(self.logg)
-        print(self.feh)
-        print(self.vt)
+    def __repr__(self):
+        return "Star object named '{0}':\n"\
+               "  Teff = {1} K, logg = {2}, feh = {3}, vt = {4} km/s".\
+               format(self.name, self.teff, self.logg, self.feh, self.vt)
 
     def get_data_from(self, Data):
         #idx must correspond to a unique id; hence the [0][0]
