@@ -1,0 +1,21 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: win-64
+dateutil=2.1=py27_2
+ipython=2.3.0=py27_0
+ipython-notebook=2.3.0=py27_0
+jinja2=2.7.3=py27_1
+markupsafe=0.23=py27_0
+matplotlib=1.4.0=np19py27_0
+numpy=1.9.0=py27_0
+pyparsing=2.0.1=py27_0
+pyqt=4.10.4=py27_0
+pyreadline=2.0=py27_0
+python=2.7.8=0
+pytz=2014.7=py27_0
+pyzmq=14.3.1=py27_0
+scipy=0.14.0=np19py27_0
+setuptools=5.8=py27_0
+six=1.8.0=py27_0
+ssl_match_hostname=3.4.0.2=py27_0
+tornado=4.0.2=py27_0

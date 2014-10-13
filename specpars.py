@@ -10,7 +10,6 @@ from star import Star
 import datetime
 from scipy import ma
 
-
 logger = logging.getLogger(__name__)
 
 
