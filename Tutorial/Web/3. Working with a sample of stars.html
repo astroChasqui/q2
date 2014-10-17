@@ -1680,20 +1680,11 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="q2-Tutorial---3.-Working-with-a-sample-of-stars">q2 Tutorial - 3. Working with a sample of stars<a class="anchor-link" href="#q2-Tutorial---3.-Working-with-a-sample-of-stars">&#182;</a></h2>
-</div>
-</div>
-</div>
-
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's say we have N stars and we want to derive the spectroscopic parameters for all of them. We could use q2.specpars.solve_one on each star, as we did for Arcturus before, but q2 offers a better option: q2.specpars.solve_all. As the name suggests, this one will solve for parameters for all stars in our input files.</p>
+<h1 id="q2-tutorial---3.-working-with-a-sample-of-stars">q<sup>2</sup> Tutorial - 3. Working with a sample of stars</h1>
+<p>Let's say we have N stars and we want to derive the spectroscopic parameters for all of them. We could use q2.specpars.solve_one on each star, as we did for Arcturus before, but q<sup>2</sup> offers a better option: q2.specpars.solve_all. As the name suggests, this one will solve for parameters for all stars in our input files.</p>
 <p>For this part of the tutorial we will use data for a couple of Hyades stars. Take a look at the &quot;hyades_stars.csv&quot; and &quot;hyades_lines.csv&quot; files to know what we are working with. Note that the files contain vestaOct, which corresponds to a solar spectrum to be used as reference.</p>
-<p>In Parts 1 and 2 of this Tutorial, both stars had EW measurements for all lines, but q2 is smart enough to identify missing data and will have no problems performing calculations for stars that do not have EW measurements for all lines in the reference star (or viceversa). In fact, our Hyades lines file has some missing EW data.</p>
-<p>As usual, we move to the Demo folder, import q2, and upload the data.</p>
+<p>In Parts 1 and 2 of this Tutorial, both stars had EW measurements for all lines, but q<sup>2</sup> is smart enough to identify missing data and will have no problems performing calculations for stars that do not have EW measurements for all lines in the reference star (or viceversa). In fact, our Hyades lines file has some missing EW data.</p>
+<p>As usual, we move to the Demo folder, import q<sup>2</sup>, and upload the data.</p>
 </div>
 </div>
 </div>
@@ -1722,7 +1713,7 @@ In&nbsp;[1]:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The solve_all function works very much like solve_one, except that instead of referring to a star object, we refer to the data object. q2 will figure out which stars need to be solved (excludes the reference, for example, which in this case is vestaOct --yes, we are doing differential analysis!, and stars that do not have any EWs in the lines csv file --that is not the case of this example, though).</p>
+<p>The solve_all function works very much like solve_one, except that instead of referring to a star object, we refer to the data object. q<sup>2</sup> will figure out which stars need to be solved (excludes the reference, for example, which in this case is vestaOct --yes, we are doing differential analysis!, and stars that do not have any EWs in the lines csv file --that is not the case of this example, though).</p>
 <p>Note that in this example we are not setting the steps for SolvePars (step_teff, etc.), so they will be large at the beginning. As the parameters converge within those steps, they will reduce automatically. This is common practice when we work on a sample of unknown stars and all we know is that they are solar-type stars. That's why the input parameters for all stars are set to solar.</p>
 <p>Finally, when working on a sample of stars, the results are saved to an output csv file, which we are calling &quot;Hyades_solution.csv&quot;. The output on screen can be informative as well, so we should keep an eye on it (if the number of stars is large, it may be best to send it to a logfile).</p>
 </div>
@@ -1754,7 +1745,7 @@ In&nbsp;[2]:
 <pre>
 ------------------------------------------------------
 Initializing ...
-- Date and time: 07-Oct-2014, 14:25:32
+- Date and time: 17-Oct-2014, 10:36:42
 - Model atmospheres: marcs
 - Star data: ../hyades_stars.csv
 - Line list: ../hyades_lines.csv
@@ -1883,8 +1874,8 @@ it Teff logg [Fe/H]  vt           [Fe/H]
 ------------------------------------------------------
 
 ------------------------------------------------------
-- Date and time: 07-Oct-2014, 14:26:26
-- Time elapsed: 0H 0M 53S
+- Date and time: 17-Oct-2014, 10:37:37
+- Time elapsed: 0H 0M 54S
 Done!
 ------------------------------------------------------
 
@@ -1902,11 +1893,11 @@ Done!
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's have a look at the output file (Hyades_solution.csv). It contains all the final parameters that we would now use to derive abundances of elements other than iron, for example, or whatever it is that we need them for.</p>
+<p>Let's have a look at the output file (Hyades_solution.csv). It contains all the final parameters that we would now use to derive abundances of elements other than iron, for example, or whatever it is that we need them for. Note that there is a column &quot;feh_model&quot; and another column &quot;feh&quot;. The former is the [Fe/H] used to interpolate the final model atmosphere while the latter is the [Fe/H] that results from the spectral line analysis. They should be very close to each other, if not identical, if convergence was achieved.</p>
 <p>We should always check the column converged. They should all be True; otherwise we need to re-iterate.</p>
 <p>Automating MOOG has many advantages. Let's say, for example, that for whatever reason we want to re-do all the calculations, but using Kurucz's ODFNEW model atmospheres instead of MARCS. All we have to do then is re-define sp.grid and run q2.specpars.solve_all again. We will do that now.</p>
 <p>By default, q2.specpars.solve_all does not calculate the formal errors (hence the -1 values in the error columns of the output file). The reason is that error calculation can be time-consuming and we only really need to do it once we are happy with our solutions. We will now turn-on error calculation by changing the errors attribute of the SolvePars object to True.</p>
-<p>For this next step, we will set PlotPars so that the range of D[Fe/H] in the plots is the same for all stars. In addition, the figures will be saved in eps format. By default, q2 saves figures in png format, but that can be changed via the figure_format attribute of the PlotPars object.</p>
+<p>For this next step, we will set PlotPars so that the range of D[Fe/H] in the plots is the same for all stars. In addition, the figures will be saved in eps format. By default, q<sup>2</sup> saves figures in png format, but that can be changed via the figure_format attribute of the PlotPars object.</p>
 <p>One last thing: to keep things in order, we will send the plots to a directory odfnew.</p>
 </div>
 </div>
@@ -1942,7 +1933,7 @@ In&nbsp;[3]:
 <pre>
 ------------------------------------------------------
 Initializing ...
-- Date and time: 07-Oct-2014, 14:29:55
+- Date and time: 17-Oct-2014, 10:38:36
 - Model atmospheres: odfnew
 - Star data: ../hyades_stars.csv
 - Line list: ../hyades_lines.csv
@@ -2071,8 +2062,8 @@ it Teff logg [Fe/H]  vt           [Fe/H]
 ------------------------------------------------------
 
 ------------------------------------------------------
-- Date and time: 07-Oct-2014, 14:31:09
-- Time elapsed: 0H 1M 13S
+- Date and time: 17-Oct-2014, 10:39:50
+- Time elapsed: 0H 1M 14S
 Done!
 ------------------------------------------------------
 
@@ -2090,7 +2081,7 @@ Done!
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's have a look at the output file Hyades_solution_odfnew_err.csv. Our final &quot;spectroscopic&quot; parameters and their formal errors are there (teff_out, logg_out, etc.). The information from the last iteration of iron_stats is also copied there for reference.</p>
+<p>Let's have a look at the output file Hyades_solution_odfnew_err.csv. Our final &quot;spectroscopic&quot; parameters and their formal errors are there (teff, logg, etc.). The information from the last iteration of iron_stats is also copied there for reference. Since we requested formal errors to be computed, column err_feh contains that information now. Previously, err_feh was simply the 1-sigma line-to-line scatter of the iron abundances. Note that both output files have err_feh and err_feh_ columns. The former should be the preferred value.</p>
 <p>The most tedious part of elemental abundance work is the derivation of fundamental parameters Teff, logg, vt. Once those are set (as they are now in this Hyades example) deriving abundances is really straightforward. In Part 4 of this Tutorial we will deal with that.</p>
 </div>
 </div>
