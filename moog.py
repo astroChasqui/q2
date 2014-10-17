@@ -7,7 +7,8 @@ logger = logging.getLogger(__name__)
 
 
 class Driver:
-    def __init__(self):
+    def __init__(self, mode='abfind'):
+        self.mode = mode
         self.standard_out = 'moog.std'
         self.summary_out = 'moog.sum'
         self.model_in = 'model.in'
@@ -18,10 +19,13 @@ class Driver:
     def create_file(self, file_name="batch.par"):
         self.file_name = file_name
         f = open(file_name, 'w')
-        if self.hfs_species:
-            f.write('blends\n')
+        if self.mode == 'abfind':
+            if self.hfs_species:
+                f.write('blends\n')
+            else:
+                f.write('abfind\n')
         else:
-            f.write('abfind\n')
+            f.write(self.mode+'\n')
         f.write('standard_out '+self.standard_out+'\n')
         f.write('summary_out  '+self.summary_out+'\n')
         f.write('model_in     '+self.model_in+'\n')
@@ -36,6 +40,9 @@ class Driver:
         if self.hfs_species:
             f.write('blenlimits\n')
             f.write(' 2.0 0.01 '+self.hfs_species+'\n')
+        if self.mode == 'cog':
+            f.write('coglimits\n')
+            f.write('  -6.5 -3.5 0.1 0 0\n')
         f.close()
 
 
@@ -209,3 +216,53 @@ def abfind(Star, species, species_id):
     setattr(Star, species_id, x)
     logger.info('Successfully ran abfind')
     return True
+
+
+def cog(Star, species, cog_id):
+    """Runs MOOG with cog driver for a given Star and species
+
+    Star is a star object; must have all attributes need by MOOG set.
+    species could be 26.0 for Fe I, for example. cog_id is a string that
+    will become a new attribute for the Star object. For example:
+    >>>cog(s, 26.1, 'cog_fe2')
+    s.cog_fe2 #shows result from cog
+    MD is the moog driver object
+    """
+    k = Star.linelist['species'] == species
+    #negs = [wx for wx in Star.linelist['wavelength'][k] if wx < 0]
+    MD = Driver(mode='cog')
+    MD.create_file()
+    create_model_in(Star)
+    found_lines = create_lines_in(Star, species=species)
+    if not found_lines:
+        logger.warning('Did not run cog (no lines found)')
+        return False
+    os.system('MOOGSILENT > moog.log 2>&1')
+
+    f = open(MD.summary_out, 'r')
+    line = f.readline()
+    cog_obj = {}
+    while line:
+        line = f.readline()
+        if line.startswith('wavelength'):
+            npt = int(line.split('=')[5]) #number of cog points
+            #wavelength = round(float(line.split('=')[1].split()[0]), 1)
+            wavelength = float(line.split('=')[1].split()[0])
+            line = f.readline()
+            x, y = [], []
+            for i in range(int(np.ceil(npt/5.))):
+                line = f.readline()
+                for j in range(len(line.split())/2):
+                    x.append(float(line.split()[2*j].replace(',', '')))
+                    y.append(float(line.split()[2*j+1]))
+            cog_obj[wavelength] = {'loggf': np.array(x), 'logrw': np.array(y)}
+    f.close()
+
+    os.unlink(MD.file_name)
+    os.unlink(MD.model_in)
+    os.unlink(MD.lines_in)
+    os.unlink(MD.summary_out)
+    os.unlink(MD.standard_out)
+    os.unlink('moog.log')
+
+    setattr(Star, cog_id, cog_obj)

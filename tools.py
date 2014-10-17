@@ -93,6 +93,9 @@ def read_csv(csv_file, file_type=None):
     for key in keys:
         dictionary[key] = np.array(dictionary[key])
     if file_type == "stars":
+        if [None] in dictionary["id"]:
+            logger.error("The 'id' column cannot have empty rows.")
+            return None
         ambiguous_ids = [idx for idx in dictionary["id"]\
                         if len(dictionary["id"][dictionary["id"]==idx]) > 1]
         if len(ambiguous_ids) > 1:

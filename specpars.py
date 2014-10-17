@@ -382,11 +382,18 @@ def solve_all(Data, SolveParsInit, output_file, reference_star=None,
     else:
         Ref = None
     fout = open(output_file, 'wb')
-    fout.write('id,teff_out,logg_out,feh_out,vt_out,feh,err_feh,'+
-               'feh1,err_feh1,nfe1,feh2,err_feh2,nfe2,'
-               'slope_ep,err_slope_ep,slope_rew,err_slope_rew,'
-               'stop_iter,converged,'
-               'err_teff_out,err_logg_out,err_feh_out,err_vt_out\n')
+    if SolveParsInit.errors:
+        fout.write('id,teff,logg,feh_model,vt,feh,err_feh_,'+
+                   'feh1,err_feh1,nfe1,feh2,err_feh2,nfe2,'
+                   'slope_ep,err_slope_ep,slope_rew,err_slope_rew,'
+                   'stop_iter,converged,'
+                   'err_teff,err_logg,err_feh,err_vt\n')
+    else:
+        fout.write('id,teff,logg,feh_model,vt,feh,err_feh,'+
+                   'feh1,err_feh1,nfe1,feh2,err_feh2,nfe2,'
+                   'slope_ep,err_slope_ep,slope_rew,err_slope_rew,'
+                   'stop_iter,converged,'
+                   'err_teff,err_logg,err_feh_,err_vt\n')
     for star_id in Data.star_data['id']:
         print('')
         print('*'*len(star_id))

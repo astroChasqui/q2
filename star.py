@@ -12,29 +12,47 @@ class Data:
         try:
             self.star_data = read_csv(fname_star_data, file_type='stars')
             self.star_data_fname = fname_star_data
+            if not self.star_data:
+                logger.error('Star data file not read. Data.star_data '+\
+                             'attribute set to None.')
         except:
+            self.star_data_fname = None
             logger.error('Star data file not found.')
-            return None
 
         if fname_lines:
             try:
                 self.lines = read_csv(fname_lines, file_type='lines')
                 self.lines_fname = fname_lines
+                if not self.lines:
+                    logger.error('Lines data file not read. Data.lines '+\
+                                 'attribute set to None.')
             except:
+                self.lines = None
                 self.lines_fname = None
-                logger.error('Lines file not found or could not be read.')
-                return None
+                logger.error('Lines file not found.')
         else:
+            self.lines = None
             self.lines_fname = None
             logger.warning('No lines data. Wont be able to MOOG.')
 
-        logger.info('Data object successfully created.')
+        if self.star_data:
+            logger.info('Data object created with star_data attribute.')
+        if self.lines:
+            logger.info('lines_data attribute added to Data object.')
 
     def __repr__(self):
+        if self.star_data:
+            nstars = len(self.star_data['id'])
+        else:
+            nstars = 0
+        if self.lines:
+            nlines = len(np.where(self.lines['wavelength'] > 0)[0])
+        else:
+            nlines = 0
         return "Data object built from:\n"\
-               "  stars file = {0}\n"\
-               "  lines file = {1}".\
-               format(self.star_data_fname, self.lines_fname)
+               "  stars file = {0} ({1} stars)\n"\
+               "  lines file = {2} ({3} lines)".\
+               format(self.star_data_fname, nstars, self.lines_fname, nlines)
 
 
 class Star:
@@ -60,46 +78,18 @@ class Star:
         except:
             logger.error("Star '"+self.name+"' not found in data object.")
             return None
-        try:
-            self.teff = Data.star_data['teff_out'][idx]
-            self.logg = Data.star_data['logg_out'][idx]
-            self.feh = Data.star_data['feh_out'][idx]
-            self.err_teff = Data.star_data['err_teff_out'][idx]
-            self.err_logg = Data.star_data['err_logg_out'][idx]
-            self.err_feh = Data.star_data['err_feh_out'][idx]
-            try:
-                self.vt = Data.star_data['vt_out'][idx]
-                self.err_vt = Data.star_data['err_vt_out'][idx]
-            except:
-                logger.warning('No vt_out for this star.')
-        except:
-            self.teff = Data.star_data['teff_in'][idx]
-            self.logg = Data.star_data['logg_in'][idx]
-            self.feh = Data.star_data['feh_in'][idx]
-            try:
-                self.vt = Data.star_data['vt_in'][idx]
-            except:
-                logger.warning('No vt_in for this star.')
-            try:
-                self.err_teff = Data.star_data['err_teff_in'][idx]
-                self.err_logg = Data.star_data['err_logg_in'][idx]
-                self.err_feh = Data.star_data['err_feh_in'][idx]
-            except:
-                logger.info('No errors in _in parameters.')
 
-        logger.info('Attributes teff, logg, feh added to star object.')
-        if hasattr(self, 'err_teff'):
-            logger.info('Attributes err_teff, err_logg, err_feh added to star object.')
-
-        additional_parameters = ['v', 'err_v', 'plx', 'err_plx', 'converged']
+        parameters = ['teff', 'err_teff', 'logg', 'err_logg',
+                      'feh', 'err_feh', 'vt', 'err_vt',
+                      'v', 'err_v', 'plx', 'err_plx', 'converged']
         msg = []
-        for ap in additional_parameters:
-            if ap in Data.star_data.keys():
-                if Data.star_data[ap][idx]:
-                    setattr(self, ap, Data.star_data[ap][idx])
-                    msg.append(ap)
+        for par in parameters:
+            if par in Data.star_data.keys():
+                if Data.star_data[par][idx] != None:
+                    setattr(self, par, Data.star_data[par][idx])
+                    msg.append(par)
         if msg:
-            logger.info('Additional attribute(s) '+','.join(msg)+\
+            logger.info('Attribute(s) '+','.join(msg)+\
                         ' added to star object.')
 
         # gets line data excluding cells with no ew:
