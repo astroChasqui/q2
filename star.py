@@ -105,11 +105,7 @@ class Star:
             logger.warning('There is no line data to attach to Star object.')
 
     def get_model_atmosphere(self, grid='odfnew'):
-        try:
-            self.teff
-            self.logg
-            self.feh
-        except:
+        if self.teff == None or self.logg == None or self.feh == None:
             logger.error('To create model atmosphere, star must have all '+
                          'three fundamental parameters: Teff, logg, and '+
                          '[Fe/H].')

@@ -60,9 +60,16 @@ def read_csv(csv_file, file_type=None):
                      ") has empty columns.")
         return None
 
-    if "id" not in keys and file_type=="stars":
-        logger.error("Stars CSV file must have an 'id' column.")
-        return None
+    if file_type == "stars":
+        if "id" not in keys:
+            logger.error("Stars CSV file must have an 'id' column.")
+            return None
+        important_pars = ["teff", "logg", "feh"]
+        for par in important_pars:
+            if par not in keys:
+                logger.warning("Stars CSV file does not have a '"+par+\
+                               "' column.")
+
     if ("wavelength" not in keys or "species" not in keys\
         or "ep" not in keys or "gf" not in keys) and file_type=="lines":
         logger.error("Lines CSV file must have all of these columns: "+\
