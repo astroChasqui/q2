@@ -141,7 +141,7 @@ def create_lines_in(Star, species=0, file_name='lines.in'):
     else:
         logger.info(str(nlines)+' lines found for '+Star.name)
     gf_values = Star.linelist['gf'][idx]
-    gf10 = [10**gfx for gfx in Star.linelist['gf'][idx] if gfx > 0]
+    gf10 = [10**gfx for gfx in Star.linelist['gf'][idx] if gfx >= 0]
     if len(gf10) == len(Star.linelist['gf'][idx]):
         logger.info('all gf values for this species are positive --> 10^gf')
         gf_values = gf10
