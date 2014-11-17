@@ -16,6 +16,7 @@ class Data:
                 logger.error('Star data file not read. Data.star_data '+\
                              'attribute set to None.')
         except:
+            self.star_data = None
             self.star_data_fname = None
             logger.error('Star data file not found.')
 
@@ -66,9 +67,18 @@ class Star:
         logger.info('Star object successfully created.')
 
     def __repr__(self):
+        if hasattr(self, 'linelist'):
+            nlines = len(self.linelist['wavelength'])
+            species = ','.join([str(sp) for sp in\
+                      set(self.linelist['species'])])
+        else:
+            nlines = species = None
         return "Star object named '{0}':\n"\
-               "  Teff = {1} K, logg = {2}, feh = {3}, vt = {4} km/s".\
-               format(self.name, self.teff, self.logg, self.feh, self.vt)
+               "  Teff (K) = {1}, logg [cgs] = {2}, [Fe/H] = {3}, "\
+                 "vt (km/s) = {4}\n"\
+               "  Spectral lines = {5} (species: {6})".\
+               format(self.name, self.teff, self.logg, self.feh, self.vt,
+                      nlines, species)
 
     def get_data_from(self, Data):
         #idx must correspond to a unique id; hence the [0][0]
