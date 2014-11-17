@@ -8,6 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 class Data:
+    """Takes as input a star data file (CSV) and a line list data file 
+    (CSV, optional) to create a q2 data object to be manipulated later.
+    """
     def __init__(self, fname_star_data, fname_lines=None):
         try:
             self.star_data = read_csv(fname_star_data, file_type='stars')

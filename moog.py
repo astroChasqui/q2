@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class Driver:
+    """Set the options for your MOOG driver."""
     def __init__(self, mode='abfind'):
         self.mode = mode
         self.standard_out = 'moog.std'
@@ -17,6 +18,7 @@ class Driver:
         self.hfs_species = None
 
     def create_file(self, file_name="batch.par"):
+        """Creates the MOOG driver file."""
         self.file_name = file_name
         f = open(file_name, 'w')
         if self.mode == 'abfind':
@@ -47,6 +49,9 @@ class Driver:
 
 
 def create_model_in(Star, file_name='model.in'):
+    """Creates a model atmosphere file for MOOG from the model_atmosphere
+    attribute of a Star object.
+    """
     try:
         Star.vt
     except:
@@ -126,6 +131,7 @@ def create_model_in(Star, file_name='model.in'):
 
 
 def create_lines_in(Star, species=0, file_name='lines.in'):
+    """Creates a line list file for MOOG"""
     if species > 0:
         idx = np.where(np.logical_and(Star.linelist['species'] == species,\
                                        Star.linelist['ew'] >= 0))[0]
