@@ -29,7 +29,7 @@ def data_are_available():
     """q2 needs data files with model atmosphere and isochrone grids.
     These files can be downloaded from:
     http://www.astrochasqui.com/projects/astro/share/q2Data.tar.gz
-    They need to be extracted within the q2 directory.
+    They need to be extracted inside the q2 directory.
     'tar xvfz q2Data.tar.gz' will create the Data folder.
     """
     if os.path.exists(path):

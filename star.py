@@ -8,10 +8,13 @@ logger = logging.getLogger(__name__)
 
 
 class Data:
-    """Takes as input a star data file (CSV) and a line list data file 
-    (CSV, optional) to create a q2 data object to be manipulated later.
+    """q2 Data objects contain the information from the input star
+    and lines CSV files as attributes 'star_data' and 'lines'.
     """
     def __init__(self, fname_star_data, fname_lines=None):
+        """Takes as input a star data file (CSV, required) and a line-list
+        data file (CSV, optional) to create a q2 data object.
+        """
         try:
             self.star_data = read_csv(fname_star_data, file_type='stars')
             self.star_data_fname = fname_star_data
@@ -60,6 +63,13 @@ class Data:
 
 
 class Star:
+    """q2 Star objects contain information about a star (e.g., Teff, logg,
+    etc). This information can be grabbed from a q2.Data object using the
+    'get_data_from' method. If the Star object has parameters known, a
+    model atmosphere can be computed using the 'get_model_atmosphere'
+    method. This will attach a 'model_atmosphere' attribute to the Star
+    object.
+    """
     def __init__(self, name='Unnamed star',
                        teff=None, logg=None, feh=None, vt=None):
         self.name = name
@@ -84,6 +94,9 @@ class Star:
                       nlines, species)
 
     def get_data_from(self, Data):
+        """If the Star object has a name that matches one of the id's in
+        a Data object, the information from Data will be given to Star.
+        """
         #idx must correspond to a unique id; hence the [0][0]
         try:
             idx = np.where(Data.star_data['id'] == self.name)[0][0]
@@ -119,6 +132,11 @@ class Star:
             logger.warning('There is no line data to attach to Star object.')
 
     def get_model_atmosphere(self, grid='odfnew'):
+        """If teff, logg, and feh are set attributes for a Star object,
+        a model atmosphere will be interpolated from one of the
+        available grids: 'odfnew' (default), 'aodfnew', 'over', 'nover'
+        (all Kurucz), or 'marcs'.
+        """
         if self.teff == None or self.logg == None or self.feh == None:
             logger.error('To create model atmosphere, star must have all '+
                          'three fundamental parameters: Teff, logg, and '+

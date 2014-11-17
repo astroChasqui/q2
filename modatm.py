@@ -14,8 +14,8 @@ def get_from_file(teff, logg, feh, grid):
     """Extracts a Kurucz or MARCS model atmosphere
 
     If model file does not exist, the program returns None, None.
-    Output is model, tauRoss.
-    The latter is necessary for proper model interpolation.
+    Output is model, tauRoss. The latter is necessary for proper
+    model interpolation.
     """
 
     # location of model files
@@ -70,7 +70,7 @@ def interpolate(teff, logg, feh, grid):
     """Interpolates within Kurucz or MARCS model atmosphere grids
 
     Returns original (not interpolated) model if it exists (grid node).
-    Returns None if for whatever reason the program cannot interpolate.
+    Returns None if for some reason the program cannot interpolate.
     """
 
     model, tau = get_from_file(teff, logg, feh, grid)

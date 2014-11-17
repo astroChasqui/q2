@@ -3,7 +3,9 @@ of stars. It helps determining fundamental parameters (Teff, logg,
 [Fe/H], etc.) of solar-type stars given an observational data set. q2
 requires the 2014 version of the spectrum synthesis code MOOG
 (http://www.as.utexas.edu/~chris/moog.html) and files containing the
-model atmosphere and isochrone grids.
+model atmosphere and isochrone grids. The latter can be downloaded from
+http://www.astrochasqui.com/projects/astro/share/q2Data.tar.gz and must
+be placed in the q2/Data folder.
 """
 
 from __future__ import print_function
@@ -27,6 +29,6 @@ __email__ = 'ivan@astro.as.utexas.edu'
 
 logging.basicConfig(level=logging.ERROR)
 logger.setLevel('WARNING')
-moog_check = moog_is_available()
-data_check = data_are_available()
+moog = moog_is_available()
+data = data_are_available()
 logger.setLevel('ERROR')
