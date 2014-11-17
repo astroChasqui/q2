@@ -1,4 +1,7 @@
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 path = os.path.dirname(os.path.realpath(__file__))
@@ -9,8 +12,10 @@ MODATM_PATH     = os.path.join(path, 'ModelAtmospheres')
 ISOCHRONES_PATH = os.path.join(path, 'Isochrones')
 OTHER_PATH      = os.path.join(path, 'Other')
 
-def moog_check():
+def moog_is_available():
     if os.system('which MOOGSILENT >/dev/null'):
-        print "MOOGSILENT is not available"
+        logger.warning("MOOGSILENT is not available")
+        return False
     else:
-        print "MOOGSILENT is available"
+        logger.info("MOOGSILENT is available")
+        return True

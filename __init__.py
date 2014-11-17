@@ -19,12 +19,13 @@ import grids
 import yypars
 import logging
 
-
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.ERROR)
-logger.setLevel('WARNING')
 
 __author__ = 'Ivan Ramirez (UT Austin)'
 __email__ = 'ivan@astro.as.utexas.edu'
 
-logger.info('q2 package successfully imported')
+
+logging.basicConfig(level=logging.ERROR)
+logger.setLevel('WARNING')
+mc = moog_is_available()
+logger.setLevel('ERROR')
