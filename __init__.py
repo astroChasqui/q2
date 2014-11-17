@@ -29,6 +29,6 @@ __email__ = 'ivan@astro.as.utexas.edu'
 
 logging.basicConfig(level=logging.ERROR)
 logger.setLevel('WARNING')
-moog = moog_is_available()
-data = data_are_available()
+_moog = moog_is_available()
+_data = data_are_available()
 logger.setLevel('ERROR')
