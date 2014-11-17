@@ -22,7 +22,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.ERROR)
-logger.setLevel('ERROR')
+logger.setLevel('WARNING')
 
 __author__ = 'Ivan Ramirez (UT Austin)'
 __email__ = 'ivan@astro.as.utexas.edu'
