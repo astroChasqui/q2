@@ -150,8 +150,9 @@ def create_lines_in(Star, species=0, file_name='lines.in'):
     gf10 = [10**gfx for gfx in Star.linelist['gf'][idx] if gfx >= 0]
     if len(gf10) == len(Star.linelist['gf'][idx]):
         logger.info('all gf values for this species are positive --> 10^gf')
-        gf_values = gf10
-    Star.linelist['gf'][idx] = gf_values
+        #gf_values = gf10
+        Star.linelist['gf'][idx] = gf10
+    #Star.linelist['gf'][idx] = gf_values
 
     with open(file_name, 'w') as f:
         f.write("MOOG linelist created by q2\n")
@@ -163,6 +164,8 @@ def create_lines_in(Star, species=0, file_name='lines.in'):
                     Star.linelist['gf'][lidx],\
                     Star.linelist['ew'][lidx])
                    )
+
+    Star.linelist['gf'][idx] = gf_values
 
     logger.info('Moog line list created: '+file_name)
     return True

@@ -301,7 +301,9 @@ def nlte_triplet(teff, logg, feh, ao, silent=True):
               format(ao[1], x1, ao[1]-x1))
         print("   7775.4      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".
               format(ao[2], x2, ao[2]-x2))
-    ax = [ao[0]-x0, ao[1]-x1, ao[2]-x2]
+    ax = [round(ao[0]-x0, 3),
+          round(ao[1]-x1, 3),
+          round(ao[2]-x2, 3)]
 
     aon = np.ma.masked_array(ax,np.isnan(ax))
 
