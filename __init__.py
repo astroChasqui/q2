@@ -8,7 +8,6 @@ http://www.astrochasqui.com/projects/astro/share/q2Data.tar.gz and must
 be placed in the q2/Data folder.
 """
 
-from __future__ import print_function
 import matplotlib
 matplotlib.use('Agg')
 from config import *

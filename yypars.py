@@ -62,7 +62,7 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
     stats = get_stats(pdf_x, pdf_y_smooth)
 
     if stats['most_probable']:
-        print("{0:10s} = {1:6.3f} | {2:6.3f} - {3:6.3f} | "\
+        print "{0:10s} = {1:6.3f} | {2:6.3f} - {3:6.3f} | "\
               "{4:6.3f} - {5:6.3f} | {6:6.3f} +/- {7:6.3f}"\
               .format(par,
                       stats['most_probable'],
@@ -71,12 +71,10 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
                       stats['lower_limit_2sigma'],
                       stats['upper_limit_2sigma'],
                       stats['mean'], stats['std'])
-              )
     else:
-        print("{0:10s} =        |        -        |  "\
+        print "{0:10s} =        |        -        |  "\
               "      -        | {1:6.3f} +/- {2:6.3f}"\
               .format(par, stats['mean'], stats['std'])
-              )
         logger.warning("--- Unable to calculate PDF stats for "+par)
 
     return pdf_y, pdf_y_smooth, stats
@@ -142,7 +140,7 @@ def solve_one(Star, SolvePars, PlotPars):
     if ips == None:
         logger.warning('Could not get any isochrone points.')
         return None
-    print('Using {0} Y2 isochrone points'.format(len(ips['age'])))
+    print 'Using {0} Y2 isochrone points'.format(len(ips['age']))
     logger.info('Using {0} Y2 isochrone points'.format(len(ips['age'])))
     Star.yykeyparameterknown = SolvePars.key_parameter_known
     Star.yynpoints = len(ips['age'])
@@ -323,12 +321,12 @@ def solve_one(Star, SolvePars, PlotPars):
     plt.close()
 
 def solve_all(Data, SolvePars, PlotPars, output_file):
-    print('------------------------------------------------------')
-    print('Initializing ...')
+    print '------------------------------------------------------'
+    print 'Initializing ...'
     start_time = datetime.datetime.now()
-    print('- Date and time: '+start_time.strftime('%d-%b-%Y, %H:%M:%S'))
-    print('- Star data: '+Data.star_data_fname)
-    print('------------------------------------------------------')
+    print '- Date and time: '+start_time.strftime('%d-%b-%Y, %H:%M:%S')
+    print '- Star data: '+Data.star_data_fname
+    print '------------------------------------------------------'
     fout = open(output_file, 'wb')
     pars = ['age', 'mass', 'logl', 'mv', 'r']
     if SolvePars.key_parameter_known == 'plx':
@@ -340,10 +338,10 @@ def solve_all(Data, SolvePars, PlotPars, output_file):
             hd += ','+par+'_'+value
     fout.write(hd+'\n')
     for star_id in Data.star_data['id']:
-        print('')
-        print('*'*len(star_id))
-        print(star_id)
-        print('*'*len(star_id))
+        print ''
+        print '*'*len(star_id)
+        print star_id
+        print '*'*len(star_id)
         s = Star(star_id)
         s.get_data_from(Data)
         solve_one(s, SolvePars, PlotPars)
@@ -366,17 +364,17 @@ def solve_all(Data, SolvePars, PlotPars, output_file):
         fout.write(string+"\n")
     fout.close()
 
-    print('')
-    print('------------------------------------------------------')
+    print ''
+    print '------------------------------------------------------'
     end_time = datetime.datetime.now()
-    print('- Date and time: '+end_time.strftime('%d-%b-%Y, %H:%M:%S'))
+    print '- Date and time: '+end_time.strftime('%d-%b-%Y, %H:%M:%S')
     delta_t = (end_time - start_time).seconds
     hours, remainder = divmod(delta_t, 3600)
     minutes, seconds = divmod(remainder, 60)
-    print('- Time elapsed: %sH %sM %sS' % (hours, minutes, seconds))
-    print('Done!')
-    print('------------------------------------------------------')
-    print('')
+    print '- Time elapsed: %sH %sM %sS' % (hours, minutes, seconds)
+    print 'Done!'
+    print '------------------------------------------------------'
+    print ''
 
 def get_isochrone_points(Star, db, nsigma, key_parameter_known):
     '''Looks in the db database for isochrone points within nsigma from

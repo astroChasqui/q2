@@ -1683,7 +1683,7 @@ div#notebook {
 <p><em>Under Construction</em></p>
 <h1 id="q2-tutorial---4.-elemental-abundances">q<sup>2</sup> Tutorial - 4. Elemental abundances</h1>
 <p>Our hyades_lines.csv file contains rows with atomic data and EWs for C, O, and Ba lines, in addition to the Fe lines we employed before. We can use those data to measure the C, O, and Ba abundances of the stars in our Hyades list.</p>
-<p>As usual, let's move to the Demo directory, import q<sup>2</sup>, and upload the data. At this point we should use the atmospheric parameters that we have derived using q<sup>2</sup>; i.e., not the inputs given in our original csv file, but those in the Hyades_solution.csv file we created in Part 3 of this Tutorial. In the original file we referred to the input parameters as teff_in, logg_in, etc. In Hyades_solution.csv, the parameters are called teff_out, logg_out, etc. q<sup>2</sup> will first try to assign the &quot;out&quot; parameters in the csv file. If they are not there, it will use the &quot;in&quot; values.</p>
+<p>As usual, let's move to the Demo directory, import q<sup>2</sup>, and upload the data. At this point we should use the atmospheric parameters that we have derived using q<sup>2</sup>; i.e., not the inputs given in our original csv file, but those in the Hyades_solution.csv file we created in Part 3 of this Tutorial.</p>
 </div>
 </div>
 </div>
@@ -1738,7 +1738,7 @@ In&nbsp;[2]:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We should be familiar enough with q2 at this point to know that this is all that is needed to calculate the abundances. We just need to tell q2 which species we are interested in measuring. Our linelist contains not only the C, O, and Ba lines, but also the Fe lines. We do this with a species_id list that we pass to q2.abundances.one. The latter is a function that calculates abundances of elements in species_id for a star object. Let's begin with C and Ba.</p>
+<p>We should be familiar enough with q<sup>2</sup> at this point to know that this is all that is needed to calculate the abundances. We just need to tell q<sup>2</sup> which species we are interested in measuring. Our linelist contains not only the C, O, and Ba lines, but also the Fe lines. We do this with a species_id list that we pass to q2.abundances.one. The latter is a function that calculates abundances of elements in species_id for a star object. Let's begin with C and Ba.</p>
 </div>
 </div>
 </div>
@@ -1774,11 +1774,13 @@ In&nbsp;[4]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="k">print</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">CI</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">BaII</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">BaII</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">]))</span>
-<span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">BaII</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">]))</span>
+<div class="highlight"><pre><span class="k">print</span> <span class="n">star</span><span class="o">.</span><span class="n">CI</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">star</span><span class="o">.</span><span class="n">BaII</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="k">print</span> <span class="s">&quot;Average C and Ba abundances:&quot;</span>
+<span class="k">print</span> <span class="s">&quot;A(C)  = {0:.2f} +/- {1:.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">CI</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">CI</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">]))</span>
+<span class="k">print</span> <span class="s">&quot;A(Ba) = {0:.2f} +/- {1:.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">BaII</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">BaII</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">]))</span>
 </pre></div>
 
 </div>
@@ -1792,10 +1794,11 @@ In&nbsp;[4]:
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
-{&apos;ab&apos;: array([ 8.48 ,  8.559,  8.484,  8.517]), &apos;difab&apos;: array([None, None, None, None], dtype=object), &apos;rew&apos;: array([-5.009, -5.189, -5.43 , -5.54 ]), &apos;ww&apos;: array([ 5052.167,  5380.337,  6587.61 ,  7111.469]), &apos;ew&apos;: array([ 49.5,  34.8,  24.5,  20.5]), &apos;ep&apos;: array([ 7.685,  7.685,  8.537,  8.64 ])}
-{&apos;ab&apos;: array([ 4.297,  6.044,  4.284]), &apos;difab&apos;: array([None, None, None], dtype=object), &apos;rew&apos;: array([-4.876, -4.625, -4.642]), &apos;ww&apos;: array([ 5853.696,  6141.695,  6496.9  ]), &apos;ew&apos;: array([  77.9,  145.8,  148.1]), &apos;ep&apos;: array([ 0.604,  0.704,  0.604])}
-4.875
-0.826624864534
+[ 8.481  8.559  8.485  8.517]
+[ 4.296  6.043  4.283]
+Average C and Ba abundances:
+A(C)  = 8.51 +/- 0.03
+A(Ba) = 4.87 +/- 0.83
 
 </pre>
 </div>
@@ -1810,7 +1813,8 @@ In&nbsp;[4]:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>If we look at the &quot;lines&quot; file again, we will notice that the BaII lines consider hyperfine structure. q2 will figure out when HFS is needed and it will be careful enough to create MOOG linelists in the proper format.</p>
+<p>If we look at the &quot;lines&quot; file again, we will notice that the BaII lines take into account hyperfine structure (HFS). q<sup>2</sup> will figure out when HFS is needed and it will be careful enough to create MOOG linelists in the proper format.</p>
+<p>The line-to-line scatter of the Ba abundances is huge. This is probably due to non-LTE effects. Differential analysis could reduce that error a bit (see below).</p>
 <p>Now, let's do oxygen.</p>
 </div>
 </div>
@@ -1823,8 +1827,7 @@ In&nbsp;[5]:
 <div class="inner_cell">
     <div class="input_area">
 <div class="highlight"><pre><span class="n">species_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;OI&#39;</span><span class="p">]</span>
-<span class="n">q2</span><span class="o">.</span><span class="n">abundances</span><span class="o">.</span><span class="n">one</span><span class="p">(</span><span class="n">star</span><span class="p">,</span> <span class="n">species_ids</span><span class="p">)</span>
-<span class="n">star</span><span class="o">.</span><span class="n">OI</span>
+<span class="n">q2</span><span class="o">.</span><span class="n">abundances</span><span class="o">.</span><span class="n">one</span><span class="p">(</span><span class="n">star</span><span class="p">,</span> <span class="n">species_ids</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -1835,23 +1838,20 @@ In&nbsp;[5]:
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">
-    Out[5]:</div>
-
-
-<div class="output_text output_subarea output_pyout">
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
 <pre>
-{&apos;ab&apos;: masked_array(data = [8.813867956858058 8.813859519732866 8.774539278607632],
-              mask = [False False False],
-        fill_value = 1e+20),
- &apos;difab&apos;: array([None, None, None], dtype=object),
- &apos;ep&apos;: array([ 9.146,  9.146,  9.146]),
- &apos;ew&apos;: array([ 102.7,   91.6,   71.1]),
- &apos;rew&apos;: array([-4.879, -4.929, -5.039]),
- &apos;ww&apos;: array([ 7771.944,  7774.161,  7775.39 ])}
+
+777 nm oxygen abundances will be NLTE corrected
+Wavelength (A) | A(O) LTE | Correction | A(O) NLTE
+   7771.9      |   8.986  |    0.173   |  8.813
+   7774.2      |   8.981  |    0.168   |  8.813
+   7775.4      |   8.921  |    0.147   |  8.774
+A(O) LTE  =  8.963 +/- 0.030
+A(O) NLTE =  8.800 +/- 0.018
+
 </pre>
 </div>
-
 </div>
 
 </div>
@@ -1863,8 +1863,8 @@ In&nbsp;[5]:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Oxygen is a special case in q2. By default it is NLTE corrected using the grid by Ramirez et al. (2007). For reference, details of this correction are printed on screen.</p>
-<p>Calculating differential abundances is also easy. All we need to do is pass a Ref(erence) object to q2.abundances.one. We will use the vestaOct data as reference, creating a ref object and loading its data onto it, in addition to creating a model atmosphere of the same grid (marcs), for consistency. Note that we are now calculating abundances for all three species.</p>
+<p>Oxygen is a special case in q2. By default it is NLTE corrected using the grid by Ramirez et al. (2007). For reference, details of this correction are printed on screen, if requested by the silent parameter (True by default, set to False here to print the information on screen).</p>
+<p>Calculating differential abundances is also easy. All we need to do is pass a Ref(erence) object to q2.abundances.one. We will use the vestaOct data as reference, creating a ref object and loading its data onto it, in addition to creating a model atmosphere of the same grid (marcs), for consistency. Note that we are now calculating abundances for all three species at once.</p>
 </div>
 </div>
 </div>
@@ -1880,10 +1880,38 @@ In&nbsp;[6]:
 <span class="n">ref</span><span class="o">.</span><span class="n">get_model_atmosphere</span><span class="p">(</span><span class="s">&#39;marcs&#39;</span><span class="p">)</span>
 
 <span class="n">species_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;CaI&#39;</span><span class="p">,</span> <span class="s">&#39;OI&#39;</span><span class="p">,</span> <span class="s">&#39;BaII&#39;</span><span class="p">]</span>
-<span class="n">q2</span><span class="o">.</span><span class="n">abundances</span><span class="o">.</span><span class="n">one</span><span class="p">(</span><span class="n">star</span><span class="p">,</span> <span class="n">species_ids</span><span class="p">,</span> <span class="n">Ref</span><span class="o">=</span><span class="n">ref</span><span class="p">)</span>
+<span class="n">q2</span><span class="o">.</span><span class="n">abundances</span><span class="o">.</span><span class="n">one</span><span class="p">(</span><span class="n">star</span><span class="p">,</span> <span class="n">species_ids</span><span class="p">,</span> <span class="n">Ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 
 </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+
+777 nm oxygen abundances will be NLTE corrected
+Wavelength (A) | A(O) LTE | Correction | A(O) NLTE
+   7771.9      |   8.986  |    0.173   |  8.813
+   7774.2      |   8.981  |    0.168   |  8.813
+   7775.4      |   8.921  |    0.147   |  8.774
+A(O) LTE  =  8.963 +/- 0.030
+A(O) NLTE =  8.800 +/- 0.018
+
+777 nm oxygen abundances will be NLTE corrected (Reference)
+OI done
+BaII done
+All species completed
+
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -1904,11 +1932,11 @@ In&nbsp;[7]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">OI</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">OI</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">OI</span><span class="p">[</span><span class="s">&#39;difab&#39;</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">OI</span><span class="p">[</span><span class="s">&#39;difab&#39;</span><span class="p">]))</span>
-<span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">OI</span><span class="p">[</span><span class="s">&#39;difab&#39;</span><span class="p">]))</span>
+<div class="highlight"><pre><span class="k">print</span> <span class="n">star</span><span class="o">.</span><span class="n">OI</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">star</span><span class="o">.</span><span class="n">OI</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">star</span><span class="o">.</span><span class="n">OI</span><span class="p">[</span><span class="s">&#39;difab&#39;</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">OI</span><span class="p">[</span><span class="s">&#39;difab&#39;</span><span class="p">])</span>
+<span class="k">print</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">OI</span><span class="p">[</span><span class="s">&#39;difab&#39;</span><span class="p">])</span>
 
 <span class="k">print</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">BaII</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">star</span><span class="o">.</span><span class="n">BaII</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">])</span>
@@ -1928,18 +1956,15 @@ In&nbsp;[7]:
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
-{&apos;ab&apos;: masked_array(data = [7.117017500973857 7.524576886051689 7.882822780329848],
-             mask = [False False False],
-       fill_value = 1e+20)
-, &apos;difab&apos;: [-1.5558331448261651, -1.1402637720253637, -0.80013376199836195], &apos;rew&apos;: array([-4.879, -4.929, -5.039]), &apos;ww&apos;: array([ 7771.944,  7774.161,  7775.39 ]), &apos;ew&apos;: array([ 102.7,   91.6,   71.1]), &apos;ep&apos;: array([ 9.146,  9.146,  9.146])}
-[7.117017500973857 7.524576886051689 7.882822780329848]
-[-1.5558331448261651, -1.1402637720253637, -0.80013376199836195]
--1.16541022628
-0.309024969242
-{&apos;ab&apos;: array([ 4.297,  6.044,  4.284]), &apos;difab&apos;: [0.15499999999999936, 0.26799999999999979, 0.49299999999999988], &apos;rew&apos;: array([-4.876, -4.625, -4.642]), &apos;ww&apos;: array([ 5853.696,  6141.695,  6496.9  ]), &apos;ew&apos;: array([  77.9,  145.8,  148.1]), &apos;ep&apos;: array([ 0.604,  0.704,  0.604])}
-[ 4.297  6.044  4.284]
-[0.15499999999999936, 0.26799999999999979, 0.49299999999999988]
-0.305333333333
+[&apos;ab&apos;, &apos;difab&apos;, &apos;rew&apos;, &apos;ww&apos;, &apos;ew&apos;, &apos;ep&apos;]
+[8.813 8.813 8.774]
+[0.14000000000000057, 0.14800000000000146, 0.090999999999999304]
+0.126333333333
+0.0251970015853
+{&apos;ab&apos;: array([ 4.296,  6.043,  4.283]), &apos;difab&apos;: [0.15399999999999991, 0.26700000000000035, 0.49200000000000044], &apos;rew&apos;: array([-4.876, -4.625, -4.642]), &apos;ww&apos;: array([ 5853.696,  6141.695,  6496.9  ]), &apos;ew&apos;: array([  77.9,  145.8,  148.1]), &apos;ep&apos;: array([ 0.604,  0.704,  0.604])}
+[ 4.296  6.043  4.283]
+[0.15399999999999991, 0.26700000000000035, 0.49200000000000044]
+0.304333333333
 0.140490410903
 
 </pre>
@@ -1962,7 +1987,7 @@ In&nbsp;[7]:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[]:
+In&nbsp;[8]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
@@ -1970,6 +1995,150 @@ In&nbsp;[]:
 </pre></div>
 
 </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+------------------------------------------------------
+Initializing ...
+- Date and time: 2014-11-18 06:40:38.621226
+- Model atmospheres: odfnew
+- Star data: Hyades_solution.csv
+- Line list: ../hyades_lines.csv
+- Reference star: vestaOct
+------------------------------------------------------
+
+*******
+hd28099
+*******
+
+CI
+--
+ABS =  8.500 +/-  0.006
+DIF =  0.140 +/-  0.049
+
+Wavelength   ABS    RES    DIF    RES 
+----------  ----- ------  -----  -----
+ 5052.1670  8.491 -0.009  0.112 -0.028
+ 5380.3370  8.499 -0.001  0.076 -0.064
+ 6587.6100  8.509  0.009  0.175  0.035
+ 7111.4690  8.500  0.000  0.198  0.058
+
+OI
+--
+ABS =  8.847 +/-  0.018
+DIF =  0.164 +/-  0.025
+
+Wavelength   ABS    RES    DIF    RES 
+----------  ----- ------  -----  -----
+ 7771.9440  8.862  0.015  0.179  0.015
+ 7774.1610  8.858  0.011  0.183  0.019
+ 7775.3900  8.822 -0.025  0.129 -0.035
+
+BaII
+----
+ABS =  4.870 +/-  0.844
+DIF =  0.277 +/-  0.053
+
+Wavelength   ABS    RES    DIF    RES 
+----------  ----- ------  -----  -----
+ 5853.6960  4.387 -0.483  0.227 -0.050
+ 6141.6950  6.057  1.187  0.253 -0.024
+ 6496.9000  4.166 -0.704  0.351  0.074
+
+*******
+hd29310
+*******
+
+CI
+--
+ABS =  8.527 +/-  0.032
+DIF =  0.168 +/-  0.040
+
+Wavelength   ABS    RES    DIF    RES 
+----------  ----- ------  -----  -----
+ 5052.1670  8.500 -0.027  0.121 -0.047
+ 5380.3370  8.577  0.050  0.154 -0.014
+ 6587.6100  8.500 -0.027  0.166 -0.002
+ 7111.4690  8.532  0.005  0.230  0.062
+
+OI
+--
+ABS =  8.813 +/-  0.019
+DIF =  0.129 +/-  0.026
+
+Wavelength   ABS    RES    DIF    RES 
+----------  ----- ------  -----  -----
+ 7771.9440  8.826  0.013  0.143  0.014
+ 7774.1610  8.826  0.013  0.151  0.022
+ 7775.3900  8.786 -0.027  0.093 -0.036
+
+BaII
+----
+ABS =  4.904 +/-  0.830
+DIF =  0.311 +/-  0.147
+
+Wavelength   ABS    RES    DIF    RES 
+----------  ----- ------  -----  -----
+ 5853.6960  4.312 -0.592  0.152 -0.159
+ 6141.6950  6.078  1.174  0.274 -0.037
+ 6496.9000  4.322 -0.582  0.507  0.196
+
+********
+vestaOct
+********
+
+CI
+--
+ABS =  8.360 +/-  0.046
+DIF =  0.000 +/-  0.000
+
+Wavelength   ABS    RES    DIF    RES 
+----------  ----- ------  -----  -----
+ 5052.1670  8.379  0.019  0.000  0.000
+ 5380.3370  8.423  0.063  0.000  0.000
+ 6587.6100  8.334 -0.026  0.000  0.000
+ 7111.4690  8.302 -0.058  0.000  0.000
+
+OI
+--
+ABS =  8.684 +/-  0.007
+DIF =  0.000 +/-  0.000
+
+Wavelength   ABS    RES    DIF    RES 
+----------  ----- ------  -----  -----
+ 7771.9440  8.683 -0.001  0.000  0.000
+ 7774.1610  8.675 -0.009  0.000  0.000
+ 7775.3900  8.693  0.009  0.000  0.000
+
+BaII
+----
+ABS =  4.593 +/-  0.868
+DIF =  0.000 +/-  0.000
+
+Wavelength   ABS    RES    DIF    RES 
+----------  ----- ------  -----  -----
+ 5853.6960  4.160 -0.433  0.000  0.000
+ 6141.6950  5.804  1.211  0.000  0.000
+ 6496.9000  3.815 -0.778  0.000  0.000
+
+------------------------------------------------------
+- Date and time: 2014-11-18 06:40:45.530571
+- Time elapsed: 0:00:06.909345
+Done!
+------------------------------------------------------
+
+
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 

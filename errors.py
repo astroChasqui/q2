@@ -2,6 +2,9 @@ import numpy as np
 from numpy import matrix
 from star import Star
 import specpars
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def error_one(Star_in, SolvePars, Ref=object):
@@ -10,9 +13,9 @@ def error_one(Star_in, SolvePars, Ref=object):
     s.__dict__ = Star_in.__dict__.copy()
     try:
         Ref.get_model_atmosphere(SolvePars.grid)
-        #print('Relative abundances')
+        logger.info('Relative abundances')
     except:
-        print('Absolute abundances')
+        logger.info('Absolute abundances')
 
     dteff = 20
     dvt = 0.02
@@ -47,13 +50,8 @@ def error_one(Star_in, SolvePars, Ref=object):
     egx = 1e0*(egx1+egx2)/2
     dhx = 1e0*(hx2-hx1)/(2*dteff)
     ehx = 1e0*(ehx1+ehx2)/2
-    #print(dfx, efx/dfx)
-    #print(dgx, egx/dgx)
-    #print(dhx, ehx/dhx)
-    #print(dfx, dgx, dhx)
     dfdt, dgdt, dhdt = dfx, dgx, dhx
     eft, egt, eht = efx, egx, ehx
-    #print(efx, egx, ehx)
 
     s.vt = s.vt + dvt
     s.get_model_atmosphere(SolvePars.grid)
@@ -84,13 +82,8 @@ def error_one(Star_in, SolvePars, Ref=object):
     egx = 1e0*(egx1+egx2)/2
     dhx = 1e0*(hx2-hx1)/(2*dvt)
     ehx = 1e0*(ehx1+ehx2)/2
-    #print(dfx, efx/dfx)
-    #print(dgx, egx/dgx)
-    #print(dhx, ehx/dhx)
-    #print(dfx, dgx, dhx)
     dfdv, dgdv, dhdv = dfx, dgx, dhx
     efv, egv, ehv = efx, egx, ehx
-    #print(efx, egx, ehx)
 
     s.logg = s.logg + dlogg
     s.get_model_atmosphere(SolvePars.grid)
@@ -121,21 +114,13 @@ def error_one(Star_in, SolvePars, Ref=object):
     egx = 1e0*(egx1+egx2)/2
     dhx = 1e0*(hx2-hx1)/(2*dlogg)
     ehx = 1e0*(ehx1+ehx2)/2
-    #print(dfx, efx/dfx)
-    #print(dgx, egx/dgx)
-    #print(dhx, ehx/dhx)
-    #print(dfx, dgx, dhx)
     dfdg, dgdg, dhdg = dfx, dgx, dhx
     efg, egg, ehg = efx, egx, ehx
-    #print(efx, egx, ehx)
     
     d = matrix( [ [dfdt, dfdv, dfdg],
                   [dgdt, dgdv, dgdg],
                   [dhdt, dhdv, dhdg] ] )
     di = d.I
-    #print('')
-    #print(d)
-    #print(di)
 
     s0 = np.mean([eft,efv,efg])
     s1 = np.mean([egt,egv,egg])
@@ -152,11 +137,6 @@ def error_one(Star_in, SolvePars, Ref=object):
     elogg = np.sqrt ( (s0*di[2, 0])**2 +
                       (s1*di[2, 1])**2 +
                       (s2*di[2, 2])**2  )
-
-    #print(eteff, elogg, evt)
-    #Star_in.sp_err_teff = eteff
-    #Star_in.sp_err_logg = elogg
-    #Star_in.sp_err_vt =  evt
 
     s.teff = s.teff + eteff
     s.get_model_atmosphere(SolvePars.grid)
@@ -192,6 +172,5 @@ def error_one(Star_in, SolvePars, Ref=object):
     eav = (ap-am)/2
 
     ea = np.sqrt(eat**2+eag**2+eav**2+s2**2)
-    #Star_in.sp_err_feh = ea
 
     Star_in.sp_err = {'teff': int(eteff), 'logg': elogg, 'afe': ea, 'vt': evt}

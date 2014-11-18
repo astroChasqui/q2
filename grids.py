@@ -21,7 +21,7 @@ def one(StarIn, RefIn):
     s.vt = StarIn.vt
     s.vt = 1.30
     s.linelist = StarIn.linelist
-    print("slep,eslep,slrew,eslrew,dfe,edfe,t,g,f,v")
+    print "slep,eslep,slrew,eslrew,dfe,edfe,t,g,f,v"
     for t in tg:
         for g in gg:
             s.teff = t
@@ -37,7 +37,8 @@ def one(StarIn, RefIn):
             nfe2 = s.iron_stats['nfe2']
             dfe = afe1 - afe2
             edfe = np.sqrt(eafe1**2/nfe1+eafe2**2/nfe2)
-            print("{0:.5f},{1:.5f},{2:.6f},{3:.6f},{4:.3f},{5:.3f},{6:4d},{7:.2f},{8:.3f},{9:.2f}".
+            print "{0:.5f},{1:.5f},{2:.6f},{3:.6f},{4:.3f},{5:.3f},"\
+                  "{6:4d},{7:.2f},{8:.3f},{9:.2f}".\
                    format(
                           s.iron_stats['slope_ep'],
                           s.iron_stats['err_slope_ep'],
@@ -45,4 +46,4 @@ def one(StarIn, RefIn):
                           s.iron_stats['err_slope_rew'],
                           dfe, edfe,
                           t, g, s.feh, s.vt,
-                          ))
+                          )

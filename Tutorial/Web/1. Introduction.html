@@ -1753,9 +1753,9 @@ In&nbsp;[3]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">star_data</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">star_data</span><span class="p">[</span><span class="s">&#39;teff&#39;</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="s">&#39;Sun&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">])</span>
+<div class="highlight"><pre><span class="k">print</span> <span class="n">data</span><span class="o">.</span><span class="n">star_data</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">data</span><span class="o">.</span><span class="n">star_data</span><span class="p">[</span><span class="s">&#39;teff&#39;</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">data</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="s">&#39;Sun&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -1825,10 +1825,10 @@ In&nbsp;[5]:
 <div class="highlight"><pre><span class="n">sun</span><span class="o">.</span><span class="n">get_data_from</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="n">arcturus</span><span class="o">.</span><span class="n">get_data_from</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-<span class="k">print</span><span class="p">(</span><span class="s">&quot;Sun     : Teff = {0:4.0f} K, logg = {1:4.2f}&quot;</span><span class="o">.</span>
-      <span class="n">format</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">teff</span><span class="p">,</span> <span class="n">sun</span><span class="o">.</span><span class="n">logg</span><span class="p">))</span>
-<span class="k">print</span><span class="p">(</span><span class="s">&quot;Arcturus: Teff = {0:4.0f} K, logg = {1:4.2f}&quot;</span><span class="o">.</span>
-      <span class="n">format</span><span class="p">(</span><span class="n">arcturus</span><span class="o">.</span><span class="n">teff</span><span class="p">,</span> <span class="n">arcturus</span><span class="o">.</span><span class="n">logg</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&quot;Sun     : Teff = {0:4.0f} K, logg = {1:4.2f}&quot;</span><span class="o">.</span>\
+      <span class="n">format</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">teff</span><span class="p">,</span> <span class="n">sun</span><span class="o">.</span><span class="n">logg</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Arcturus: Teff = {0:4.0f} K, logg = {1:4.2f}&quot;</span><span class="o">.</span>\
+      <span class="n">format</span><span class="p">(</span><span class="n">arcturus</span><span class="o">.</span><span class="n">teff</span><span class="p">,</span> <span class="n">arcturus</span><span class="o">.</span><span class="n">logg</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -1869,10 +1869,10 @@ In&nbsp;[6]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="s">&quot;Wavelength column (first five):&quot;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">linelist</span><span class="p">[</span><span class="s">&#39;wavelength&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="s">&quot;Equivalent width column (first five):&quot;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">linelist</span><span class="p">[</span><span class="s">&#39;ew&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">])</span>
+<div class="highlight"><pre><span class="k">print</span> <span class="s">&quot;Wavelength column (first five):&quot;</span>
+<span class="k">print</span> <span class="n">sun</span><span class="o">.</span><span class="n">linelist</span><span class="p">[</span><span class="s">&#39;wavelength&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">]</span>
+<span class="k">print</span> <span class="s">&quot;Equivalent width column (first five):&quot;</span>
+<span class="k">print</span> <span class="n">sun</span><span class="o">.</span><span class="n">linelist</span><span class="p">[</span><span class="s">&#39;ew&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -1944,7 +1944,7 @@ In&nbsp;[8]:
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">model_atmosphere</span><span class="p">[</span><span class="s">&#39;RHOX&#39;</span><span class="p">],</span> <span class="n">sun</span><span class="o">.</span><span class="n">model_atmosphere</span><span class="p">[</span><span class="s">&#39;T&#39;</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;RHOX&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;T (K)&quot;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s">&quot;Interpolated solar model atmosphere. Grid: &quot;</span><span class="o">+</span><span class="n">sun</span><span class="o">.</span><span class="n">model_atmosphere_grid</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Interpolated solar model atmosphere. Grid: &quot;</span><span class="o">+</span><span class="n">sun</span><span class="o">.</span><span class="n">model_atmosphere_grid</span>
 </pre></div>
 
 </div>
@@ -2206,9 +2206,9 @@ In&nbsp;[10]:
 <div class="inner_cell">
     <div class="input_area">
 <div class="highlight"><pre><span class="n">q2</span><span class="o">.</span><span class="n">moog</span><span class="o">.</span><span class="n">abfind</span><span class="p">(</span><span class="n">sun</span><span class="p">,</span> <span class="mf">26.1</span><span class="p">,</span> <span class="s">&#39;fe2&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">fe2</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-<span class="k">print</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">fe2</span><span class="p">[</span><span class="s">&#39;ww&#39;</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">fe2</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">])</span>
+<span class="k">print</span> <span class="n">sun</span><span class="o">.</span><span class="n">fe2</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">sun</span><span class="o">.</span><span class="n">fe2</span><span class="p">[</span><span class="s">&#39;ww&#39;</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">sun</span><span class="o">.</span><span class="n">fe2</span><span class="p">[</span><span class="s">&#39;ab&#39;</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -2802,12 +2802,12 @@ In&nbsp;[12]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="s">&quot;A(Fe I)  = {0:5.3f} +/- {1:5.3f}&quot;</span><span class="o">.</span>
-      <span class="n">format</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;afe1&#39;</span><span class="p">],</span> <span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;err_afe1&#39;</span><span class="p">]))</span>
-<span class="k">print</span><span class="p">(</span><span class="s">&quot;A(Fe II) = {0:5.3f} +/- {1:5.3f}&quot;</span><span class="o">.</span>
-      <span class="n">format</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;afe2&#39;</span><span class="p">],</span> <span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;err_afe2&#39;</span><span class="p">]))</span>
-<span class="k">print</span><span class="p">(</span><span class="s">&quot;A(FeI) vs. EP slope  = {0:.6f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;slope_ep&#39;</span><span class="p">]))</span>
-<span class="k">print</span><span class="p">(</span><span class="s">&quot;A(FeI) vs. REW slope = {0:.6f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;slope_rew&#39;</span><span class="p">]))</span>
+<div class="highlight"><pre><span class="k">print</span> <span class="s">&quot;A(Fe I)  = {0:5.3f} +/- {1:5.3f}&quot;</span><span class="o">.</span>\
+      <span class="n">format</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;afe1&#39;</span><span class="p">],</span> <span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;err_afe1&#39;</span><span class="p">])</span>
+<span class="k">print</span> <span class="s">&quot;A(Fe II) = {0:5.3f} +/- {1:5.3f}&quot;</span><span class="o">.</span>\
+      <span class="n">format</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;afe2&#39;</span><span class="p">],</span> <span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;err_afe2&#39;</span><span class="p">])</span>
+<span class="k">print</span> <span class="s">&quot;A(FeI) vs. EP slope  = {0:.6f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;slope_ep&#39;</span><span class="p">])</span>
+<span class="k">print</span> <span class="s">&quot;A(FeI) vs. REW slope = {0:.6f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sun</span><span class="o">.</span><span class="n">iron_stats</span><span class="p">[</span><span class="s">&#39;slope_rew&#39;</span><span class="p">])</span>
 </pre></div>
 
 </div>

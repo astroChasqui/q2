@@ -30,17 +30,17 @@ def q2print(message, err=0):
     msg = '['+mname+'.'+fname+': '+err_strg+'] '+message
     lmsg = len(msg)
     if lmsg <= maxc:
-        print(msg)
+        print msg
     else:
         msga =  msg.split(' ')
         words = ''
         for word in msga:
             words += word+' '
             if len(words) >= maxc:
-                print(words)
+                print words
                 words = '    '
         if words.replace(' ', '') != '':
-            print(words)
+            print words
 
 def create_moog_model_in(Star, file_name='model.in'):
     try:

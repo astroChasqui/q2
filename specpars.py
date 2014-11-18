@@ -1,4 +1,3 @@
-from __future__ import print_function
 import numpy as np
 import os
 import logging
@@ -239,8 +238,8 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
     if sp.niter == 0:
         Star.converged = True
 
-    print('it Teff logg [Fe/H]  vt           [Fe/H]')
-    print('-- ---- ---- ------ ----      --------------')
+    print 'it Teff logg [Fe/H]  vt           [Fe/H]'
+    print '-- ---- ---- ------ ----      --------------'
 
     for i in range(sp.niter+1):
         if sp.step_teff <= 1 and sp.step_logg <= 0.01 \
@@ -248,9 +247,9 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
             if not stop_iter:
                 Star.converged = False
                 if SolveParsInit.niter > 0:
-                    print('-- Begin final loop')
+                    print '-- Begin final loop'
             stop_iter = True
-             
+
         if i > 0:
             if Star.iron_stats['slope_ep'] > 0:
                 Star.teff += sp.step_teff
@@ -295,9 +294,10 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
 
         is_done = iron_stats(Star, Ref=Ref, plot=plot, PlotPars=PlotPars)
 
-        print ("{0:2d} {1:4d} {2:4.2f} {3:6.3f} {4:4.2f} ---> {5:6.3f}+/-{6:5.3f}".
+        print "{0:2d} {1:4d} {2:4.2f} {3:6.3f} {4:4.2f}"\
+              " ---> {5:6.3f}+/-{6:5.3f}".\
                 format(i, Star.teff, Star.logg, Star.feh, Star.vt,
-                          Star.iron_stats['afe'], Star.iron_stats['err_afe']))
+                          Star.iron_stats['afe'], Star.iron_stats['err_afe'])
 
         dtv.append(Star.teff)
         dgv.append(Star.logg)
@@ -307,8 +307,8 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
             if np.std(dtv[-5:]) <= 0.8*sp.step_teff and \
                np.std(dgv[-5:]) <= 0.8*sp.step_logg and \
                np.std(dvv[-5:]) <= 0.8*sp.step_vt:
-                print('-- Converged at iteration '+str(i)+ \
-                      ' of '+str(sp.niter))
+                print '-- Converged at iteration '+str(i)+ \
+                      ' of '+str(sp.niter)
                 if stop_iter:
                     plot = Star.name
                     if hasattr(Ref, 'name'):
@@ -330,59 +330,58 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
     if not Star.converged:
         if hasattr(Ref, 'name'):
             if Star.name == Ref.name or SolveParsInit.niter == 0:
-                print('--')
+                print '--'
             else:
-                print('-- Did not achieve final convergence.')
+                print '-- Did not achieve final convergence.'
         else:
-            print('-- Did not achieve final convergence.')
-    #else:
-    #    print('-- Calculating formal errors ...')
+            print '-- Did not achieve final convergence.'
 
-    print('------------------------------------------------------')
+    print '------------------------------------------------------'
 
     if hasattr(Ref, 'name'):
-        print('   D[Fe/H]    ||    D[Fe/H] Fe I   |   D[Fe/H] Fe II')
+        print '   D[Fe/H]    ||    D[Fe/H] Fe I   |   D[Fe/H] Fe II'
     else:
-        print('    A(Fe)     ||      A(Fe I)      |     A(Fe II)   ')
+        print '    A(Fe)     ||      A(Fe I)      |     A(Fe II)   '
 
-    print ("{0:6.3f} {1:6.3f} || {2:6.3f} {3:6.3f} {4:3d} | {5:6.3f} {6:6.3f} {7:3d}".
+    print "{0:6.3f} {1:6.3f} || {2:6.3f} {3:6.3f} {4:3d} "\
+          "| {5:6.3f} {6:6.3f} {7:3d}".\
             format(Star.iron_stats['afe'], Star.iron_stats['err_afe'],
                    Star.iron_stats['afe1'], Star.iron_stats['err_afe1'],
                    Star.iron_stats['nfe1'],
                    Star.iron_stats['afe2'], Star.iron_stats['err_afe2'],
-                   Star.iron_stats['nfe2']))
-    print('------------------------------------------------------')
+                   Star.iron_stats['nfe2'])
+    print '------------------------------------------------------'
 
     Star.sp_err = {'teff': -1, 'logg': -1, 'afe': -1, 'vt': -1}
     if ((Star.converged and sp.errors == True) or \
         (sp.niter == 0 and sp.errors == True and Star.converged != '')):
         errors.error_one(Star, sp, Ref)
-        print("Solution with formal errors:")
-        print("Teff    = {0:6d} +/- {1:5d}".
-              format(int(Star.teff), int(Star.sp_err['teff'])))
-        print("log g   = {0:6.3f} +/- {1:5.3f}".
-              format(Star.logg, Star.sp_err['logg']))
+        print "Solution with formal errors:"
+        print "Teff    = {0:6d} +/- {1:5d}".\
+              format(int(Star.teff), int(Star.sp_err['teff']))
+        print "log g   = {0:6.3f} +/- {1:5.3f}".\
+              format(Star.logg, Star.sp_err['logg'])
         if hasattr(Ref, 'name'):
-            print("D[Fe/H] = {0:6.3f} +/- {1:5.3f}".
-                  format(Star.iron_stats['afe'], Star.sp_err['afe']))
+            print "D[Fe/H] = {0:6.3f} +/- {1:5.3f}".\
+                  format(Star.iron_stats['afe'], Star.sp_err['afe'])
         else:
-            print("A(Fe)   = {0:6.3f} +/- {1:5.3f}".
-                  format(Star.iron_stats['afe'], Star.sp_err['afe']))
-        print("vt      = {0:6.2f} +/- {1:5.2f}".
-              format(Star.vt, Star.sp_err['vt']))
-        print('------------------------------------------------------')
+            print "A(Fe)   = {0:6.3f} +/- {1:5.3f}".\
+                  format(Star.iron_stats['afe'], Star.sp_err['afe'])
+        print "vt      = {0:6.2f} +/- {1:5.2f}".\
+              format(Star.vt, Star.sp_err['vt'])
+        print '------------------------------------------------------'
 
 
 def solve_all(Data, SolveParsInit, output_file, reference_star=None,
               PlotPars=object):
-    print('------------------------------------------------------')
-    print('Initializing ...')
+    print '------------------------------------------------------'
+    print 'Initializing ...'
     start_time = datetime.datetime.now()
-    print('- Date and time: '+start_time.strftime('%d-%b-%Y, %H:%M:%S'))
-    print('- Model atmospheres: '+SolveParsInit.grid)
-    print('- Star data: '+Data.star_data_fname)
-    print('- Line list: '+Data.lines_fname)
-    print('------------------------------------------------------')
+    print '- Date and time: '+start_time.strftime('%d-%b-%Y, %H:%M:%S')
+    print '- Model atmospheres: '+SolveParsInit.grid
+    print '- Star data: '+Data.star_data_fname
+    print '- Line list: '+Data.lines_fname
+    print '------------------------------------------------------'
     if reference_star:
         Ref = Star(reference_star)
         Ref.get_data_from(Data)
@@ -402,33 +401,32 @@ def solve_all(Data, SolveParsInit, output_file, reference_star=None,
                    'stop_iter,converged,'
                    'err_teff,err_logg,err_feh_,err_vt\n')
     for star_id in Data.star_data['id']:
-        print('')
-        print('*'*len(star_id))
-        print(star_id)
-        print('*'*len(star_id))
+        print ''
+        print '*'*len(star_id)
+        print star_id
+        print '*'*len(star_id)
         s = Star(star_id)
         try:
             s.get_data_from(Data)
         except:
-            print('Data not found.')
-            print("{0},,,,,,,,,,"\
-                  ",,,,,,,,".\
-                  format(s.name),
-                  file=fout)
+            print 'Data not found.'
+            fout.write("{0},,,,,,,,,,"\
+                       ",,,,,,,,".\
+                       format(s.name))
             continue
         if ma.count(Data.lines[star_id]) == 0:
-            print('Line data not found.')
+            print 'Line data not found.'
             continue
         sp = SolvePars()
         sp.__dict__ = SolveParsInit.__dict__.copy()
         if reference_star:
             if s.name == Ref.name:
                 sp.niter = 0
-                print('Reference star. No calculations needed.')
+                print 'Reference star. No calculations needed.'
                 #continue
         if hasattr(s, 'converged'):
             if s.converged == 'True':
-                print('Already converged.')
+                print 'Already converged.'
                 continue
                 #sp.niter = 0
                 #s.converged = True
@@ -438,41 +436,42 @@ def solve_all(Data, SolveParsInit, output_file, reference_star=None,
         if sp.niter == 0:
             s.converged = ''
 
-        print("{0},{1:4d},{2:5.3f},{3},{4:4.2f},{5},{6:5.3f},{7},{8:5.3f},{9},"\
-              "{10},{11:5.3f},{12},{13:.6f},{14:.6f},{15:.6f},{16:.6f},{17},{18},"\
-              "{19:3d},{20:5.3f},{21:5.3f},{22:4.2f}".\
-              format(s.name, s.teff, s.logg, str(round(s.feh,3)), s.vt,
-                     str(round(s.iron_stats['afe'],3)),
-                     s.iron_stats['err_afe'],
-                     str(round(s.iron_stats['afe1'],3)),
-                     s.iron_stats['err_afe1'],
-                     s.iron_stats['nfe1'],
-                     str(round(s.iron_stats['afe2'],3)),
-                     s.iron_stats['err_afe2'],
-                     s.iron_stats['nfe2'],
-                     s.iron_stats['slope_ep'],
-                     s.iron_stats['err_slope_ep'],
-                     s.iron_stats['slope_rew'],
-                     s.iron_stats['err_slope_rew'],
-                     s.stop_iter,
-                     s.converged,
-                     s.sp_err['teff'], s.sp_err['logg'],
-                     s.sp_err['afe'], s.sp_err['vt']
-                     ),
-              file=fout)
+        fout.write("{0},{1:4d},{2:5.3f},{3},{4:4.2f},{5},{6:5.3f},"\
+                   "{7},{8:5.3f},{9},"\
+                   "{10},{11:5.3f},{12},{13:.6f},{14:.6f},"\
+                   "{15:.6f},{16:.6f},{17},{18},"\
+                   "{19:3d},{20:5.3f},{21:5.3f},{22:4.2f}\n".\
+                   format(s.name, s.teff, s.logg, str(round(s.feh,3)), s.vt,
+                          str(round(s.iron_stats['afe'],3)),
+                          s.iron_stats['err_afe'],
+                          str(round(s.iron_stats['afe1'],3)),
+                          s.iron_stats['err_afe1'],
+                          s.iron_stats['nfe1'],
+                          str(round(s.iron_stats['afe2'],3)),
+                          s.iron_stats['err_afe2'],
+                          s.iron_stats['nfe2'],
+                          s.iron_stats['slope_ep'],
+                          s.iron_stats['err_slope_ep'],
+                          s.iron_stats['slope_rew'],
+                          s.iron_stats['err_slope_rew'],
+                          s.stop_iter,
+                          s.converged,
+                          s.sp_err['teff'], s.sp_err['logg'],
+                          s.sp_err['afe'], s.sp_err['vt']
+                          ))
     fout.close()
 
-    print('')
-    print('------------------------------------------------------')
+    print ''
+    print '------------------------------------------------------'
     end_time = datetime.datetime.now()
-    print('- Date and time: '+end_time.strftime('%d-%b-%Y, %H:%M:%S'))
+    print '- Date and time: '+end_time.strftime('%d-%b-%Y, %H:%M:%S')
     delta_t = (end_time - start_time).seconds
     hours, remainder = divmod(delta_t, 3600)
     minutes, seconds = divmod(remainder, 60)
-    print('- Time elapsed: %sH %sM %sS' % (hours, minutes, seconds))
-    print('Done!')
-    print('------------------------------------------------------')
-    print('')
+    print '- Time elapsed: %sH %sM %sS' % (hours, minutes, seconds)
+    print 'Done!'
+    print '------------------------------------------------------'
+    print ''
 
 
 def make_single_solution_table(solution_files, single_solution_file):
@@ -491,7 +490,7 @@ def make_single_solution_table(solution_files, single_solution_file):
             #nline = line[0:line.rfind('\n')]
             #linew = nline[0:nline.rfind('\n')]
             #fout.write(linew+'\n')
-            #print(line)
+            #print line
             fout.write(line)
         else:
             for i in range(1, len(solution_files)):
