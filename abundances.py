@@ -8,7 +8,6 @@ import os
 from config import *
 from tools import read_csv
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -16,7 +15,7 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
     print '------------------------------------------------------'
     print 'Initializing ...'
     start_time = datetime.datetime.now()
-    print '- Date and time: '+str(start_time)
+    print '- Date and time: '+start_time.strftime('%d-%b-%Y, %H:%M:%S')
     print '- Model atmospheres: '+grid
     print '- Star data: '+Data.star_data_fname
     print '- Line list: '+Data.lines_fname
@@ -101,8 +100,11 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
     print ''
     print '------------------------------------------------------'
     end_time = datetime.datetime.now()
-    print '- Date and time: '+str(end_time)
-    print '- Time elapsed: '+str(end_time - start_time)
+    print '- Date and time: '+end_time.strftime('%d-%b-%Y, %H:%M:%S')
+    delta_t = (end_time - start_time).seconds
+    hours, remainder = divmod(delta_t, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    print '- Time elapsed: %sH %sM %sS' % (hours, minutes, seconds)
     print 'Done!'
     print '------------------------------------------------------'
     print ''
@@ -123,7 +125,6 @@ def one(Star, species_ids, Ref=object, silent=True):
 
         if species_id == 'OI':
             if not silent:
-                print ''
                 print '777 nm oxygen abundances will be NLTE corrected'
             ao = []
             for wx in [7771.94, 7774.16, 7775.39]:
@@ -148,7 +149,6 @@ def one(Star, species_ids, Ref=object, silent=True):
 
                 if species_id == 'OI':
                     if not silent:
-                        print ''
                         print '777 nm oxygen abundances will be NLTE '\
                               +'corrected (Reference)'
                     ao = []
@@ -158,7 +158,8 @@ def one(Star, species_ids, Ref=object, silent=True):
                             ao.append(np.mean(Ref.OI['ab'][k]))
                         else:
                             ao.append(0)
-                    aon = nlte_triplet(Ref.teff, Ref.logg, Ref.feh, ao)
+                    aon = nlte_triplet(Ref.teff, Ref.logg, Ref.feh, ao,
+                                       silent=silent)
                     k= np.where(np.array(ao) > 0)
                     getattr(Ref, species_id)['ab'] = aon[k]
 
