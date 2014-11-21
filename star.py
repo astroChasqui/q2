@@ -86,12 +86,18 @@ class Star:
                       set(self.linelist['species'])])
         else:
             nlines = species = None
+        if hasattr(self, 'model_atmosphere'):
+            ma = self.model_atmosphere_grid
+        else:
+            ma = None
+
         return "Star object named '{0}':\n"\
                "  Teff (K) = {1}, logg [cgs] = {2}, [Fe/H] = {3}, "\
                  "vt (km/s) = {4}\n"\
-               "  Spectral lines = {5} (species: {6})".\
+               "  Spectral lines = {5} (species: {6})\n"\
+               "  Model atmosphere: {7}".\
                format(self.name, self.teff, self.logg, self.feh, self.vt,
-                      nlines, species)
+                      nlines, species, ma)
 
     def get_data_from(self, Data):
         """If the Star object has a name that matches one of the id's in
