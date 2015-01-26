@@ -70,6 +70,7 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
             line += ',{0:.3f},{1:.3f}'.format(mab, sab)
             if reference:
                 da = getattr(s, species_id)['difab']
+                da = np.array(da, dtype=np.float) #convert None to np.nan
                 mda = np.ma.masked_array(da, np.isnan(da))
                 mdifab = np.mean(mda)
                 sdifab = np.std(mda)
@@ -88,6 +89,8 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
                 zip(getattr(s, species_id)['ww'],
                     getattr(s, species_id)['ab'],
                     getattr(s, species_id)['difab']):
+                if difab == None:
+                    continue
                 if reference:
                     print "{0:10.4f} {1:6.3f} {2:6.3f} {3:6.3f} {4:6.3f}".\
                           format(wi, ab, ab-mab, difab, difab-mdifab)
