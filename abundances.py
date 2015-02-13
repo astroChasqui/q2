@@ -7,6 +7,9 @@ from scipy import interpolate
 import os
 from config import *
 from tools import read_csv
+from collections import OrderedDict
+from bokeh.plotting import *
+from bokeh.objects import HoverTool
 
 logger = logging.getLogger(__name__)
 
@@ -318,3 +321,64 @@ def nlte_triplet(teff, logg, feh, ao, silent=True):
               format(np.mean(aon), np.std(aon))
 
     return aon
+
+def fancy_abund_plot(Star, species_id):
+    """Makes bokeh hover-ing plots
+    
+    Function written to look for outliers and investigate line-to-line scatter
+    """
+    if not hasattr(Star, species_id):
+        logger.error('Star object ('+Star.name+') has no '\
+                     +species_id+'attribute.')
+        return None
+    ww = getattr(Star, species_id)['ww']
+    ew = getattr(Star, species_id)['ew']
+    ab = getattr(Star, species_id)['ab']
+    difab = getattr(Star, species_id)['difab']
+
+    TOOLS="pan,wheel_zoom,box_zoom,reset,hover"
+    output_notebook()
+
+    figure(title=Star.name, plot_width=650, plot_height=300)
+
+    ws = [str(round(w, 1)) for w in ww]
+
+    source = ColumnDataSource(
+        data=dict(
+            ww = ww,
+            ws = ws,
+            ew = ew,
+            ab = ab,
+            difab = difab,
+        )
+    )
+
+    scatter('ww', 'ab', tools=TOOLS, size=10,
+            x_axis_label='Wavelength (A)',
+            y_axis_label='A(X)',
+            source=source, marker='square')
+
+    hover = curplot().select(dict(type=HoverTool))
+    hover.tooltips = OrderedDict([
+        ("Wavelength", "@ws A"),
+        ("EW", "@ew mA"),
+        ("Abundance", "@ab"),
+    ])
+
+    show()
+
+    figure(title=Star.name, plot_width=650, plot_height=300)
+
+    scatter('ww', 'difab', tools=TOOLS, size=10,
+            x_axis_label='Wavelength (A)',
+            y_axis_label='[X/H]',
+            source=source, marker='square')
+
+    hover = curplot().select(dict(type=HoverTool))
+    hover.tooltips = OrderedDict([
+        ("Wavelength", "@ws A"),
+        ("EW", "@ew mA"),
+        ("Abundance", "@difab"),
+    ])
+
+    show()
