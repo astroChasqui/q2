@@ -9,7 +9,7 @@ from config import *
 from tools import read_csv
 from collections import OrderedDict
 from bokeh.plotting import *
-from bokeh.objects import HoverTool
+from bokeh.models import HoverTool
 
 logger = logging.getLogger(__name__)
 
@@ -144,6 +144,7 @@ def one(Star, species_ids, Ref=object, silent=True):
             k= np.where(np.array(ao) > 0)
             getattr(Star, species_id)['ab'] = aon[k]
 
+        getattr(Star, species_id)['ref'] = None
         if hasattr(Ref, 'name'):
             logger.info('Diferential analysis: '+Ref.name)
             if Star.name == Ref.name:
@@ -168,7 +169,6 @@ def one(Star, species_ids, Ref=object, silent=True):
                                        silent=silent)
                     k= np.where(np.array(ao) > 0)
                     getattr(Ref, species_id)['ab'] = aon[k]
-
             else:
                 logger.info('Reference star has '+species_id+\
                             ' abundances computed already: '+Ref.name)
@@ -188,6 +188,7 @@ def one(Star, species_ids, Ref=object, silent=True):
                 else:
                     ax.append(None)
             getattr(Star, species_id)['difab'] = ax
+            getattr(Star, species_id)['ref'] = Ref.name
         if not silent and len(species_ids) > 1:
             print species_id + ' done'
     if not silent and len(species_ids) > 1:
@@ -203,6 +204,7 @@ def getsp(species_id):
          'AlI' : 13.0,
          'SiI' : 14.0,
          'SI'  : 16.0,
+         'KI'  : 19.0,
          'CaI' : 20.0,
          'ScI' : 21.0,
          'ScII': 21.1,
@@ -339,7 +341,10 @@ def fancy_abund_plot(Star, species_id):
     TOOLS="pan,wheel_zoom,box_zoom,reset,hover"
     output_notebook()
 
-    figure(title=Star.name, plot_width=650, plot_height=300)
+    p1 = figure(title=Star.name, plot_width=650, plot_height=300,
+                x_axis_label='Wavelength (A)',
+                y_axis_label='A('+species_id+')',
+                tools=TOOLS)
 
     ws = [str(round(w, 1)) for w in ww]
 
@@ -353,32 +358,46 @@ def fancy_abund_plot(Star, species_id):
         )
     )
 
-    scatter('ww', 'ab', tools=TOOLS, size=10,
-            x_axis_label='Wavelength (A)',
-            y_axis_label='A(X)',
-            source=source, marker='square')
+    p1.scatter('ww', 'ab', tools=TOOLS, size=10,
+            source=source, marker='square', color='blue')
 
-    hover = curplot().select(dict(type=HoverTool))
+    hover = p1.select(dict(type=HoverTool))
     hover.tooltips = OrderedDict([
         ("Wavelength", "@ws A"),
         ("EW", "@ew mA"),
         ("Abundance", "@ab"),
     ])
 
-    show()
+    show(p1)
 
-    figure(title=Star.name, plot_width=650, plot_height=300)
+    if getattr(Star, species_id)['ref']:
+        difabs = [str(round(dfab, 3)) for dfab in difab]
+        source = ColumnDataSource(
+            data=dict(
+                ww = ww,
+                ws = ws,
+                ew = ew,
+                ab = ab,
+                difab = difab,
+                difabs = difabs,
+            )
+        )
 
-    scatter('ww', 'difab', tools=TOOLS, size=10,
-            x_axis_label='Wavelength (A)',
-            y_axis_label='[X/H]',
-            source=source, marker='square')
+        p2 = figure(title=Star.name+' - '+getattr(Star, species_id)['ref'],
+                    plot_width=650, plot_height=300,
+                    x_axis_label='Wavelength (A)',
+                    y_axis_label='['+species_id+'/H]',
+                    tools=TOOLS
+                    )
 
-    hover = curplot().select(dict(type=HoverTool))
-    hover.tooltips = OrderedDict([
-        ("Wavelength", "@ws A"),
-        ("EW", "@ew mA"),
-        ("Abundance", "@difab"),
-    ])
+        p2.scatter('ww', 'difab', tools=TOOLS, size=10,
+                source=source, marker='square', color='blue')
 
-    show()
+        hover = p2.select(dict(type=HoverTool))
+        hover.tooltips = OrderedDict([
+            ("Wavelength", "@ws A"),
+            ("EW", "@ew mA"),
+            ("Abundance", "@difabs"),
+        ])
+
+        show(p2)

@@ -10,7 +10,7 @@ import datetime
 from scipy import ma
 from collections import OrderedDict
 from bokeh.plotting import *
-from bokeh.objects import HoverTool
+from bokeh.models import HoverTool
 
 logger = logging.getLogger(__name__)
 
@@ -531,45 +531,53 @@ def fancy_ironstats_plot(Star):
     TOOLS="pan,wheel_zoom,box_zoom,reset,hover"
     output_notebook()
 
-    figure(title=Star.name, plot_width=650, plot_height=300)
+    title = Star.name
+    if getattr(Star, 'iron_stats')['reference']:
+        title += ' - '+getattr(Star, 'iron_stats')['reference']
 
+    p1 = figure(title=title, plot_width=650, plot_height=300,
+                x_axis_label='EP (eV)',
+                y_axis_label=y_axis_label,
+                tools=TOOLS)
+
+    abst = [str(round(xab, 3)) for xab in ab]
     source = ColumnDataSource(
         data=dict(
             ws = ws,
             ep = ep,
             rew = rew,
             ab = ab,
+            abst = abst,
             ew = ew,
             colors = colors,
         )
     )
 
-    scatter('ep', 'ab', tools=TOOLS, size=10, color='colors',
-            x_axis_label='EP (eV)',
-            y_axis_label=y_axis_label,
+    p1.scatter('ep', 'ab', tools=TOOLS, size=10, color='colors',
             source=source, marker='square')
 
-    hover = curplot().select(dict(type=HoverTool))
+    hover = p1.select(dict(type=HoverTool))
     hover.tooltips = OrderedDict([
         ("Wavelength, EP", "@ws A, @ep eV"),
         ("EW, REW", "@ew mA, @rew"),
-        ("Abundance", "@ab"),
+        ("Abundance", "@abst"),
     ])
 
-    show()
+    show(p1)
 
-    figure(title='', plot_width=650, plot_height=300)
+    p2 = figure(title='', plot_width=650, plot_height=300,
+                x_axis_label='REW',
+                y_axis_label=y_axis_label,
+                tools=TOOLS)
 
-    scatter('rew', 'ab', tools=TOOLS, size=10, color='colors',
-            x_axis_label='REW',
-            y_axis_label=y_axis_label,
+    p2.scatter('rew', 'ab', tools=TOOLS, size=10, color='colors',
             source=source, marker='square')
 
-    hover = curplot().select(dict(type=HoverTool))
+    hover = p2.select(dict(type=HoverTool))
     hover.tooltips = OrderedDict([
         ("Wavelength, EP", "@ws A, @ep eV"),
         ("EW, REW", "@ew mA, @rew"),
-        ("Abundance", "@ab"),
+        ("Abundance", "@abst"),
     ])
 
-    show()
+    show(p2)
