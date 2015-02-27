@@ -234,6 +234,8 @@ def getsp(species_id):
 
 
 def nlte_triplet(teff, logg, feh, ao, silent=True):
+    if feh >= 0.4:
+        feh = 0.4
     grid = read_csv(os.path.join(OTHER_PATH ,'nlte_triplet.csv'))
 
     t,g,f,dao0,dao1,dao2=[],[],[],[],[],[]
