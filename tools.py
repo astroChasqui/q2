@@ -1,5 +1,6 @@
 import numpy as np
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +48,11 @@ def read_csv(csv_file, file_type=None):
     'wavelength', 'species', 'ep', and 'gf'.
     """
 
+    os.system("cat "+csv_file+" | tr '\r' '\n' > q2tmp.csv")
+    csv_file = 'q2tmp.csv'
     with open(csv_file) as f:
         x = f.readlines()
+    os.unlink('q2tmp.csv')
 
     keys = [key.strip("\n") for key in x[0].split(",")]
     if (len(keys) != len(set(keys))):
