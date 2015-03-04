@@ -220,6 +220,7 @@ def getsp(species_id):
          'NiI' : 28.0,
          'CuI' : 29.0,
          'ZnI' : 30.0,
+         'RbI' : 37.0,
          'SrI' : 38.0,
          'YII' : 39.1,
          'ZrII': 40.1,
