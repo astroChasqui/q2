@@ -204,7 +204,7 @@ def abfind(Star, species, species_id):
     while line:
         line = f.readline()
         if line[0:3] == 'ave': break
-        if float(line[50:60]) > 999.: #exclude dummies (hfs)
+        if float(line[58:68]) > 999.: #exclude dummies (hfs)
             continue
         ww.append(float(line[0:10]))
         ep.append(float(line[22:29]))
