@@ -34,9 +34,10 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
     fout = open(output_file, 'wb')
     header = 'id'
     for species_id in species_ids:
-        header += ','+species_id+',err_'+species_id
+        header += ','+species_id+',err_'+species_id+',n_'+species_id
         if reference:
-            header += ',['+species_id+'],err_['+species_id+']'
+            header += ',['+species_id+'],err_['+species_id+\
+                      '],n_['+species_id+']'
     fout.write(header+'\n')
     for star_id in Data.star_data['id']:
         line = star_id
@@ -69,16 +70,21 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
                 continue
             mab = np.mean(getattr(s, species_id)['ab'])
             sab = np.std(getattr(s, species_id)['ab'])
-            print "ABS = {0:6.3f} +/- {1:6.3f}".format(mab, sab)
-            line += ',{0:.3f},{1:.3f}'.format(mab, sab)
+            nab = len(getattr(s, species_id)['ab'])
+            print "ABS = {0:6.3f} +/- {1:6.3f} , n = {2:.0f}".\
+                  format(mab, sab, nab)
+            line += ',{0:.3f},{1:.3f},{2:.0f}'.format(mab, sab, nab)
             if reference:
                 da = getattr(s, species_id)['difab']
                 da = np.array(da, dtype=np.float) #convert None to np.nan
                 mda = np.ma.masked_array(da, np.isnan(da))
                 mdifab = np.mean(mda)
                 sdifab = np.std(mda)
-                print "DIF = {0:6.3f} +/- {1:6.3f}".format(mdifab, sdifab)
-                line += ',{0:.3f},{1:.3f}'.format(mdifab, sdifab)
+                ndifab = mda.count()
+                print "DIF = {0:6.3f} +/- {1:6.3f} , n = {2:.0f}".\
+                      format(mdifab, sdifab, ndifab)
+                line += ',{0:.3f},{1:.3f},{2:.0f}'.\
+                        format(mdifab, sdifab, ndifab)
             else:
                 mdifab = 0
             print ''
@@ -92,9 +98,7 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
                 zip(getattr(s, species_id)['ww'],
                     getattr(s, species_id)['ab'],
                     getattr(s, species_id)['difab']):
-                if difab == None:
-                    continue
-                if reference:
+                if reference and difab != None:
                     print "{0:10.4f} {1:6.3f} {2:6.3f} {3:6.3f} {4:6.3f}".\
                           format(wi, ab, ab-mab, difab, difab-mdifab)
                 else:
@@ -197,35 +201,35 @@ def one(Star, species_ids, Ref=object, silent=True):
 
 def getsp(species_id):
     d = {
-         'CI'  :  6.0,
+         'CI'  :   6.0,
          'CH'  : 106.0,
-         'OI'  :  8.0,
-         'NaI' : 11.0,
-         'MgI' : 12.0,
-         'AlI' : 13.0,
-         'SiI' : 14.0,
-         'SI'  : 16.0,
-         'KI'  : 19.0,
-         'CaI' : 20.0,
-         'ScI' : 21.0,
-         'ScII': 21.1,
-         'TiI' : 22.0,
-         'TiII': 22.1,
-         'VI'  : 23.0,
-         'CrI' : 24.0,
-         'CrII': 24.1,
-         'MnI' : 25.0,
-         'FeI' : 26.0,
-         'FeII': 26.1,
-         'CoI' : 27.0,
-         'NiI' : 28.0,
-         'CuI' : 29.0,
-         'ZnI' : 30.0,
-         'RbI' : 37.0,
-         'SrI' : 38.0,
-         'YII' : 39.1,
-         'ZrII': 40.1,
-         'BaII': 56.1
+         'OI'  :   8.0,
+         'NaI' :  11.0,
+         'MgI' :  12.0,
+         'AlI' :  13.0,
+         'SiI' :  14.0,
+         'SI'  :  16.0,
+         'KI'  :  19.0,
+         'CaI' :  20.0,
+         'ScI' :  21.0,
+         'ScII':  21.1,
+         'TiI' :  22.0,
+         'TiII':  22.1,
+         'VI'  :  23.0,
+         'CrI' :  24.0,
+         'CrII':  24.1,
+         'MnI' :  25.0,
+         'FeI' :  26.0,
+         'FeII':  26.1,
+         'CoI' :  27.0,
+         'NiI' :  28.0,
+         'CuI' :  29.0,
+         'ZnI' :  30.0,
+         'RbI' :  37.0,
+         'SrI' :  38.0,
+         'YII' :  39.1,
+         'ZrII':  40.1,
+         'BaII':  56.1
          }
     try:
         species = d[species_id]
