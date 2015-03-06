@@ -198,6 +198,7 @@ def one(Star, species_ids, Ref=object, silent=True):
 def getsp(species_id):
     d = {
          'CI'  :  6.0,
+         'CH'  : 106.0,
          'OI'  :  8.0,
          'NaI' : 11.0,
          'MgI' : 12.0,
