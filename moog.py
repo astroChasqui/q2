@@ -198,20 +198,26 @@ def abfind(Star, species, species_id):
     os.system('MOOGSILENT > moog.log 2>&1')
     f = open(MD.summary_out, 'r')
     line=''
-    #this might be inconsistent among different MOOG versions:
     while line[0:10] != 'wavelength':
         line = f.readline()
     ww, ep, ew, rew, ab, difab = [], [], [], [], [], []
     while line:
         line = f.readline()
         if line[0:7] == 'average': break
-        if float(line.split()[6]) > 999.: #exclude dummies (hfs)
+        linesplit = line.split()
+        if float(linesplit[6]) > 999.: #exclude dummies (hfs)
             continue
-        ww.append(float(line.split()[0]))
-        ep.append(float(line.split()[2]))
-        ew.append(float(line.split()[4]))
-        rew.append(float(line.split()[5]))
-        ab.append(float(line.split()[6]))
+        ww.append(float(linesplit[0]))
+        if 'ID' in line: #MOOGJUL2014 adds a new column 'ID' to moog.sum
+            ep.append(float(linesplit[2]))
+            ew.append(float(linesplit[4]))
+            rew.append(float(linesplit[5]))
+            ab.append(float(linesplit[6]))
+        else: #older versions of MOOG don't have 'ID' but 'EP' in 2nd col
+            ep.append(float(linesplit[1]))
+            ew.append(float(linesplit[3]))
+            rew.append(float(linesplit[4]))
+            ab.append(float(linesplit[5]))
         difab.append(None)
     f.close()
     os.unlink(MD.file_name)
