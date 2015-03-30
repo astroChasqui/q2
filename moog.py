@@ -227,7 +227,7 @@ def abfind(Star, species, species_id):
     os.unlink(MD.file_name)
     os.unlink(MD.model_in)
     os.unlink(MD.lines_in)
-    #os.unlink(MD.summary_out)
+    os.unlink(MD.summary_out)
     os.unlink(MD.standard_out)
     os.unlink('moog.log')
 
