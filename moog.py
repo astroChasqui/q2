@@ -200,6 +200,10 @@ def abfind(Star, species, species_id):
     line=''
     while line[0:10] != 'wavelength':
         line = f.readline()
+    if 'ID' in line:
+        moogjul2014 = True
+    else:
+        moogjul2014 = False
     ww, ep, ew, rew, ab, difab = [], [], [], [], [], []
     while line:
         line = f.readline()
@@ -208,7 +212,7 @@ def abfind(Star, species, species_id):
         if float(linesplit[6]) > 999.: #exclude dummies (hfs)
             continue
         ww.append(float(linesplit[0]))
-        if 'ID' in line: #MOOGJUL2014 adds a new column 'ID' to moog.sum
+        if moogjul2014: #MOOGJUL2014 adds a new column 'ID' to moog.sum
             ep.append(float(linesplit[2]))
             ew.append(float(linesplit[4]))
             rew.append(float(linesplit[5]))
@@ -223,7 +227,7 @@ def abfind(Star, species, species_id):
     os.unlink(MD.file_name)
     os.unlink(MD.model_in)
     os.unlink(MD.lines_in)
-    os.unlink(MD.summary_out)
+    #os.unlink(MD.summary_out)
     os.unlink(MD.standard_out)
     os.unlink('moog.log')
 
