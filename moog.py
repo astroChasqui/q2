@@ -198,19 +198,20 @@ def abfind(Star, species, species_id):
     os.system('MOOGSILENT > moog.log 2>&1')
     f = open(MD.summary_out, 'r')
     line=''
-    while line[0:21] != 'wavelength         ID':
+    #this might be inconsistent among different MOOG versions:
+    while line[0:10] != 'wavelength':
         line = f.readline()
     ww, ep, ew, rew, ab, difab = [], [], [], [], [], []
     while line:
         line = f.readline()
-        if line[0:3] == 'ave': break
-        if float(line[58:68]) > 999.: #exclude dummies (hfs)
+        if line[0:7] == 'average': break
+        if float(line.split()[6]) > 999.: #exclude dummies (hfs)
             continue
-        ww.append(float(line[0:10]))
-        ep.append(float(line[22:29]))
-        ew.append(float(line[38:46]))
-        rew.append(float(line[47:56]))
-        ab.append(float(line[57:66]))
+        ww.append(float(line.split()[0]))
+        ep.append(float(line.split()[2]))
+        ew.append(float(line.split()[4]))
+        rew.append(float(line.split()[5]))
+        ab.append(float(line.split()[6]))
         difab.append(None)
     f.close()
     os.unlink(MD.file_name)
