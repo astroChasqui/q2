@@ -146,7 +146,8 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
         plt.ylim(ylim)
         if hasattr(PlotPars, 'title_inside'):
             if PlotPars.title_inside != None:
-                plt.text(2.5, 0.8*plt.ylim()[1],
+                plt.text(plt.xlim()[0]+0.50*(plt.xlim()[1]-plt.xlim()[0]),
+                         plt.ylim()[0]+0.85*(plt.ylim()[1]-plt.ylim()[0]),
                          PlotPars.title_inside,
                          horizontalalignment='center',
                          size=15)
