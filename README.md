@@ -1,10 +1,12 @@
 q2 Python package
 =================
 
-q2 allows you to use MOOG (in its SILENT mode) to calculate elemental abundances of stars and/or determine their atmospheric parameters using the standard techniques of iron line excitation/ionization equlibrium. It also allows you to calculate other fundamental stellar parameters such as mass and age using isochrones.
+q2 allows you to use MOOG (in its SILENT mode) to calculate elemental abundances of stars and/or determine their atmospheric parameters using the standard techniques of iron line excitation/ionization equlibrium. It also allows you to calculate other fundamental stellar parameters such as mass and age using isochrones. A tutorial is available <a href="https://github.com/astroChasqui/q2_tutorial">here</a>.
 
 Examples
 --------
+
+Find spectroscopic parameters of a sample of stars using the Sun as the reference star (strict line-by-line differential analysis):
 
 ```python
 import q2
@@ -13,10 +15,17 @@ sp = q2.specpars.SolvePars(grid='marcs')
 q2.specpars.solve_all(data, sp, 'solution.csv', 'Sun')
 ```
 
+Measure elemental abundances of a sample of stars with respect to the solar abudances (line-by-line):
+
+```python
+species_ids = ['CI', 'OI', 'BaII']
+q2.abundances.all(data, species_ids, 'abundances.csv', 'Sun')
+```
+
 MOOG
 ----
 
-q2 works only with the 2014 version of MOOGSILENT.
+q2 needs a recent version of <a href="http://www.as.utexas.edu/~chris/moog.html">MOOGSILENT</a> (>2003) installed in your system.
 
 Data
 ----
