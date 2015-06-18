@@ -346,6 +346,9 @@ def fancy_abund_plot(Star, species_id):
     ab = getattr(Star, species_id)['ab']
     difab = getattr(Star, species_id)['difab']
 
+    print "[{0}/H] = {1:.3f} +/- {2:.3f} (# of lines = {3})".\
+          format(species_id, np.mean(difab), np.std(difab), len(difab))
+
     TOOLS="pan,wheel_zoom,box_zoom,reset,hover"
     output_notebook()
 
