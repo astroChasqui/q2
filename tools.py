@@ -93,8 +93,11 @@ def read_csv(csv_file, file_type=None):
             if (key == "v" or "err" in key or "plx" in key)\
                and xij != None:
                 xij = float(xij)
-            if file_type == "lines" and xij != None and key != "comments":
-                xij = float(xij)
+            if file_type == "lines" and xij != None:
+                try:
+                    xij = float(xij)
+                except:
+                    xij = xij
             if file_type == None:
                 xij = float(xij)
             dictionary[key].append(xij)
