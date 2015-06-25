@@ -83,7 +83,7 @@ def read_csv(csv_file, file_type=None):
     for xi in x[1:]:
         for key, xij in zip(keys,xi.split(",")):
             xij = xij.strip("\n")
-            if xij == "":
+            if xij.strip(" ") == "":
                 xij = None
             if "teff" in key and xij != None:
                 xij = int(xij)
