@@ -230,6 +230,8 @@ def abfind(Star, species, species_id):
     os.unlink(MD.summary_out)
     os.unlink(MD.standard_out)
     os.unlink('moog.log')
+    if os.path.isfile('fort.99'):
+        os.unlink('fort.99')
 
     x = {'ww': np.array(ww), 'ep': np.array(ep), 'ew': np.array(ew),\
          'rew': np.array(rew), 'ab': np.array(ab), 'difab': np.array(difab)}
