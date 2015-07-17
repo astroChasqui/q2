@@ -193,9 +193,9 @@ def one(Star, species_ids, Ref=object, silent=True):
                     ax.append(None)
             getattr(Star, species_id)['difab'] = ax
             getattr(Star, species_id)['ref'] = Ref.name
-        if not silent and len(species_ids) > 1:
+        if not silent and len(species_ids) >= 1:
             print species_id + ' done'
-    if not silent and len(species_ids) > 1:
+    if not silent and len(species_ids) >= 1:
         print 'All species completed'
 
 
