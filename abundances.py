@@ -372,8 +372,8 @@ def fancy_abund_plot(Star, species_id):
         )
     )
 
-    p1.scatter('ww', 'ab', tools=TOOLS, size=10,
-            source=source, marker='square', color='blue')
+    p1.scatter('ww', 'ab', size=10, source=source, marker='square',
+               color='blue')
 
     hover = p1.select(dict(type=HoverTool))
     hover.tooltips = OrderedDict([
@@ -404,8 +404,8 @@ def fancy_abund_plot(Star, species_id):
                     tools=TOOLS
                     )
 
-        p2.scatter('ww', 'difab', tools=TOOLS, size=10,
-                source=source, marker='square', color='blue')
+        p2.scatter('ww', 'difab', size=10, source=source, marker='square',
+                   color='blue')
 
         hover = p2.select(dict(type=HoverTool))
         hover.tooltips = OrderedDict([
