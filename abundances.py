@@ -120,7 +120,7 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
     print ''
 
 
-def one(Star, species_ids, Ref=object, silent=True):
+def one(Star, species_ids, Ref=object, silent=True, errors=False):
     logger.info('Working on: '+Star.name)
     for species_id in species_ids:
         species = getsp(species_id)
@@ -193,10 +193,112 @@ def one(Star, species_ids, Ref=object, silent=True):
                     ax.append(None)
             getattr(Star, species_id)['difab'] = ax
             getattr(Star, species_id)['ref'] = Ref.name
+
+        if errors:
+            error(Star, species_id, Ref=Ref, silent=silent)
+
         if not silent and len(species_ids) >= 1:
             print species_id + ' done'
+
     if not silent and len(species_ids) >= 1:
         print 'All species completed'
+
+
+
+def error(Star_in, species_id, Ref=object, silent=True):
+    s = Star()
+    s.__dict__ = Star_in.__dict__.copy()
+
+    if not silent:
+        print '-----------------------------'
+        print 'Error propagation for '+species_id+':'
+
+    try:
+        Ref.model_atmosphere_grid
+        dab = getattr(Star_in, species_id)['difab']
+        l2l_sct = np.std(dab)/np.sqrt(max([len(dab),2])-1)
+        abx = 'difab'
+    except:
+        try:
+            ab = getattr(Star_in, species_id)['ab']
+            l2l_sct = np.std(ab)/np.sqrt(max([len(ab),2])-1)
+            abx = 'ab'
+        except:
+            logger.error('Must calculate abundances before errors')
+            return None
+
+    try:
+        s.teff += s.err_teff
+        s.get_model_atmosphere(s.model_atmosphere_grid)
+        one(s, [species_id], Ref=Ref)
+        ap = np.mean(getattr(s, species_id)[abx])
+        s.teff -= 2*s.err_teff
+        s.get_model_atmosphere(s.model_atmosphere_grid)
+        one(s, [species_id], Ref=Ref)
+        am = np.mean(getattr(s, species_id)[abx])
+        a_teff = abs(ap-am)/2.
+        s.teff += s.err_teff
+    except:
+        a_teff = 0.
+
+    try:
+        s.logg += s.err_logg
+        s.get_model_atmosphere(s.model_atmosphere_grid)
+        one(s, [species_id], Ref=Ref)
+        ap = np.mean(getattr(s, species_id)[abx])
+        s.logg -= 2*s.err_logg
+        s.get_model_atmosphere(s.model_atmosphere_grid)
+        one(s, [species_id], Ref=Ref)
+        am = np.mean(getattr(s, species_id)[abx])
+        a_logg = abs(ap-am)/2.
+        s.logg += s.err_logg
+    except:
+        a_logg = 0.
+
+    try:
+        s.feh += s.err_feh
+        s.get_model_atmosphere(s.model_atmosphere_grid)
+        one(s, [species_id], Ref=Ref)
+        ap = np.mean(getattr(s, species_id)[abx])
+        s.feh -= 2*s.err_feh
+        s.get_model_atmosphere(s.model_atmosphere_grid)
+        one(s, [species_id], Ref=Ref)
+        am = np.mean(getattr(s, species_id)[abx])
+        a_feh = abs(ap-am)/2.
+        s.feh += s.err_feh
+    except:
+        a_feh = 0.
+
+    try:
+        s.vt += s.err_vt
+        s.get_model_atmosphere(s.model_atmosphere_grid)
+        one(s, [species_id], Ref=Ref)
+        ap = np.mean(getattr(s, species_id)[abx])
+        s.vt -= 2*s.err_vt
+        s.get_model_atmosphere(s.model_atmosphere_grid)
+        one(s, [species_id], Ref=Ref)
+        am = np.mean(getattr(s, species_id)[abx])
+        a_vt = abs(ap-am)/2.
+        s.vt += s.err_vt
+    except:
+        a_vt = 0.
+
+    a_tot = np.sqrt(a_teff**2+a_logg**2+a_feh**2+a_vt**2+l2l_sct**2)
+    if not silent:
+        print 'Line to line scatter:  {0:.3f}'.format(l2l_sct)
+        print 'Error from Teff:       {0:.3f}'.format(a_teff)
+        print 'Error from logg:       {0:.3f}'.format(a_logg)
+        print 'Error from [Fe/H]:     {0:.3f}'.format(a_feh)
+        print 'Error from vt:         {0:.3f}'.format(a_vt)
+        print '                      -------'
+        print 'Total abundance error: {0:.3f}'.format(a_tot)
+        print '-----------------------------'
+
+    try:
+        Ref.model_atmosphere_grid
+        getattr(Star_in, species_id)['err_difab'] = a_tot
+    except:
+        getattr(Star_in, species_id)['err_ab'] = a_tot
 
 
 def getsp(species_id):
@@ -346,11 +448,22 @@ def fancy_abund_plot(Star, species_id):
     ab = getattr(Star, species_id)['ab']
     difab = getattr(Star, species_id)['difab']
 
+    aa = np.array(ab, dtype=np.float) #convert None to np.nan
+    maa = np.ma.masked_array(aa, np.isnan(aa))
+
     da = np.array(difab, dtype=np.float) #convert None to np.nan
     mda = np.ma.masked_array(da, np.isnan(da))
 
-    print "[{0}/H] = {1:.3f} +/- {2:.3f} (# of lines = {3})".\
-          format(species_id, np.mean(mda), np.std(mda), mda.count())
+    print "A({0}) = {1:.3f} +/- {2:.3f} (# of lines = {3})".\
+          format(species_id, np.mean(maa), np.std(maa), maa.count())
+    #if getattr(Star, species_id)['err_ab']:
+    #    print getattr(Star, species_id)['err_ab']
+
+    if getattr(Star, species_id)['ref']:
+        print "[{0}/H] = {1:.3f} +/- {2:.3f} (# of lines = {3})".\
+              format(species_id, np.mean(mda), np.std(mda), mda.count())
+        #if getattr(Star, species_id)['err_difab']:
+        #    print getattr(Star, species_id)['err_difab']
 
     TOOLS="pan,wheel_zoom,box_zoom,reset,hover"
     output_notebook()

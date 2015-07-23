@@ -554,7 +554,7 @@ def fancy_ironstats_plot(Star):
         )
     )
 
-    p1.scatter('ep', 'ab', tools=TOOLS, size=10, color='colors',
+    p1.scatter('ep', 'ab', size=10, color='colors',
             source=source, marker='square')
 
     hover = p1.select(dict(type=HoverTool))
@@ -571,7 +571,7 @@ def fancy_ironstats_plot(Star):
                 y_axis_label=y_axis_label,
                 tools=TOOLS)
 
-    p2.scatter('rew', 'ab', tools=TOOLS, size=10, color='colors',
+    p2.scatter('rew', 'ab', size=10, color='colors',
             source=source, marker='square')
 
     hover = p2.select(dict(type=HoverTool))
