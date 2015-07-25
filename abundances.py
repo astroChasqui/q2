@@ -14,7 +14,8 @@ from bokeh.models import HoverTool
 logger = logging.getLogger(__name__)
 
 
-def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
+def all(Data, species_ids, output_file, reference=None, grid='odfnew',
+        errors=False):
     print '------------------------------------------------------'
     print 'Initializing ...'
     start_time = datetime.datetime.now()
@@ -34,10 +35,12 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
     fout = open(output_file, 'wb')
     header = 'id'
     for species_id in species_ids:
-        header += ','+species_id+',err_'+species_id+',n_'+species_id
+        header += ','+species_id+',e_'+species_id+',n_'+species_id
         if reference:
-            header += ',['+species_id+'],err_['+species_id+\
+            header += ',['+species_id+'],e_['+species_id+\
                       '],n_['+species_id+']'
+        if errors:
+            header += ',err_'+species_id
     fout.write(header+'\n')
     for star_id in Data.star_data['id']:
         line = star_id
@@ -57,7 +60,7 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
                 line += ','*(len(species_ids)*2)
             fout.write(line+'\n')
             continue
-        one(s, species_ids, ref)
+        one(s, species_ids, ref, errors=errors)
         for species_id in species_ids:
             print '\n'+species_id+'\n'+'-'*len(species_id)
             if not hasattr(s, species_id):
@@ -85,8 +88,18 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew'):
                       format(mdifab, sdifab, ndifab)
                 line += ',{0:.3f},{1:.3f},{2:.0f}'.\
                         format(mdifab, sdifab, ndifab)
+                if errors:
+                    print "ERR = {0:5.3f} (DIF)".\
+                          format(getattr(s, species_id)['err_difab'])
+                    line += ',{0:.3f}'.\
+                            format(getattr(s, species_id)['err_difab'])
             else:
                 mdifab = 0
+                if errors:
+                    print "ERR = {0:5.3f} (ABS)".\
+                          format(getattr(s, species_id)['err_ab'])
+                    line += ',{0:.3f}'.\
+                            format(getattr(s, species_id)['err_ab'])
             print ''
             llhd1 = 'Wavelength   ABS    RES '
             llhd2 = '----------  ----- ------'
@@ -124,6 +137,8 @@ def one(Star, species_ids, Ref=object, silent=True, errors=False):
     logger.info('Working on: '+Star.name)
     for species_id in species_ids:
         species = getsp(species_id)
+        if not silent:
+            print "*** Begin "+species_id+":"
         if species == None:
             logger.warning('Not doing calculations for: '+species_id)
             continue
@@ -194,11 +209,28 @@ def one(Star, species_ids, Ref=object, silent=True, errors=False):
             getattr(Star, species_id)['difab'] = ax
             getattr(Star, species_id)['ref'] = Ref.name
 
+        if not silent:
+            ab = getattr(Star, species_id)['ab']
+            difab = getattr(Star, species_id)['difab']
+
+            aa = np.array(ab, dtype=np.float) #convert None to np.nan
+            maa = np.ma.masked_array(aa, np.isnan(aa))
+
+            da = np.array(difab, dtype=np.float) #convert None to np.nan
+            mda = np.ma.masked_array(da, np.isnan(da))
+
+            print "A({0})  = {1:6.3f} +/- {2:5.3f} (# of lines = {3})".\
+                  format(species_id, np.mean(maa), np.std(maa), maa.count())
+
+            if hasattr(Ref, 'name'):
+                print "[{0}/H] = {1:6.3f} +/- {2:5.3f} (# of lines = {3})".\
+                      format(species_id, np.mean(mda), np.std(mda), mda.count())
+
         if errors:
             error(Star, species_id, Ref=Ref, silent=silent)
 
-        if not silent and len(species_ids) >= 1:
-            print species_id + ' done'
+        if not silent:
+            print '---' + species_id + ' done'
 
     if not silent and len(species_ids) >= 1:
         print 'All species completed'
@@ -447,23 +479,6 @@ def fancy_abund_plot(Star, species_id):
     ew = getattr(Star, species_id)['ew']
     ab = getattr(Star, species_id)['ab']
     difab = getattr(Star, species_id)['difab']
-
-    aa = np.array(ab, dtype=np.float) #convert None to np.nan
-    maa = np.ma.masked_array(aa, np.isnan(aa))
-
-    da = np.array(difab, dtype=np.float) #convert None to np.nan
-    mda = np.ma.masked_array(da, np.isnan(da))
-
-    print "A({0}) = {1:.3f} +/- {2:.3f} (# of lines = {3})".\
-          format(species_id, np.mean(maa), np.std(maa), maa.count())
-    #if getattr(Star, species_id)['err_ab']:
-    #    print getattr(Star, species_id)['err_ab']
-
-    if getattr(Star, species_id)['ref']:
-        print "[{0}/H] = {1:.3f} +/- {2:.3f} (# of lines = {3})".\
-              format(species_id, np.mean(mda), np.std(mda), mda.count())
-        #if getattr(Star, species_id)['err_difab']:
-        #    print getattr(Star, species_id)['err_difab']
 
     TOOLS="pan,wheel_zoom,box_zoom,reset,hover"
     output_notebook()
