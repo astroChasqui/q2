@@ -264,60 +264,72 @@ def error(Star_in, species_id, Ref=object, silent=True):
             logger.error('Must calculate abundances before errors')
             return None
 
-    try:
-        s.teff += s.err_teff
-        s.get_model_atmosphere(s.model_atmosphere_grid)
-        one(s, [species_id], Ref=Ref)
-        ap = np.mean(getattr(s, species_id)[abx])
-        s.teff -= 2*s.err_teff
-        s.get_model_atmosphere(s.model_atmosphere_grid)
-        one(s, [species_id], Ref=Ref)
-        am = np.mean(getattr(s, species_id)[abx])
-        a_teff = abs(ap-am)/2.
-        s.teff += s.err_teff
-    except:
+    if hasattr(s, 'err_teff'):
+        if s.err_teff != 0:
+            s.teff += s.err_teff
+            s.get_model_atmosphere(s.model_atmosphere_grid)
+            one(s, [species_id], Ref=Ref)
+            ap = np.mean(getattr(s, species_id)[abx])
+            s.teff -= 2*s.err_teff
+            s.get_model_atmosphere(s.model_atmosphere_grid)
+            one(s, [species_id], Ref=Ref)
+            am = np.mean(getattr(s, species_id)[abx])
+            a_teff = abs(ap-am)/2.
+            s.teff += s.err_teff
+        else:
+            a_teff = 0.
+    else:
         a_teff = 0.
 
-    try:
-        s.logg += s.err_logg
-        s.get_model_atmosphere(s.model_atmosphere_grid)
-        one(s, [species_id], Ref=Ref)
-        ap = np.mean(getattr(s, species_id)[abx])
-        s.logg -= 2*s.err_logg
-        s.get_model_atmosphere(s.model_atmosphere_grid)
-        one(s, [species_id], Ref=Ref)
-        am = np.mean(getattr(s, species_id)[abx])
-        a_logg = abs(ap-am)/2.
-        s.logg += s.err_logg
-    except:
+    if hasattr(s, 'err_logg'):
+        if s.err_logg != 0:
+            s.logg += s.err_logg
+            s.get_model_atmosphere(s.model_atmosphere_grid)
+            one(s, [species_id], Ref=Ref)
+            ap = np.mean(getattr(s, species_id)[abx])
+            s.logg -= 2*s.err_logg
+            s.get_model_atmosphere(s.model_atmosphere_grid)
+            one(s, [species_id], Ref=Ref)
+            am = np.mean(getattr(s, species_id)[abx])
+            a_logg = abs(ap-am)/2.
+            s.logg += s.err_logg
+        else:
+            a_logg = 0.
+    else:
         a_logg = 0.
 
-    try:
-        s.feh += s.err_feh
-        s.get_model_atmosphere(s.model_atmosphere_grid)
-        one(s, [species_id], Ref=Ref)
-        ap = np.mean(getattr(s, species_id)[abx])
-        s.feh -= 2*s.err_feh
-        s.get_model_atmosphere(s.model_atmosphere_grid)
-        one(s, [species_id], Ref=Ref)
-        am = np.mean(getattr(s, species_id)[abx])
-        a_feh = abs(ap-am)/2.
-        s.feh += s.err_feh
-    except:
+    if hasattr(s, 'err_feh'):
+        if s.err_teff != 0:
+            s.feh += s.err_feh
+            s.get_model_atmosphere(s.model_atmosphere_grid)
+            one(s, [species_id], Ref=Ref)
+            ap = np.mean(getattr(s, species_id)[abx])
+            s.feh -= 2*s.err_feh
+            s.get_model_atmosphere(s.model_atmosphere_grid)
+            one(s, [species_id], Ref=Ref)
+            am = np.mean(getattr(s, species_id)[abx])
+            a_feh = abs(ap-am)/2.
+            s.feh += s.err_feh
+        else:
+            a_feh = 0.
+    else:
         a_feh = 0.
 
-    try:
-        s.vt += s.err_vt
-        s.get_model_atmosphere(s.model_atmosphere_grid)
-        one(s, [species_id], Ref=Ref)
-        ap = np.mean(getattr(s, species_id)[abx])
-        s.vt -= 2*s.err_vt
-        s.get_model_atmosphere(s.model_atmosphere_grid)
-        one(s, [species_id], Ref=Ref)
-        am = np.mean(getattr(s, species_id)[abx])
-        a_vt = abs(ap-am)/2.
-        s.vt += s.err_vt
-    except:
+    if hasattr(s, 'err_vt'):
+        if s.err_teff != 0:
+            s.vt += s.err_vt
+            s.get_model_atmosphere(s.model_atmosphere_grid)
+            one(s, [species_id], Ref=Ref)
+            ap = np.mean(getattr(s, species_id)[abx])
+            s.vt -= 2*s.err_vt
+            s.get_model_atmosphere(s.model_atmosphere_grid)
+            one(s, [species_id], Ref=Ref)
+            am = np.mean(getattr(s, species_id)[abx])
+            a_vt = abs(ap-am)/2.
+            s.vt += s.err_vt
+        else:
+            a_vt = 0.
+    else:
         a_vt = 0.
 
     a_tot = np.sqrt(a_teff**2+a_logg**2+a_feh**2+a_vt**2+l2l_sct**2)

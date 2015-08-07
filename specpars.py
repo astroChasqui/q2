@@ -355,7 +355,7 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
                    Star.iron_stats['nfe2'])
     print '------------------------------------------------------'
 
-    Star.sp_err = {'teff': -1, 'logg': -1, 'afe': -1, 'vt': -1}
+    Star.sp_err = {'teff': 0, 'logg': 0, 'afe': 0, 'vt': 0}
     if ((Star.converged and sp.errors == True) or \
         (sp.niter == 0 and sp.errors == True and Star.converged != '')):
         errors.error_one(Star, sp, Ref)
