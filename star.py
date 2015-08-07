@@ -113,7 +113,7 @@ class Star:
 
         parameters = ['teff', 'err_teff', 'logg', 'err_logg',
                       'feh', 'err_feh', 'vt', 'err_vt',
-                      'v', 'err_v', 'plx', 'err_plx', 'converged']
+                      'v', 'err_v', 'plx', 'err_plx', 'converged', 'feh_model']
         msg = []
         for par in parameters:
             if par in Data.star_data.keys():

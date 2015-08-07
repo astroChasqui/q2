@@ -29,6 +29,8 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew',
     if reference:
         ref = Star(reference)
         ref.get_data_from(Data)
+        if hasattr(ref, 'feh_model'):           #####
+            ref.feh = getattr(ref, 'feh_model') #####
         ref.get_model_atmosphere(grid)
     else:
         ref = None
@@ -51,6 +53,8 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew',
         s = Star(star_id)
         try:
             s.get_data_from(Data)
+            if hasattr(s, 'feh_model'):
+                s.feh = getattr(s, 'feh_model')
             s.get_model_atmosphere(grid)
         except:
             print 'No data available'
@@ -60,6 +64,7 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew',
                 line += ','*(len(species_ids)*2)
             fout.write(line+'\n')
             continue
+        print 'Using [Fe/H] = {0:6.3f} for the model atmosphere'.format(s.feh)
         one(s, species_ids, ref, errors=errors)
         for species_id in species_ids:
             print '\n'+species_id+'\n'+'-'*len(species_id)
