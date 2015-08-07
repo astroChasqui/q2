@@ -410,10 +410,12 @@ def solve_all(Data, SolveParsInit, output_file, reference_star=None,
         try:
             s.get_data_from(Data)
         except:
+            logger.warning('No data found for '+s.name+\
+                        '. Excluded from output file.')
             print 'Data not found.'
-            fout.write("{0},,,,,,,,,,"\
-                       ",,,,,,,,".\
-                       format(s.name))
+            #fout.write("{0},,,,,,,,,,"\
+            #           ",,,,,,,,,,,,\n".\
+            #           format(s.name))
             continue
         if ma.count(Data.lines[star_id]) == 0:
             print 'Line data not found.'
