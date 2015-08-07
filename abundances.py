@@ -530,6 +530,7 @@ def fancy_abund_plot(Star, species_id):
     show(p1)
 
     if getattr(Star, species_id)['ref']:
+        difab = np.array(difab, dtype=np.float) #convert None to np.nan
         difabs = [str(round(dfab, 3)) for dfab in difab]
         source = ColumnDataSource(
             data=dict(
