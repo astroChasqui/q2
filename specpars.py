@@ -24,6 +24,8 @@ class SolvePars:
         self.grid = grid
         self.solar_afe = 7.45
         self.errors = False
+        self.check_converged = True
+        self.ignore = []
 
 class PlotPars:
     def __init__(self):
@@ -427,12 +429,15 @@ def solve_all(Data, SolveParsInit, output_file, reference_star=None,
                 sp.niter = 0
                 print 'Reference star. No calculations needed.'
                 #continue
-        if hasattr(s, 'converged'):
+        if hasattr(s, 'converged') and sp.check_converged:
             if s.converged == 'True':
                 print 'Already converged.'
                 continue
                 #sp.niter = 0
                 #s.converged = True
+        if s.name in sp.ignore:
+            print 'Asked to ignore.'
+            continue
 
         solve_one(s, sp, Ref, PlotPars=PlotPars)
 
