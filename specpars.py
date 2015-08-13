@@ -36,7 +36,7 @@ class PlotPars:
         self.title = None
         self.title_inside = None
 
-def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
+def iron_stats(Star, Ref=object, plot=None, PlotPars=object, silent=True):
     if hasattr(Ref, 'name'):
         if Star.name == Ref.name:
             x = {'afe': 0, 'err_afe': 0,
@@ -207,6 +207,12 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object):
          'err_slope_rew': err_slope_rew,
          'reference': ref_star}
     Star.iron_stats = x
+
+    if not silent:
+        print "FeI  : {0:6.3f} +/- {1:5.3f} (n={2:3.0f})".\
+              format(mfe1, efe1, nfe1)
+        print "FeII : {0:6.3f} +/- {1:5.3f} (n={2:3.0f})".\
+              format(mfe2, efe2, nfe2)
 
 
 def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
