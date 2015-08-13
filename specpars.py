@@ -365,6 +365,10 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
     if ((Star.converged and sp.errors == True) or \
         (sp.niter == 0 and sp.errors == True and Star.converged != '')):
         errors.error_one(Star, sp, Ref)
+        Star.err_teff = int(Star.sp_err['teff'])
+        Star.err_logg = Star.sp_err['logg']
+        Star.err_feh = Star.sp_err['afe']
+        Star.err_vt = Star.sp_err['vt']
         print "Solution with formal errors:"
         print "Teff    = {0:6d} +/- {1:5d}".\
               format(int(Star.teff), int(Star.sp_err['teff']))
