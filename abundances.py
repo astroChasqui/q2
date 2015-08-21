@@ -357,6 +357,7 @@ def getsp(species_id):
          'OI'  :   8.0,
          'NaI' :  11.0,
          'MgI' :  12.0,
+         'MgII':  12.1,
          'AlI' :  13.0,
          'SiI' :  14.0,
          'SI'  :  16.0,
@@ -378,6 +379,7 @@ def getsp(species_id):
          'ZnI' :  30.0,
          'RbI' :  37.0,
          'SrI' :  38.0,
+         'SrII':  38.1,
          'YII' :  39.1,
          'ZrII':  40.1,
          'BaII':  56.1
