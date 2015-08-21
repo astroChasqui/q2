@@ -352,6 +352,7 @@ def error(Star_in, species_id, Ref=object, silent=True):
 
 def getsp(species_id):
     d = {
+         'LiI' :   3.0,
          'CI'  :   6.0,
          'CH'  : 106.0,
          'OI'  :   8.0,
