@@ -265,7 +265,7 @@ def error(Star_in, species_id, Ref=object, silent=True):
             return None
 
     if hasattr(s, 'err_teff'):
-        if s.err_teff != 0:
+        if s.err_teff > 0:
             s.teff += s.err_teff
             s.get_model_atmosphere(s.model_atmosphere_grid)
             one(s, [species_id], Ref=Ref)
@@ -282,7 +282,7 @@ def error(Star_in, species_id, Ref=object, silent=True):
         a_teff = 0.
 
     if hasattr(s, 'err_logg'):
-        if s.err_logg != 0:
+        if s.err_logg > 0:
             s.logg += s.err_logg
             s.get_model_atmosphere(s.model_atmosphere_grid)
             one(s, [species_id], Ref=Ref)
@@ -299,7 +299,7 @@ def error(Star_in, species_id, Ref=object, silent=True):
         a_logg = 0.
 
     if hasattr(s, 'err_feh'):
-        if s.err_teff != 0:
+        if s.err_feh > 0:
             s.feh += s.err_feh
             s.get_model_atmosphere(s.model_atmosphere_grid)
             one(s, [species_id], Ref=Ref)
@@ -316,7 +316,7 @@ def error(Star_in, species_id, Ref=object, silent=True):
         a_feh = 0.
 
     if hasattr(s, 'err_vt'):
-        if s.err_teff != 0:
+        if s.err_vt > 0:
             s.vt += s.err_vt
             s.get_model_atmosphere(s.model_atmosphere_grid)
             one(s, [species_id], Ref=Ref)
