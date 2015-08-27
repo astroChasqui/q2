@@ -14,7 +14,7 @@ from bokeh.models import HoverTool
 logger = logging.getLogger(__name__)
 
 
-def all(Data, species_ids, output_file, reference=None, grid='odfnew',
+def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
         errors=False):
     print '------------------------------------------------------'
     print 'Initializing ...'
@@ -36,6 +36,13 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew',
         ref = None
     fout = open(output_file, 'wb')
     header = 'id'
+    if species_ids == None:
+        species_codes = sorted(set(Data.lines['species']))
+        species_ids = getsp_ids(species_codes)
+        print '"species_ids" not provided'
+        print 'Lines found for the following species: '+\
+              ','.join(species_ids)
+        print ''
     for species_id in species_ids:
         header += ','+species_id+',e_'+species_id+',n_'+species_id
         if reference:
@@ -138,8 +145,16 @@ def all(Data, species_ids, output_file, reference=None, grid='odfnew',
     print ''
 
 
-def one(Star, species_ids, Ref=object, silent=True, errors=False):
+def one(Star, species_ids=None, Ref=object, silent=True, errors=False):
     logger.info('Working on: '+Star.name)
+    if species_ids == None:
+        species_codes = sorted(set(Star.linelist['species']))
+        species_ids = getsp_ids(species_codes)
+        if not silent:
+            print '"species_ids" not provided'
+            print 'Lines found for the following species: '+\
+                  ','.join(species_ids)
+            print ''
     for species_id in species_ids:
         species = getsp(species_id)
         if not silent:
@@ -349,48 +364,64 @@ def error(Star_in, species_id, Ref=object, silent=True):
     except:
         getattr(Star_in, species_id)['err_ab'] = a_tot
 
+sp_map = {
+          'LiI' :   3.0,
+          'BeI' :   4.0,
+          'BeII':   4.1,
+          'BI'  :   5.0,
+          'CI'  :   6.0,
+          'CH'  : 106.0,
+          'NI'  :   7.0,
+          'OI'  :   8.0,
+          'FI'  :   9.0,
+          'NaI' :  11.0,
+          'MgI' :  12.0,
+          'MgII':  12.1,
+          'AlI' :  13.0,
+          'SiI' :  14.0,
+          'PI'  :  15.0,
+          'SI'  :  16.0,
+          'KI'  :  19.0,
+          'CaI' :  20.0,
+          'ScI' :  21.0,
+          'ScII':  21.1,
+          'TiI' :  22.0,
+          'TiII':  22.1,
+          'VI'  :  23.0,
+          'CrI' :  24.0,
+          'CrII':  24.1,
+          'MnI' :  25.0,
+          'FeI' :  26.0,
+          'FeII':  26.1,
+          'CoI' :  27.0,
+          'NiI' :  28.0,
+          'CuI' :  29.0,
+          'ZnI' :  30.0,
+          'RbI' :  37.0,
+          'SrI' :  38.0,
+          'SrII':  38.1,
+          'YII' :  39.1,
+          'ZrII':  40.1,
+          'BaII':  56.1
+          }
 
 def getsp(species_id):
-    d = {
-         'LiI' :   3.0,
-         'CI'  :   6.0,
-         'CH'  : 106.0,
-         'OI'  :   8.0,
-         'NaI' :  11.0,
-         'MgI' :  12.0,
-         'MgII':  12.1,
-         'AlI' :  13.0,
-         'SiI' :  14.0,
-         'SI'  :  16.0,
-         'KI'  :  19.0,
-         'CaI' :  20.0,
-         'ScI' :  21.0,
-         'ScII':  21.1,
-         'TiI' :  22.0,
-         'TiII':  22.1,
-         'VI'  :  23.0,
-         'CrI' :  24.0,
-         'CrII':  24.1,
-         'MnI' :  25.0,
-         'FeI' :  26.0,
-         'FeII':  26.1,
-         'CoI' :  27.0,
-         'NiI' :  28.0,
-         'CuI' :  29.0,
-         'ZnI' :  30.0,
-         'RbI' :  37.0,
-         'SrI' :  38.0,
-         'SrII':  38.1,
-         'YII' :  39.1,
-         'ZrII':  40.1,
-         'BaII':  56.1
-         }
     try:
-        species = d[species_id]
+        species = sp_map[species_id]
     except:
         logger.warning('species id not recognized: '+species_id)
         return None
     return species
+
+def getsp_ids(species_list):
+    species_ids = []
+    for species_code in species_list:
+        try:
+            species_id = [key for key in sp_map if sp_map[key] == species_code][0]
+            species_ids.append(species_id)
+        except:
+            logger.warning('species_code '+str(species_code)+' not found')
+    return species_ids
 
 
 def nlte_triplet(teff, logg, feh, ao, silent=True):
