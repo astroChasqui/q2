@@ -402,7 +402,13 @@ sp_map = {
           'SrII':  38.1,
           'YII' :  39.1,
           'ZrII':  40.1,
-          'BaII':  56.1
+          'BaII':  56.1,
+          'LaII':  57.1,
+          'CeII':  58.1,
+          'NdII':  60.1,
+          'SmII':  62.1,
+          'EuII':  63.1,
+          'DyII':  66.1
           }
 
 def getsp(species_id):
