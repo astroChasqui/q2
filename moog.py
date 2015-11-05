@@ -28,10 +28,10 @@ class Driver:
                 f.write('abfind\n')
         else:
             f.write(self.mode+'\n')
-        f.write('standard_out '+self.standard_out+'\n')
-        f.write('summary_out  '+self.summary_out+'\n')
-        f.write('model_in     '+self.model_in+'\n')
-        f.write('lines_in     '+self.lines_in+'\n')
+        f.write('standard_out "'+self.standard_out+'"\n')
+        f.write('summary_out  "'+self.summary_out+'"\n')
+        f.write('model_in     "'+self.model_in+'"\n')
+        f.write('lines_in     "'+self.lines_in+'"\n')
         f.write('atmosphere   1\n')
         f.write('molecules    1\n')
         f.write('lines        1\n')
@@ -188,14 +188,21 @@ def abfind(Star, species, species_id):
     else:
         MD = Driver() #hfs
         MD.hfs_species = str(round(species))
+    if not os.path.exists('.q2'):
+        os.mkdir('.q2')
+    MD.standard_out = os.path.join('.q2', 'moog.std')
+    MD.summary_out = os.path.join('.q2', 'moog.sum')
+    MD.model_in = os.path.join('.q2', 'model.in')
+    MD.lines_in = os.path.join('.q2', 'lines.in')
     MD.create_file('batch.par')
 
-    create_model_in(Star)
-    found_lines = create_lines_in(Star, species=species)
+    create_model_in(Star, file_name=MD.model_in)
+    found_lines = create_lines_in(Star, species=species, file_name=MD.lines_in)
     if not found_lines:
         logger.warning('Did not run abfind (no lines found)')
         return False
-    os.system('MOOGSILENT > moog.log 2>&1')
+    logfile = os.path.join('.q2', 'moog.log')
+    os.system('MOOGSILENT > '+logfile+' 2>&1')
     f = open(MD.summary_out, 'r')
     line=''
     while line[0:10] != 'wavelength':
@@ -229,7 +236,7 @@ def abfind(Star, species, species_id):
     os.unlink(MD.lines_in)
     os.unlink(MD.summary_out)
     os.unlink(MD.standard_out)
-    os.unlink('moog.log')
+    os.unlink(logfile)
     if os.path.isfile('fort.99'):
         os.unlink('fort.99')
 
