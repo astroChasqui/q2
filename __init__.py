@@ -18,6 +18,7 @@ import errors
 import abundances
 import grids
 import yypars
+import isopars
 import logging
 
 logger = logging.getLogger(__name__)
