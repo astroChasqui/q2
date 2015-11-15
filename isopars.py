@@ -28,7 +28,7 @@ class SolvePars:
         self.smooth_window_len_logg = 0
 
 class PlotPars:
-    def __init__(self, figure_format='png', directory=""):
+    def __init__(self, figure_format='png', directory="", make_figures=True):
         self.age_xlim = [0, 14]
         self.mass_xlim = None
         self.logl_xlim = None
@@ -38,6 +38,7 @@ class PlotPars:
         self.directory = directory
         self.figure_format = figure_format
         self.title_inside = None
+        self.make_figures = make_figures
 
 def pdf(pdf_x, ips, prob, par, smooth_window_len):
     '''Calculates a probability distribution function (PDF) for parameter par
@@ -208,9 +209,12 @@ def solve_one(Star, SolvePars, PlotPars):
         pdf_logg_y, pdf_logg_y_smooth, Star.yylogg = \
           pdf(pdf_logg_x, ips, prob, 'logg', SolvePars.smooth_window_len_logg)
 
+    if not PlotPars.make_figures:
+        return
+
     if not os.path.exists(PlotPars.directory) and PlotPars.directory != "":
         os.mkdir(PlotPars.directory)
-  
+
     if Star.yyage:
         plt.figure(figsize=(7, 4))
         plt.rc("axes", labelsize=15, titlesize=12)
