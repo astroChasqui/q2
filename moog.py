@@ -204,32 +204,39 @@ def abfind(Star, species, species_id):
     logfile = os.path.join('.q2', 'moog.log')
     os.system('MOOGSILENT > '+logfile+' 2>&1')
     f = open(MD.summary_out, 'r')
-    line=''
+    line, stop = '', False
     while line[0:10] != 'wavelength':
         line = f.readline()
     if 'ID' in line:
         moogjul2014 = True
     else:
         moogjul2014 = False
-    ww, ep, ew, rew, ab, difab = [], [], [], [], [], []
-    while line:
-        line = f.readline()
-        if line[0:7] == 'average': break
-        linesplit = line.split()
-        if float(linesplit[6]) > 999.: #exclude dummies (hfs)
-            continue
-        ww.append(float(linesplit[0]))
-        if moogjul2014: #MOOGJUL2014 adds a new column 'ID' to moog.sum
-            ep.append(float(linesplit[2]))
-            ew.append(float(linesplit[4]))
-            rew.append(float(linesplit[5]))
-            ab.append(float(linesplit[6]))
-        else: #older versions of MOOG don't have 'ID' but 'EP' in 2nd col
-            ep.append(float(linesplit[1]))
-            ew.append(float(linesplit[3]))
-            rew.append(float(linesplit[4]))
-            ab.append(float(linesplit[5]))
-        difab.append(None)
+    while not stop: #looping required for multiple iterations (molecules)
+        ww, ep, ew, rew, ab, difab = [], [], [], [], [], []
+        while line:
+            line = f.readline()
+            if line[0:7] == 'average': break
+            linesplit = line.split()
+            if float(linesplit[6]) > 999.: #exclude dummies (hfs)
+                continue
+            ww.append(float(linesplit[0]))
+            if moogjul2014: #MOOGJUL2014 adds a new column 'ID' to moog.sum
+                ep.append(float(linesplit[2]))
+                ew.append(float(linesplit[4]))
+                rew.append(float(linesplit[5]))
+                ab.append(float(linesplit[6]))
+            else: #older versions of MOOG don't have 'ID' but 'EP' in 2nd col
+                ep.append(float(linesplit[1]))
+                ew.append(float(linesplit[3]))
+                rew.append(float(linesplit[4]))
+                ab.append(float(linesplit[5]))
+            difab.append(None)
+        while line: #to break out of multiple iterations loop if done
+            line = f.readline()
+            if line[0:10] == 'wavelength':
+                stop = False
+                break
+            stop = True
     f.close()
     os.unlink(MD.file_name)
     os.unlink(MD.model_in)
