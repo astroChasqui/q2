@@ -134,7 +134,7 @@ def get_stats(pdf_x, pdf_y_smooth):
     return stats
 
 def solve_one(Star, SolvePars, PlotPars):
-    '''Calculates most likely parameters of Star using YY isochrone points
+    '''Calculates most likely parameters of Star using isochrone points
     '''
     ips = get_isochrone_points(Star, SolvePars.feh_offset,
                                SolvePars.get_isochrone_points_db,
@@ -145,8 +145,8 @@ def solve_one(Star, SolvePars, PlotPars):
         return None
     print 'Using {0} isochrone points'.format(len(ips['age']))
     logger.info('Using {0} Y2 isochrone points'.format(len(ips['age'])))
-    Star.yykeyparameterknown = SolvePars.key_parameter_known
-    Star.yynpoints = len(ips['age'])
+    Star.isokeyparameterknown = SolvePars.key_parameter_known
+    Star.isonpoints = len(ips['age'])
     ips['t'] = 10**ips['logt']
     ips['r'] = 10**(0.5*(np.log10(ips['mass'])-ips['logg']+4.437))
 
@@ -169,36 +169,36 @@ def solve_one(Star, SolvePars, PlotPars):
     ages = 0.1+np.arange(150)*0.1
     pdf_age_x = ages[np.logical_and(ages >= min(ips['age'])-0.2,
                                    ages <= max(ips['age'])+0.2)]
-    pdf_age_y, pdf_age_y_smooth, Star.yyage = \
+    pdf_age_y, pdf_age_y_smooth, Star.isoage = \
       pdf(pdf_age_x, ips, prob, 'age', SolvePars.smooth_window_len_age)
-    Star.yypdf_age = {'x': pdf_age_x, 'y': pdf_age_y, 'ys': pdf_age_y_smooth}
+    Star.pdf_age = {'x': pdf_age_x, 'y': pdf_age_y, 'ys': pdf_age_y_smooth}
 
     #mass
     masses = 0.4+np.arange(211)*0.01
     pdf_mass_x = masses[np.logical_and(masses >= min(ips['mass'])-0.02,
                                        masses <= max(ips['mass'])+0.02)]
-    pdf_mass_y, pdf_mass_y_smooth, Star.yymass = \
+    pdf_mass_y, pdf_mass_y_smooth, Star.isomass = \
       pdf(pdf_mass_x, ips, prob, 'mass', SolvePars.smooth_window_len_mass)
 
     #luminosity
     logls = -1.0+np.arange(401)*0.01
     pdf_logl_x = logls[np.logical_and(logls >= min(ips['logl'])-0.02,
                                       logls <= max(ips['logl'])+0.02)]
-    pdf_logl_y, pdf_logl_y_smooth, Star.yylogl = \
+    pdf_logl_y, pdf_logl_y_smooth, Star.isologl = \
       pdf(pdf_logl_x, ips, prob, 'logl', SolvePars.smooth_window_len_logl)
 
     #absolute magnitude
     mvs = -3.0+np.arange(1601)*0.01
     pdf_mv_x = mvs[np.logical_and(mvs >= min(ips['mv'])-0.02,
                                   mvs <= max(ips['mv'])+0.02)]
-    pdf_mv_y, pdf_mv_y_smooth, Star.yymv = \
+    pdf_mv_y, pdf_mv_y_smooth, Star.isomv = \
       pdf(pdf_mv_x, ips, prob, 'mv', SolvePars.smooth_window_len_mv)
 
     #radius
     rs = 0.4+np.arange(211)*0.01
     pdf_r_x = rs[np.logical_and(rs >= min(ips['r'])-0.02,
                                 rs <= max(ips['r'])+0.02)]
-    pdf_r_y, pdf_r_y_smooth, Star.yyr = \
+    pdf_r_y, pdf_r_y_smooth, Star.isor = \
       pdf(pdf_r_x, ips, prob, 'r', SolvePars.smooth_window_len_r)
 
     #logg
@@ -206,7 +206,7 @@ def solve_one(Star, SolvePars, PlotPars):
         loggs = np.arange(501)*0.01
         pdf_logg_x = loggs[np.logical_and(loggs >= min(ips['logg'])-0.05,
                                           loggs <= max(ips['logg'])+0.05)]
-        pdf_logg_y, pdf_logg_y_smooth, Star.yylogg = \
+        pdf_logg_y, pdf_logg_y_smooth, Star.isologg = \
           pdf(pdf_logg_x, ips, prob, 'logg', SolvePars.smooth_window_len_logg)
 
     if not PlotPars.make_figures:
@@ -215,7 +215,7 @@ def solve_one(Star, SolvePars, PlotPars):
     if not os.path.exists(PlotPars.directory) and PlotPars.directory != "":
         os.mkdir(PlotPars.directory)
 
-    if Star.yyage:
+    if Star.isoage:
         plt.figure(figsize=(7, 4))
         plt.rc("axes", labelsize=15, titlesize=12)
         plt.rc("xtick", labelsize=14)
@@ -229,15 +229,15 @@ def solve_one(Star, SolvePars, PlotPars):
         if PlotPars.age_xlim:
             plt.xlim(PlotPars.age_xlim)
         plt.ylabel('Probability density')
-        k2 = np.logical_and(pdf_age_x >= Star.yyage['lower_limit_2sigma'],
-                            pdf_age_x <= Star.yyage['upper_limit_2sigma'])
-        k1 = np.logical_and(pdf_age_x >= Star.yyage['lower_limit_1sigma'],
-                            pdf_age_x <= Star.yyage['upper_limit_1sigma'])
+        k2 = np.logical_and(pdf_age_x >= Star.isoage['lower_limit_2sigma'],
+                            pdf_age_x <= Star.isoage['upper_limit_2sigma'])
+        k1 = np.logical_and(pdf_age_x >= Star.isoage['lower_limit_1sigma'],
+                            pdf_age_x <= Star.isoage['upper_limit_1sigma'])
         plt.fill_between(pdf_age_x[k2], 0 , pdf_age_y_smooth[k2],
                          color='0.8', hatch="/")
         plt.fill_between(pdf_age_x[k1], 0 , pdf_age_y_smooth[k1],
                          color='0.6', hatch="X")
-        plt.plot([Star.yyage['most_probable'], Star.yyage['most_probable']],
+        plt.plot([Star.isoage['most_probable'], Star.isoage['most_probable']],
                  [0, max(pdf_age_y_smooth)], 'g--')
         plt.plot(pdf_age_x, pdf_age_y_smooth, 'g')
 
@@ -275,42 +275,42 @@ def solve_one(Star, SolvePars, PlotPars):
         if panel == 1:
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_age_x, pdf_age_y, pdf_age_y_smooth
-            par = Star.yyage
+            par = Star.isoage
             ax.set_xlabel('Age (Gyr)')
             if PlotPars.age_xlim:
                 ax.set_xlim(PlotPars.age_xlim)
         if panel == 2:
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_mass_x, pdf_mass_y, pdf_mass_y_smooth
-            par = Star.yymass
+            par = Star.isomass
             ax.set_xlabel('Mass ($M_\odot$)')
             if PlotPars.mass_xlim:
                 ax.set_xlim(PlotPars.mass_xlim)
         if panel == 3:
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_logl_x, pdf_logl_y, pdf_logl_y_smooth
-            par = Star.yylogl
+            par = Star.isologl
             ax.set_xlabel('$\log\,(L/L_\odot)$')
             if PlotPars.logl_xlim:
                 ax.set_xlim(PlotPars.logl_xlim)
         if panel == 4:
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_mv_x, pdf_mv_y, pdf_mv_y_smooth
-            par = Star.yymv
+            par = Star.isomv
             ax.set_xlabel('$M_V$')
             if PlotPars.mv_xlim:
                 ax.set_xlim(PlotPars.mv_xlim)
         if panel == 5:
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_r_x, pdf_r_y, pdf_r_y_smooth
-            par = Star.yyr
+            par = Star.isor
             ax.set_xlabel('Radius ($R_\odot$)')
             if PlotPars.r_xlim:
                 ax.set_xlim(PlotPars.r_xlim)
         if panel == 6:
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_logg_x, pdf_logg_y, pdf_logg_y_smooth
-            par = Star.yylogg
+            par = Star.isologg
             ax.set_xlabel('$\log g$ [cgs]')
             if PlotPars.logg_xlim:
                 ax.set_xlim(PlotPars.logg_xlim)
@@ -368,13 +368,13 @@ def solve_all(Data, SolvePars, PlotPars, output_file):
                     'lower_limit_2sigma', 'upper_limit_2sigma']
             try:
                 for key in keys:
-                      string += ",{0:.3f}".format(getattr(s, 'yy'+par)[key])
+                      string += ",{0:.3f}".format(getattr(s, 'iso'+par)[key])
             except:
                 string += ",,,,,"
             try:
                 string += ",{0:.3f},{1:.3f}".\
-                          format(getattr(s, 'yy'+par)['mean'],\
-                                 getattr(s, 'yy'+par)['std'])
+                          format(getattr(s, 'iso'+par)['mean'],\
+                                 getattr(s, 'iso'+par)['std'])
             except:
                 string += ",,"
         fout.write(string+"\n")
