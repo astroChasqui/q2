@@ -174,7 +174,7 @@ def solve_one(Star, SolvePars, PlotPars):
     Star.pdf_age = {'x': pdf_age_x, 'y': pdf_age_y, 'ys': pdf_age_y_smooth}
 
     #mass
-    masses = 0.4+np.arange(211)*0.01
+    masses = 0.2+np.arange(311)*0.01
     pdf_mass_x = masses[np.logical_and(masses >= min(ips['mass'])-0.02,
                                        masses <= max(ips['mass'])+0.02)]
     pdf_mass_y, pdf_mass_y_smooth, Star.isomass = \
@@ -195,7 +195,7 @@ def solve_one(Star, SolvePars, PlotPars):
       pdf(pdf_mv_x, ips, prob, 'mv', SolvePars.smooth_window_len_mv)
 
     #radius
-    rs = 0.4+np.arange(211)*0.01
+    rs = 0.4+np.arange(1211)*0.01
     pdf_r_x = rs[np.logical_and(rs >= min(ips['r'])-0.02,
                                 rs <= max(ips['r'])+0.02)]
     pdf_r_y, pdf_r_y_smooth, Star.isor = \
