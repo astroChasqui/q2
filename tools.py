@@ -86,7 +86,7 @@ def read_csv(csv_file, file_type=None):
             if xij.strip(" ") == "":
                 xij = None
             if "teff" in key and xij != None:
-                xij = int(xij)
+                xij = int(round(float(xij)))
             if ("logg" in key or "feh" in key or "vt" in key)\
                and xij != None:
                 xij = float(xij)
