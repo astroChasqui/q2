@@ -63,10 +63,15 @@ def create_model_in(Star, file_name='model.in'):
         logger.error('No model data to write to moog model_in file.')
         return None
 
+    if hasattr(Star, 'feh_model'):
+        feh = Star.feh_model
+    else:
+        feh = Star.feh
+
     with open('head.tmp', 'w') as f:
         f.write('KURUCZ\n')
         f.write('TEFF='+str(Star.teff)+',LOGG='+str(Star.logg)+
-                ',[FE/H]='+str(Star.feh)+','+Star.model_atmosphere_grid+'\n')
+                ',[FE/H]='+str(feh)+','+Star.model_atmosphere_grid+'\n')
         nd = len(Star.model_atmosphere['T'])
         f.write('ND=       '+str(nd)+'\n')
 
@@ -91,23 +96,23 @@ def create_model_in(Star, file_name='model.in'):
             fabund = open(os.path.join(path, 'z+0.00'), 'r')
 
         line = fabund.readline()
-        f.write(line[0:12]+' '+str(Star.feh)+'\n')
+        f.write(line[0:12]+' '+str(feh)+'\n')
         line = fabund.readline()
         while line:
             species = line[0:2]
             if Star.model_atmosphere_grid == 'marcs':
-                abund = float(line[3:9])+Star.feh
+                abund = float(line[3:9])+feh
                 #alpha-element enhancement
                 if species==' 8' or species=='10' or species=='12' or \
                    species=='14' or species=='16' or species=='18' or \
                    species=='20' or species=='22':
-                    afe = -0.4*Star.feh
-                    if Star.feh >=  0: afe=0.0
-                    if Star.feh <= -1: afe=0.4
+                    afe = -0.4*feh
+                    if feh >=  0: afe=0.0
+                    if feh <= -1: afe=0.4
                     abund = abund+afe
             else:
                 abund = 12.+np.log10(np.power(10, float(line[3:9]))/0.92040)+ \
-                        Star.feh
+                        feh
             abund = str('%5.2F' %abund)
             f.write(species+' '+abund+'\n')
             line = fabund.readline()

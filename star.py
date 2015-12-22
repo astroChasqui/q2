@@ -148,8 +148,12 @@ class Star:
                          'three fundamental parameters: Teff, logg, and '+
                          '[Fe/H].')
             return None
+        if hasattr(self, 'feh_model'):
+            feh = self.feh_model
+        else:
+            feh = self.feh
         x = modatm.interpolate(self.teff, self.logg,
-                               self.feh, grid)
+                               feh, grid)
         if x != None:
             self.model_atmosphere = x
             self.model_atmosphere_grid = grid
