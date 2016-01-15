@@ -65,7 +65,7 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
     stats = get_stats(pdf_x, pdf_y_smooth)
 
     if stats['most_probable']:
-        print "{0:10s} = {1:6.3f} | {2:6.3f} - {3:6.3f} | "\
+        print "{0:10s}   {1:6.3f} | {2:6.3f} - {3:6.3f} | "\
               "{4:6.3f} - {5:6.3f} | {6:6.3f} +/- {7:6.3f}"\
               .format(par,
                       stats['most_probable'],
@@ -75,7 +75,7 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
                       stats['upper_limit_2sigma'],
                       stats['mean'], stats['std'])
     else:
-        print "{0:10s} =        |        -        |  "\
+        print "{0:10s}          |        -        |  "\
               "      -        | {1:6.3f} +/- {2:6.3f}"\
               .format(par, stats['mean'], stats['std'])
         logger.warning("--- Unable to calculate PDF stats for "+par)
@@ -133,7 +133,7 @@ def get_stats(pdf_x, pdf_y_smooth):
 
     return stats
 
-def solve_one(Star, SolvePars, PlotPars):
+def solve_one(Star, SolvePars, PlotPars=PlotPars()):
     '''Calculates most likely parameters of Star using isochrone points
     '''
     ips = get_isochrone_points(Star, SolvePars.feh_offset,
@@ -143,7 +143,9 @@ def solve_one(Star, SolvePars, PlotPars):
     if ips == None:
         logger.warning('Could not get any isochrone points.')
         return None
-    print 'Using {0} isochrone points'.format(len(ips['age']))
+    print 'Using {0} isochrone points\n'.format(len(ips['age']))
+    print 'Parameter      m.p. |  1-sigma range  |  2-sigma range  |   mean +/-  stdev'
+    print '----------   ------ | --------------- | --------------- | -----------------'
     logger.info('Using {0} Y2 isochrone points'.format(len(ips['age'])))
     Star.isokeyparameterknown = SolvePars.key_parameter_known
     Star.isonpoints = len(ips['age'])
@@ -512,7 +514,7 @@ def smooth(x, window_len=11, window='hanning'):
     y=np.convolve(w/w.sum(),s,mode='valid')
     return y[(window_len/2):-(window_len/2)]
 
-def get_isochrone(age, feh, db):
+def get_isochrone(age, feh, db='yy02.sql3'):
     conn = sqlite3.connect(os.path.join(ISOCHRONES_PATH, db))
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
