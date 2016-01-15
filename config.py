@@ -36,5 +36,6 @@ def data_are_available():
         logger.info("Data folder exists")
         return True
     else:
-        logger.warning("Data folder does not exist")
+        logger.warning("Data folder does not exist. See the 'Data' section "\
+                       "at https://github.com/astroChasqui/q2")
         return False
