@@ -134,13 +134,17 @@ def get_stats(pdf_x, pdf_y_smooth):
 
     return stats
 
-def solve_one(Star, SolvePars, PlotPars=PlotPars()):
+def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
     '''Calculates most likely parameters of Star using isochrone points
     '''
-    ips = get_isochrone_points(Star, SolvePars.feh_offset,
-                               SolvePars.get_isochrone_points_db,
-                               SolvePars.get_isochrone_points_nsigma,
-                               SolvePars.key_parameter_known)
+    if not isochrone_points:
+        ips = get_isochrone_points(Star, SolvePars.feh_offset,
+                                   SolvePars.get_isochrone_points_db,
+                                   SolvePars.get_isochrone_points_nsigma,
+                                   SolvePars.key_parameter_known)
+    else:
+        ips = isochrone_points
+
     if ips == None:
         logger.warning('Could not get any isochrone points.')
         return None
@@ -401,7 +405,8 @@ def solve_all(Data, SolvePars, PlotPars, output_file):
     print '------------------------------------------------------'
     print ''
 
-def get_isochrone_points(Star, feh_offset, db, nsigma, key_parameter_known):
+def get_isochrone_points(Star, feh_offset=0, db='yy02.sql3', nsigma=5, \
+                         key_parameter_known='plx'):
     '''Looks in the db database for isochrone points within nsigma from
     the mean parameters of the Star and returns those values in a dict.
     '''
@@ -466,6 +471,24 @@ def get_isochrone_points(Star, feh_offset, db, nsigma, key_parameter_known):
             'logl': np.array(logl),
             'logg': np.array(logg),
             'mv'  : np.array(mv)
+            }
+
+def slice_isochrone_points(isochrone_points, Star, nsigma=5):
+    ips = isochrone_points
+    k = np.where((ips['logt'] >= np.log10(Star.teff-nsigma*Star.err_teff)) &
+                 (ips['logt'] <= np.log10(Star.teff+nsigma*Star.err_teff)) &
+                 (ips['logg'] >= Star.logg-nsigma*Star.err_logg) &
+                 (ips['logg'] <= Star.logg+nsigma*Star.err_logg) &
+                 (ips['feh'] >= Star.feh-nsigma*Star.err_feh) &
+                 (ips['feh'] <= Star.feh+nsigma*Star.err_feh)
+                 )
+    return {'feh': ips['feh'][k],
+            'age': ips['age'][k],
+            'mass': ips['mass'][k],    
+            'logt': ips['logt'][k],
+            'logl': ips['logl'][k],
+            'logg': ips['logg'][k],
+            'mv': ips['mv'][k],
             }
 
 def smooth(x, window_len=11, window='hanning'):

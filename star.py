@@ -71,12 +71,21 @@ class Star:
     object.
     """
     def __init__(self, name='Unnamed star',
-                       teff=None, logg=None, feh=None, vt=None):
+                       teff=None, logg=None, feh=None, vt=None,
+                       err_teff=None, err_logg=None, err_feh=None, err_vt=None):
         self.name = name
         self.teff = teff
         self.logg = logg
         self.feh = feh
         self.vt = vt
+        if err_teff:
+            self.err_teff = err_teff
+        if err_logg:
+            self.err_logg = err_logg
+        if err_feh:
+            self.err_feh = err_feh
+        if err_vt:
+            self.err_vt = err_vt
         logger.info('Star object successfully created.')
 
     def __repr__(self):
