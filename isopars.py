@@ -39,6 +39,7 @@ class PlotPars:
         self.figure_format = figure_format
         self.title_inside = None
         self.make_figures = make_figures
+        self.make_age_plot = True
 
 def pdf(pdf_x, ips, prob, par, smooth_window_len):
     '''Calculates a probability distribution function (PDF) for parameter par
@@ -200,8 +201,14 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars()):
     rs = 0.4+np.arange(1211)*0.01
     pdf_r_x = rs[np.logical_and(rs >= min(ips['r'])-0.02,
                                 rs <= max(ips['r'])+0.02)]
-    pdf_r_y, pdf_r_y_smooth, Star.isor = \
-      pdf(pdf_r_x, ips, prob, 'r', SolvePars.smooth_window_len_r)
+    try:
+        pdf_r_y, pdf_r_y_smooth, Star.isor = \
+          pdf(pdf_r_x, ips, prob, 'r', SolvePars.smooth_window_len_r)
+    except:
+        logger.warning('Could not determine radius.')
+        pdf_r_x = None
+        pdf_r_y, pdf_r_y_smooth, Star.isor = \
+          None, None, None
 
     #logg
     if SolvePars.key_parameter_known == 'plx':
@@ -217,7 +224,7 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars()):
     if not os.path.exists(PlotPars.directory) and PlotPars.directory != "":
         os.mkdir(PlotPars.directory)
 
-    if Star.isoage:
+    if Star.isoage and PlotPars.make_age_plot:
         plt.figure(figsize=(7, 4))
         plt.rc("axes", labelsize=15, titlesize=12)
         plt.rc("xtick", labelsize=14)
