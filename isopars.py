@@ -39,7 +39,8 @@ class PlotPars:
         self.figure_format = figure_format
         self.title_inside = None
         self.make_figures = make_figures
-        self.make_age_plot = True
+        self.make_age_plot = False
+        self.make_nearest_plot = False
 
 def pdf(pdf_x, ips, prob, par, smooth_window_len):
     '''Calculates a probability distribution function (PDF) for parameter par
@@ -65,7 +66,7 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
 
     stats = get_stats(pdf_x, pdf_y_smooth)
 
-    if stats['most_probable']:
+    if stats['most_probable'] is not None:
         print "{0:10s}   {1:6.3f} | {2:6.3f} - {3:6.3f} | "\
               "{4:6.3f} - {5:6.3f} | {6:6.3f} +/- {7:6.3f}"\
               .format(par,
@@ -339,7 +340,30 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
     plt.savefig(fig_name+'.'+PlotPars.figure_format, bbox_inches='tight')
     plt.close()
 
-def solve_all(Data, SolvePars, PlotPars, output_file):
+    if Star.isoage and PlotPars.make_nearest_plot:
+        plt.figure(figsize=(7, 4))
+
+        age_ni = round(Star.isoage['most_probable'], 2)
+        feh_ni = round(ips['feh'][abs(ips['feh'] - Star.feh) == \
+                                  min(abs(ips['feh'] - Star.feh))][0], 2)
+        niso = get_isochrone(age_ni, feh_ni, SolvePars.get_isochrone_points_db)
+
+        plt.errorbar(Star.teff, Star.logg, Star.err_logg, Star.err_teff, 'go')
+        plt.plot(10**niso['logt'], niso['logg'])
+        plt.xlabel('$T_\mathrm{eff}$ (K)')
+        plt.ylabel('$\log\,g$ [cgs]')
+        plt.title('Age = ${0}$ Gyr, [Fe/H] = ${1}$'.\
+                  format(age_ni, feh_ni), size=16)
+        plt.gca().invert_xaxis()
+        plt.gca().invert_yaxis()
+        fig_name = os.path.join(PlotPars.directory,
+                                Star.name.replace(' ', '_')+\
+                                '_isonea_'+SolvePars.key_parameter_known)
+        plt.savefig(fig_name+'.'+PlotPars.figure_format, bbox_inches='tight')
+        plt.tight_layout()
+        plt.close()
+
+def solve_all(Data, SolvePars, PlotPars, output_file, isochrone_points=None):
     print '------------------------------------------------------'
     print 'Initializing ...'
     start_time = datetime.datetime.now()
@@ -364,7 +388,11 @@ def solve_all(Data, SolvePars, PlotPars, output_file):
         s = Star(star_id)
         s.get_data_from(Data)
         try:
-            solve_one(s, SolvePars, PlotPars)
+            ips = None
+            if isochrone_points:
+                ips = slice_isochrone_points(isochrone_points, s)
+            solve_one(s, SolvePars, PlotPars,
+                      isochrone_points=ips)
         except:
             print 'Unable to find isochrone parameters.'
             print 'Input data might be missing or are too far from valid '+\
@@ -409,6 +437,9 @@ def get_isochrone_points(Star, feh_offset=0, db='yy02.sql3', nsigma=5, \
                          key_parameter_known='plx'):
     '''Looks in the db database for isochrone points within nsigma from
     the mean parameters of the Star and returns those values in a dict.
+    
+    You can apply an feh_offset that will shift the search box and then be
+    applied to the [Fe/H] values of the isochrone points selected.
     '''
     conn = sqlite3.connect(os.path.join(ISOCHRONES_PATH, db))
     conn.row_factory = sqlite3.Row
@@ -473,7 +504,24 @@ def get_isochrone_points(Star, feh_offset=0, db='yy02.sql3', nsigma=5, \
             'mv'  : np.array(mv)
             }
 
+def get_ips_info(isochrone_points):
+    '''Returns the edges of the isochrone_points grid
+    '''
+    ips = isochrone_points
+    print "The edges of this isochrone grid are:"
+    print "Teff(K) = {0:5.0f} | {1:5.0f}".\
+          format(min(10**ips['logt']), max(10**ips['logt']))
+    print "log g   = {0:5.2f} | {1:5.2f}".\
+          format(min(ips['logg']), max(ips['logg']))
+    print "[Fe/H]  = {0:5.2f} | {1:5.2f}".\
+          format(min(ips['feh']), max(ips['feh']))
+    print "Number of isochrone points = {}".\
+          format(len(ips['logt']))
+
 def slice_isochrone_points(isochrone_points, Star, nsigma=5):
+    '''Similar to get_isochrone_points, but takes a set of isochrone_points
+    gotten previously and loaded to memory instead of touching the database
+    '''
     ips = isochrone_points
     k = np.where((ips['logt'] >= np.log10(Star.teff-nsigma*Star.err_teff)) &
                  (ips['logt'] <= np.log10(Star.teff+nsigma*Star.err_teff)) &
