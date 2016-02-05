@@ -223,6 +223,13 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
         pdf_logg_y, pdf_logg_y_smooth, Star.isologg = \
           pdf(pdf_logg_x, ips, prob, 'logg', SolvePars.smooth_window_len_logg)
 
+    if Star.isoage:
+        age_ni = round(Star.isoage['most_probable'], 2)
+        feh_ni = round(ips['feh'][abs(ips['feh'] - Star.feh) == \
+                                  min(abs(ips['feh'] - Star.feh))][0], 2)
+        niso = get_isochrone(age_ni, feh_ni, SolvePars.get_isochrone_points_db)
+        Star.nearest_isochrone = niso
+
     if not PlotPars.make_figures:
         return
 
