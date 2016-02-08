@@ -335,7 +335,8 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
             ax.set_xlabel('$\log g$ [cgs]')
             if PlotPars.logg_xlim:
                 ax.set_xlim(PlotPars.logg_xlim)
-        ax.plot(pdf_x, pdf_y, color='0.8')
+        if pdf_x is not None and pdf_y is not None:
+            ax.plot(pdf_x, pdf_y, color='0.8')
         if par:
             ax.plot([par['most_probable'], par['most_probable']],
                     [0, max(pdf_y_smooth)], 'g--')
