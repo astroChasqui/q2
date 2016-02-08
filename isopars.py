@@ -511,6 +511,57 @@ def get_isochrone_points(Star, feh_offset=0, db='yy02.sql3', nsigma=5, \
             'mv'  : np.array(mv)
             }
 
+def get_all_isochrone_points(db='yy02.sql3', teff=None, logg=None, feh=None):
+    '''Returns all isochrone points from a given database. If teff, logg, feh
+    are provided, it restricts the isochrone points to the box defined by those
+    edges.
+    '''
+    conn = sqlite3.connect(os.path.join(ISOCHRONES_PATH, db))
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+
+    if not teff and not logg and not feh:
+        x = c.execute('SELECT feh, age, mass, logt, logl, logg, mv ' +\
+                              'FROM  fa, mtlgv ON fa.fa = mtlgv.fa')
+    else:
+        if not teff:
+            teff = (0, 100000)
+        if not logg:
+            logg = (-5, 10)
+        if not feh:
+            feh = (-10, 1)
+        x = c.execute('SELECT feh, age, mass, logt, logl, logg, mv ' +\
+                      'FROM  fa, mtlgv ON fa.fa = mtlgv.fa WHERE '   +\
+                      'logt >= ? AND logt <= ? AND '   +\
+                      'feh  >= ? AND feh  <= ? AND '   +\
+                      'logg >= ? AND logg <= ? ',
+                      (np.log10(teff[0]), np.log10(teff[1]),
+                       feh[0], feh[1],
+                       logg[0], logg[1])
+                      )
+
+    feh, age = [], []
+    mass, logt, logl, logg, mv = [], [], [], [], []
+    for xx in x.fetchall():
+        feh.append(xx['feh'])
+        age.append(xx['age'])
+        mass.append(xx['mass'])
+        logt.append(xx['logt'])
+        logl.append(xx['logl'])
+        logg.append(xx['logg'])
+        mv.append(xx['mv'])
+
+    conn.close()
+
+    return {'feh' : np.array(feh),
+            'age' : np.array(age),
+            'mass': np.array(mass),
+            'logt': np.array(logt),
+            'logl': np.array(logl),
+            'logg': np.array(logg),
+            'mv'  : np.array(mv)
+            }
+
 def get_ips_info(isochrone_points):
     '''Returns the edges of the isochrone_points grid
     '''
