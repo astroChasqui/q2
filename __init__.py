@@ -19,6 +19,7 @@ import abundances
 import grids
 import yypars
 import isopars
+import isopars_test
 import logging
 
 logger = logging.getLogger(__name__)
