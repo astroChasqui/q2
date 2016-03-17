@@ -74,9 +74,11 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object, silent=True):
         k2r = [i for i, w in zip(range(len(ww2r)), ww2r) if w in w2]
         afe1 = Star.fe1['ab'][k1] - Ref.fe1['ab'][k1r]
         afe2 = Star.fe2['ab'][k2] - Ref.fe2['ab'][k2r]
-        rew1 = np.log10(1e-3*Star.fe1['ew'][k1]/w1)
-        rew2 = np.log10(1e-3*Star.fe2['ew'][k2]/w2)
+        rew1 = np.log10(1e-3*Star.fe1['ew'][k1]/Star.fe1['ww'][k1])
+        rew2 = np.log10(1e-3*Star.fe2['ew'][k2]/Star.fe2['ww'][k2])
         ep1, ep2 = Star.fe1['ep'][k1], Star.fe2['ep'][k2]
+        w1 = Star.fe1['ww'][k1]
+        w2 = Star.fe2['ww'][k2]
         #
         Star.fe1['ww'], Star.fe2['ww'] = w1, w2
         Star.fe1['ep'], Star.fe2['ep'] = ep1, ep2
