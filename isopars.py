@@ -138,6 +138,10 @@ def get_stats(pdf_x, pdf_y_smooth):
 def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
     '''Calculates most likely parameters of Star using isochrone points
     '''
+    if hasattr(Star, 'feh_model'):
+        Star.old_feh = Star.feh
+        Star.feh = getattr(Star, 'feh_model')
+
     if not isochrone_points:
         ips = get_isochrone_points(Star, SolvePars.feh_offset,
                                    SolvePars.get_isochrone_points_db,
@@ -229,6 +233,9 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
                                   min(abs(ips['feh'] - Star.feh))][0], 2)
         niso = get_isochrone(age_ni, feh_ni, SolvePars.get_isochrone_points_db)
         Star.nearest_isochrone = niso
+
+    if hasattr(Star, 'feh_model'):
+        Star.feh = Star.old_feh
 
     if not PlotPars.make_figures:
         return
