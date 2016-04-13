@@ -395,6 +395,8 @@ def solve_all(Data, SolvePars, PlotPars, output_file, isochrone_points=None):
         print '*'*len(star_id)
         s = Star(star_id)
         s.get_data_from(Data)
+        if hasattr(s, 'feh_model'):
+            s.feh = getattr(s, 'feh_model')
         try:
             ips = None
             if isochrone_points:
