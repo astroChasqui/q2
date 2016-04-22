@@ -107,9 +107,16 @@ def interpolate(teff, logg, feh, grid):
 
     logger.info('Interpolating in the '+grid+' model grid:')
 
-    dt = [abs(t-teff) for t in avail_teff]
-    dt_idx = sorted(range(len(dt)), key=lambda k: dt[k])
-    tx = sorted([avail_teff[dt_idx[0]], avail_teff[dt_idx[1]]])
+    #dt = [abs(t-teff) for t in avail_teff]
+    #dt_idx = sorted(range(len(dt)), key=lambda k: dt[k])
+    #tx = sorted([avail_teff[dt_idx[0]], avail_teff[dt_idx[1]]])
+
+    dt = [t-teff for t in avail_teff]
+    for idx, dtx in enumerate(dt[:-1]):
+        if dt[idx]*dt[idx+1] < 0:
+            break
+    tx = avail_teff[idx], avail_teff[idx+1]
+
     logger.info('Searching for '+str(teff)+' in range: '+str(tx))
     if teff < tx[0] or teff > tx[1]:
         logger.error('Cannot interpolate in Teff.')
