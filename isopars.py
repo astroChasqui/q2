@@ -193,7 +193,7 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
       pdf(pdf_mass_x, ips, prob, 'mass', SolvePars.smooth_window_len_mass)
 
     #luminosity
-    logls = -1.0+np.arange(401)*0.01
+    logls = -2.0+np.arange(501)*0.01
     pdf_logl_x = logls[np.logical_and(logls >= min(ips['logl'])-0.02,
                                       logls <= max(ips['logl'])+0.02)]
     pdf_logl_y, pdf_logl_y_smooth, Star.isologl = \
@@ -227,7 +227,7 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
         pdf_logg_y, pdf_logg_y_smooth, Star.isologg = \
           pdf(pdf_logg_x, ips, prob, 'logg', SolvePars.smooth_window_len_logg)
 
-    if Star.isoage:
+    if Star.isoage and Star.isoage['most_probable'] != None:
         age_ni = round(Star.isoage['most_probable'], 2)
         feh_ni = round(ips['feh'][abs(ips['feh'] - Star.feh) == \
                                   min(abs(ips['feh'] - Star.feh))][0], 2)
