@@ -223,6 +223,9 @@ def solve_one(Star, SolveParsInit, Ref=object, PlotPars=object):
     if not hasattr(Star, 'model_atmosphere_grid'):
         logger.info('Star has no model yet. Calculating.')
         Star.get_model_atmosphere(sp.grid)
+    if not hasattr(Star, 'model_atmosphere'):
+        print 'Unable to find a starting model atmosphere for this star'
+        return None
     if Star.model_atmosphere_grid != sp.grid:
         logger.info('Inconsistent model atmosphere grids '+
                      '(Star and SolvePars). '+

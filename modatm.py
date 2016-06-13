@@ -113,7 +113,7 @@ def interpolate(teff, logg, feh, grid):
 
     dt = [t-teff for t in avail_teff]
     for idx, dtx in enumerate(dt[:-1]):
-        if dt[idx]*dt[idx+1] < 0:
+        if dt[idx]*dt[idx+1] <= 0:
             break
     tx = avail_teff[idx], avail_teff[idx+1]
 
