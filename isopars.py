@@ -4,10 +4,10 @@ import logging
 import matplotlib.pyplot as plt
 from scipy.integrate import simps
 from scipy.interpolate import griddata
-from config import *
+from .config import *
 import os
 import datetime
-from star import Star
+from .star import Star
 
 
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ class PlotPars:
 
 def pdf(pdf_x, ips, prob, par, smooth_window_len):
     '''Calculates a probability distribution function (PDF) for parameter par
-    given the x-values for the PDF, the isochrone points ips, and their 
+    given the x-values for the PDF, the isochrone points ips, and their
     probability. Return PDF and smoothed PDF (using smooth_window_len) if
     possible (otherwise returns two non-smoothed PDFs), as well as a stats
     dictionary with mean, std, most probable value, etc.
@@ -67,7 +67,7 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
     stats = get_stats(pdf_x, pdf_y_smooth)
 
     if stats['most_probable'] is not None:
-        print "{0:10s}   {1:6.3f} | {2:6.3f} - {3:6.3f} | "\
+        print("{0:10s}   {1:6.3f} | {2:6.3f} - {3:6.3f} | "\
               "{4:6.3f} - {5:6.3f} | {6:6.3f} +/- {7:6.3f}"\
               .format(par,
                       stats['most_probable'],
@@ -75,11 +75,11 @@ def pdf(pdf_x, ips, prob, par, smooth_window_len):
                       stats['upper_limit_1sigma'],
                       stats['lower_limit_2sigma'],
                       stats['upper_limit_2sigma'],
-                      stats['mean'], stats['std'])
+                      stats['mean'], stats['std']))
     else:
-        print "{0:10s}          |        -        |  "\
+        print("{0:10s}          |        -        |  "\
               "      -        | {1:6.3f} +/- {2:6.3f}"\
-              .format(par, stats['mean'], stats['std'])
+              .format(par, stats['mean'], stats['std']))
         logger.warning("--- Unable to calculate PDF stats for "+par)
 
     return pdf_y, pdf_y_smooth, stats
@@ -153,9 +153,9 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
     if ips == None:
         logger.warning('Could not get any isochrone points.')
         return None
-    print 'Using {0} isochrone points\n'.format(len(ips['age']))
-    print 'Parameter      m.p. |  1-sigma range  |  2-sigma range  |   mean +/-  stdev'
-    print '----------   ------ | --------------- | --------------- | -----------------'
+    print('Using {0} isochrone points\n'.format(len(ips['age'])))
+    print('Parameter      m.p. |  1-sigma range  |  2-sigma range  |   mean +/-  stdev')
+    print('----------   ------ | --------------- | --------------- | -----------------')
     logger.info('Using {0} Y2 isochrone points'.format(len(ips['age'])))
     Star.isokeyparameterknown = SolvePars.key_parameter_known
     Star.isonpoints = len(ips['age'])
@@ -380,13 +380,13 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
         plt.close()
 
 def solve_all(Data, SolvePars, PlotPars, output_file, isochrone_points=None):
-    print '------------------------------------------------------'
-    print 'Initializing ...'
+    print('------------------------------------------------------')
+    print('Initializing ...')
     start_time = datetime.datetime.now()
-    print '- Date and time: '+start_time.strftime('%d-%b-%Y, %H:%M:%S')
-    print '- Star data: '+Data.star_data_fname
-    print '------------------------------------------------------'
-    fout = open(output_file, 'wb')
+    print('- Date and time: '+start_time.strftime('%d-%b-%Y, %H:%M:%S'))
+    print('- Star data: '+Data.star_data_fname)
+    print('------------------------------------------------------')
+    fout = open(output_file, 'w')
     pars = ['age', 'mass', 'logl', 'mv', 'r']
     if SolvePars.key_parameter_known == 'plx':
         pars.append('logg')
@@ -397,10 +397,10 @@ def solve_all(Data, SolvePars, PlotPars, output_file, isochrone_points=None):
             hd += ','+par+'_'+value
     fout.write(hd+'\n')
     for star_id in Data.star_data['id']:
-        print ''
-        print '*'*len(star_id)
-        print star_id
-        print '*'*len(star_id)
+        print('')
+        print('*'*len(star_id))
+        print(star_id)
+        print('*'*len(star_id))
         s = Star(star_id)
         s.get_data_from(Data)
         if hasattr(s, 'feh_model'):
@@ -412,9 +412,9 @@ def solve_all(Data, SolvePars, PlotPars, output_file, isochrone_points=None):
             solve_one(s, SolvePars, PlotPars,
                       isochrone_points=ips)
         except:
-            print 'Unable to find isochrone parameters.'
-            print 'Input data might be missing or are too far from valid '+\
-                  'isochrone points.'
+            print('Unable to find isochrone parameters.')
+            print('Input data might be missing or are too far from valid '+\
+                  'isochrone points.')
             string = "{0}".format(s.name)
             for par in pars:
                 string += ",,,,,,,"
@@ -439,23 +439,23 @@ def solve_all(Data, SolvePars, PlotPars, output_file, isochrone_points=None):
         fout.write(string+"\n")
     fout.close()
 
-    print ''
-    print '------------------------------------------------------'
+    print('')
+    print('------------------------------------------------------')
     end_time = datetime.datetime.now()
-    print '- Date and time: '+end_time.strftime('%d-%b-%Y, %H:%M:%S')
+    print('- Date and time: '+end_time.strftime('%d-%b-%Y, %H:%M:%S'))
     delta_t = (end_time - start_time).seconds
     hours, remainder = divmod(delta_t, 3600)
     minutes, seconds = divmod(remainder, 60)
-    print '- Time elapsed: %sH %sM %sS' % (hours, minutes, seconds)
-    print 'Done!'
-    print '------------------------------------------------------'
-    print ''
+    print('- Time elapsed: %sH %sM %sS' % (hours, minutes, seconds))
+    print('Done!')
+    print('------------------------------------------------------')
+    print('')
 
 def get_isochrone_points(Star, feh_offset=0, db='yy02.sql3', nsigma=5, \
                          key_parameter_known='plx'):
     '''Looks in the db database for isochrone points within nsigma from
     the mean parameters of the Star and returns those values in a dict.
-    
+
     You can apply an feh_offset that will shift the search box and then be
     applied to the [Fe/H] values of the isochrone points selected.
     '''
@@ -588,15 +588,15 @@ def get_ips_info(isochrone_points):
     '''Returns the edges of the isochrone_points grid
     '''
     ips = isochrone_points
-    print "The edges of this isochrone grid are:"
-    print "Teff(K) = {0:5.0f} | {1:5.0f}".\
-          format(min(10**ips['logt']), max(10**ips['logt']))
-    print "log g   = {0:5.2f} | {1:5.2f}".\
-          format(min(ips['logg']), max(ips['logg']))
-    print "[Fe/H]  = {0:5.2f} | {1:5.2f}".\
-          format(min(ips['feh']), max(ips['feh']))
-    print "Number of isochrone points = {}".\
-          format(len(ips['logt']))
+    print("The edges of this isochrone grid are:")
+    print("Teff(K) = {0:5.0f} | {1:5.0f}".\
+          format(min(10**ips['logt']), max(10**ips['logt'])))
+    print("log g   = {0:5.2f} | {1:5.2f}".\
+          format(min(ips['logg']), max(ips['logg'])))
+    print("[Fe/H]  = {0:5.2f} | {1:5.2f}".\
+          format(min(ips['feh']), max(ips['feh'])))
+    print("Number of isochrone points = {}".\
+          format(len(ips['logt'])))
 
 def slice_isochrone_points(isochrone_points, Star, nsigma=5):
     '''Similar to get_isochrone_points, but takes a set of isochrone_points
@@ -612,7 +612,7 @@ def slice_isochrone_points(isochrone_points, Star, nsigma=5):
                  )
     return {'feh': ips['feh'][k],
             'age': ips['age'][k],
-            'mass': ips['mass'][k],    
+            'mass': ips['mass'][k],
             'logt': ips['logt'][k],
             'logl': ips['logl'][k],
             'logg': ips['logg'][k],
@@ -621,47 +621,47 @@ def slice_isochrone_points(isochrone_points, Star, nsigma=5):
 
 def smooth(x, window_len=11, window='hanning'):
     """smooth the data using a window with requested size.
-    
+
     This method is based on the convolution of a scaled window with the signal.
-    The signal is prepared by introducing reflected copies of the signal 
+    The signal is prepared by introducing reflected copies of the signal
     (with the window size) in both ends so that transient parts are minimized
     in the begining and end part of the output signal.
-    
+
     input:
-        x: the input signal 
+        x: the input signal
         window_len: the dimension of the smoothing window; should be an odd integer
         window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
             flat window will produce a moving average smoothing.
 
     output:
         the smoothed signal
-        
+
     example:
 
     t=linspace(-2,2,0.1)
     x=sin(t)+randn(len(t))*0.1
     y=smooth(x)
-    
-    see also: 
-    
+
+    see also:
+
     numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
     scipy.signal.lfilter
- 
+
     TODO: the window parameter could be the window itself if an array instead of a string
     NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
     """
 
     if x.ndim != 1:
-        raise ValueError, "smooth only accepts 1 dimension arrays."
+        raise ValueError("smooth only accepts 1 dimension arrays.")
 
     if x.size < window_len:
-        raise ValueError, "Input vector needs to be bigger than window size."
+        raise ValueError("Input vector needs to be bigger than window size.")
 
     if window_len<3:
         return x
 
     if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-        raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+        raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
 
     s=np.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
     if window == 'flat': #moving average
