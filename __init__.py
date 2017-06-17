@@ -10,16 +10,10 @@ be placed in the q2/Data folder.
 
 import matplotlib
 matplotlib.use('Agg')
-from config import *
-from star import *
-import moog
-import specpars
-import errors
-import abundances
-import grids
-import yypars
-import isopars
-import isopars_test
+from .config import *
+from .star import *
+from . import moog, specpars, errors, abundances
+from . import isopars
 import logging
 
 logger = logging.getLogger(__name__)

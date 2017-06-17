@@ -32,15 +32,15 @@ def linfit(x, y):
 
 def read_csv(csv_file, file_type=None):
     """Reads CSV file with header and sends data to dictionary
-    
+
     file_type = None, 'stars', 'lines'
 
-    This routine was written specifically for q2 and is not meant 
+    This routine was written specifically for q2 and is not meant
     to be a generic CSV file reader. The first row must be a header column
     and it must not have empty cells. No commented rows are allowed. Empty
     data rows will be read as None. The output is a dictionary of numpy
     arrays.
-    
+
     If file_type is None, it does not matter what the header contains,
     however, all data must be numbers.
     If file_type is 'stars', the CSV file must have an 'id' column.

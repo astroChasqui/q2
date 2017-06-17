@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import logging
-import tools
+from . import tools
 import os
-from config import *
+from .config import *
 from scipy.integrate import simps
 import numpy as np
 from scipy.interpolate import griddata

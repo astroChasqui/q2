@@ -229,6 +229,8 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
                                   min(abs(ips['feh'] - Star.feh))][0], 2)
         niso = get_isochrone(age_ni, feh_ni, SolvePars.get_isochrone_points_db)
         Star.nearest_isochrone = niso
+        nearest_curve_pt, radius_min = is_star_on_iso(Star,niso) #check if star is near isochrone
+        Star.nearest_isochrone_radius = radius_min
 
     if not PlotPars.make_figures:
         return
@@ -349,13 +351,8 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
     plt.close()
 
     if Star.isoage and PlotPars.make_nearest_plot:
-        plt.figure(figsize=(7, 4))
 
-        age_ni = round(Star.isoage['most_probable'], 2)
-        feh_ni = round(ips['feh'][abs(ips['feh'] - Star.feh) == \
-                                  min(abs(ips['feh'] - Star.feh))][0], 2)
-        niso = get_isochrone(age_ni, feh_ni, SolvePars.get_isochrone_points_db)
-        nearest_curve_pt = is_star_on_iso(Star,niso) #check if star is near isochrone
+        plt.figure(figsize=(7, 4))
 
         plt.errorbar(Star.teff, Star.logg, Star.err_logg, Star.err_teff, 'go')
         plt.plot(10**niso['logt'], niso['logg'])
@@ -389,7 +386,7 @@ def solve_all(Data, SolvePars, PlotPars, output_file, isochrone_points=None):
     for par in pars:
         for value in values:
             hd += ','+par+'_'+value
-    fout.write(hd+'\n')
+    fout.write(hd+',radius\n')
     for star_id in Data.star_data['id']:
         print ''
         print '*'*len(star_id)
@@ -410,7 +407,7 @@ def solve_all(Data, SolvePars, PlotPars, output_file, isochrone_points=None):
             string = "{0}".format(s.name)
             for par in pars:
                 string += ",,,,,,,"
-            fout.write(string+"\n")
+            fout.write(string+",\n")
             continue
         string = "{0}".format(s.name)
         for par in pars:
@@ -428,6 +425,10 @@ def solve_all(Data, SolvePars, PlotPars, output_file, isochrone_points=None):
                                  getattr(s, 'iso'+par)['std'])
             except:
                 string += ",,"
+        try:
+            string += ",{0:.2f}".format(s.nearest_isochrone_radius)
+        except:
+            string += ","
         fout.write(string+"\n")
     fout.close()
 
@@ -699,8 +700,9 @@ def is_star_on_iso(Star,niso):
     print "Nearest isochrone curve coords = (%f, %f) \n Star Coords = (%f, %f) \n Radius = %f \n" % (n_curve_pt[0], n_curve_pt[1], Star.teff, Star.logg, min(distance))
     
     
+    radius_min = min(distance)
     if abs(n_curve_pt[0]-Star.teff)/Star.err_teff < 1 and abs(n_curve_pt[1]-Star.logg)/Star.err_logg < 1:
         print "Star is within range of isochrone!"
     else:
         print "Star is off isochrone line!"
-    return n_curve_pt
+    return n_curve_pt, radius_min

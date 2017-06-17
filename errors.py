@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import matrix
-from star import Star
-import specpars
+from .star import Star
+from . import specpars
 import logging
 
 logger = logging.getLogger(__name__)

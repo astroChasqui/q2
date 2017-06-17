@@ -1,8 +1,8 @@
 import numpy as np
 import logging
-import modatm
-from config import *
-from tools import read_csv
+from . import modatm
+from .config import *
+from .tools import read_csv
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +136,7 @@ class Star:
         # gets line data excluding cells with no ew:
         #if hasattr(Data, 'lines'):
         if Data.lines:
-            idx = np.where(Data.lines[self.name] >= 0)
+            idx = np.where(Data.lines[self.name] != np.nan)
             self.linelist = {'wavelength': Data.lines['wavelength'][idx],
                              'species': Data.lines['species'][idx],
                              'ep': Data.lines['ep'][idx],

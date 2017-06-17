@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import logging
-from config import *
+from .config import *
 
 logger = logging.getLogger(__name__)
 

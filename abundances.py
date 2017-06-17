@@ -1,12 +1,12 @@
-import moog
-from star import Star
+from . import moog
+from .star import Star
 import numpy as np
 import datetime
 import logging
 from scipy import interpolate
 import os
-from config import *
-from tools import read_csv
+from .config import *
+from .tools import read_csv
 from collections import OrderedDict
 from bokeh.plotting import *
 from bokeh.models import HoverTool
@@ -16,16 +16,16 @@ logger = logging.getLogger(__name__)
 
 def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
         errors=False):
-    print '------------------------------------------------------'
-    print 'Initializing ...'
+    print('------------------------------------------------------')
+    print('Initializing ...')
     start_time = datetime.datetime.now()
-    print '- Date and time: '+start_time.strftime('%d-%b-%Y, %H:%M:%S')
-    print '- Model atmospheres: '+grid
-    print '- Star data: '+Data.star_data_fname
-    print '- Line list: '+Data.lines_fname
+    print('- Date and time: '+start_time.strftime('%d-%b-%Y, %H:%M:%S'))
+    print('- Model atmospheres: '+grid)
+    print('- Star data: '+Data.star_data_fname)
+    print('- Line list: '+Data.lines_fname)
     if reference:
-        print '- Reference star: '+reference
-    print '------------------------------------------------------'
+        print('- Reference star: '+reference)
+    print('------------------------------------------------------')
     if reference:
         ref = Star(reference)
         ref.get_data_from(Data)
@@ -39,10 +39,10 @@ def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
     if species_ids == None:
         species_codes = sorted(set(Data.lines['species']))
         species_ids = getsp_ids(species_codes)
-        print '"species_ids" not provided'
-        print 'Lines found for the following species: '+\
-              ','.join(species_ids)
-        print ''
+        print('"species_ids" not provided')
+        print('Lines found for the following species: '+\
+              ','.join(species_ids))
+        print('')
     for species_id in species_ids:
         header += ','+species_id+',e_'+species_id+',n_'+species_id
         if reference:
@@ -53,10 +53,10 @@ def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
     fout.write(header+'\n')
     for star_id in Data.star_data['id']:
         line = star_id
-        print ''
-        print '*'*len(star_id)
-        print star_id
-        print '*'*len(star_id)
+        print('')
+        print('*'*len(star_id))
+        print(star_id)
+        print('*'*len(star_id))
         s = Star(star_id)
         try:
             s.get_data_from(Data)
@@ -64,19 +64,19 @@ def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
                 s.feh = getattr(s, 'feh_model')
             s.get_model_atmosphere(grid)
         except:
-            print 'No data available'
+            print('No data available')
             logger.warning('Could not get all the necessary data')
             line += ','*(len(species_ids)*2)
             if reference:
                 line += ','*(len(species_ids)*2)
             fout.write(line+'\n')
             continue
-        print 'Using [Fe/H] = {0:6.3f} for the model atmosphere'.format(s.feh)
+        print('Using [Fe/H] = {0:6.3f} for the model atmosphere'.format(s.feh))
         one(s, species_ids, ref, errors=errors)
         for species_id in species_ids:
-            print '\n'+species_id+'\n'+'-'*len(species_id)
+            print('\n'+species_id+'\n'+'-'*len(species_id))
             if not hasattr(s, species_id):
-                print 'No data available'
+                print('No data available')
                 logger.warning('There are no '+species_id+' abundances '+\
                                'for this star')
                 line += ',,'
@@ -86,8 +86,8 @@ def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
             mab = np.mean(getattr(s, species_id)['ab'])
             sab = np.std(getattr(s, species_id)['ab'])
             nab = len(getattr(s, species_id)['ab'])
-            print "ABS = {0:6.3f} +/- {1:6.3f} , n = {2:.0f}".\
-                  format(mab, sab, nab)
+            print("ABS = {0:6.3f} +/- {1:6.3f} , n = {2:.0f}".\
+                  format(mab, sab, nab))
             line += ',{0:.3f},{1:.3f},{2:.0f}'.format(mab, sab, nab)
             if reference:
                 da = getattr(s, species_id)['difab']
@@ -96,53 +96,53 @@ def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
                 mdifab = np.mean(mda)
                 sdifab = np.std(mda)
                 ndifab = mda.count()
-                print "DIF = {0:6.3f} +/- {1:6.3f} , n = {2:.0f}".\
-                      format(mdifab, sdifab, ndifab)
+                print("DIF = {0:6.3f} +/- {1:6.3f} , n = {2:.0f}".\
+                      format(mdifab, sdifab, ndifab))
                 line += ',{0:.3f},{1:.3f},{2:.0f}'.\
                         format(mdifab, sdifab, ndifab)
                 if errors:
-                    print "ERR = {0:5.3f} (DIF)".\
-                          format(getattr(s, species_id)['err_difab'])
+                    print("ERR = {0:5.3f} (DIF)".\
+                          format(getattr(s, species_id)['err_difab']))
                     line += ',{0:.3f}'.\
                             format(getattr(s, species_id)['err_difab'])
             else:
                 mdifab = 0
                 if errors:
-                    print "ERR = {0:5.3f} (ABS)".\
-                          format(getattr(s, species_id)['err_ab'])
+                    print("ERR = {0:5.3f} (ABS)".\
+                          format(getattr(s, species_id)['err_ab']))
                     line += ',{0:.3f}'.\
                             format(getattr(s, species_id)['err_ab'])
-            print ''
+            print('')
             llhd1 = 'Wavelength   ABS    RES '
             llhd2 = '----------  ----- ------'
             if reference:
                 llhd1 += '   DIF    RES '
                 llhd2 += '  -----  -----'
-            print llhd1+'\n'+llhd2
+            print(llhd1+'\n'+llhd2)
             for wi, ab, difab in \
                 zip(getattr(s, species_id)['ww'],
                     getattr(s, species_id)['ab'],
                     getattr(s, species_id)['difab']):
                 if reference and difab != None:
-                    print "{0:10.4f} {1:6.3f} {2:6.3f} {3:6.3f} {4:6.3f}".\
-                          format(wi, ab, ab-mab, difab, difab-mdifab)
+                    print("{0:10.4f} {1:6.3f} {2:6.3f} {3:6.3f} {4:6.3f}".\
+                          format(wi, ab, ab-mab, difab, difab-mdifab))
                 else:
-                    print "{0:10.4f} {1:6.3f} {2:6.3f}".\
-                          format(wi, ab, ab-mab)
+                    print("{0:10.4f} {1:6.3f} {2:6.3f}".\
+                          format(wi, ab, ab-mab))
 
         fout.write(line+'\n')
     fout.close()
-    print ''
-    print '------------------------------------------------------'
+    print('')
+    print('------------------------------------------------------')
     end_time = datetime.datetime.now()
-    print '- Date and time: '+end_time.strftime('%d-%b-%Y, %H:%M:%S')
+    print('- Date and time: '+end_time.strftime('%d-%b-%Y, %H:%M:%S'))
     delta_t = (end_time - start_time).seconds
     hours, remainder = divmod(delta_t, 3600)
     minutes, seconds = divmod(remainder, 60)
-    print '- Time elapsed: %sH %sM %sS' % (hours, minutes, seconds)
-    print 'Done!'
-    print '------------------------------------------------------'
-    print ''
+    print('- Time elapsed: %sH %sM %sS' % (hours, minutes, seconds))
+    print('Done!')
+    print('------------------------------------------------------')
+    print('')
 
 
 def one(Star, species_ids=None, Ref=object, silent=True, errors=False):
@@ -151,14 +151,14 @@ def one(Star, species_ids=None, Ref=object, silent=True, errors=False):
         species_codes = sorted(set(Star.linelist['species']))
         species_ids = getsp_ids(species_codes)
         if not silent:
-            print '"species_ids" not provided'
-            print 'Lines found for the following species: '+\
-                  ','.join(species_ids)
-            print ''
+            print('"species_ids" not provided')
+            print('Lines found for the following species: '+\
+                  ','.join(species_ids))
+            print('')
     for species_id in species_ids:
         species = getsp(species_id)
         if not silent:
-            print "*** Begin "+species_id+":"
+            print("*** Begin "+species_id+":")
         if species == None:
             logger.warning('Not doing calculations for: '+species_id)
             continue
@@ -170,7 +170,7 @@ def one(Star, species_ids=None, Ref=object, silent=True, errors=False):
 
         if species_id == 'OI':
             if not silent:
-                print '777 nm oxygen abundances will be NLTE corrected'
+                print('777 nm oxygen abundances will be NLTE corrected')
             ao = []
             for wx in [7771.94, 7774.16, 7775.39]:
                 k = np.where(abs(Star.OI['ww']-wx) < 0.05)
@@ -195,8 +195,8 @@ def one(Star, species_ids=None, Ref=object, silent=True, errors=False):
 
                 if species_id == 'OI':
                     if not silent:
-                        print '777 nm oxygen abundances will be NLTE '\
-                              +'corrected (Reference)'
+                        print('777 nm oxygen abundances will be NLTE '\
+                              +'corrected (Reference)')
                     ao = []
                     for wx in [7771.94, 7774.16, 7775.39]:
                         k = np.where(abs(Ref.OI['ww']-wx) < 0.05)
@@ -239,21 +239,21 @@ def one(Star, species_ids=None, Ref=object, silent=True, errors=False):
             da = np.array(difab, dtype=np.float) #convert None to np.nan
             mda = np.ma.masked_array(da, np.isnan(da))
 
-            print "A({0})  = {1:6.3f} +/- {2:5.3f} (# of lines = {3})".\
-                  format(species_id, np.mean(maa), np.std(maa), maa.count())
+            print("A({0})  = {1:6.3f} +/- {2:5.3f} (# of lines = {3})".\
+                  format(species_id, np.mean(maa), np.std(maa), maa.count()))
 
             if hasattr(Ref, 'name'):
-                print "[{0}/H] = {1:6.3f} +/- {2:5.3f} (# of lines = {3})".\
-                      format(species_id, np.mean(mda), np.std(mda), mda.count())
+                print("[{0}/H] = {1:6.3f} +/- {2:5.3f} (# of lines = {3})".\
+                      format(species_id, np.mean(mda), np.std(mda), mda.count()))
 
         if errors:
             error(Star, species_id, Ref=Ref, silent=silent)
 
         if not silent:
-            print '---' + species_id + ' done'
+            print('---' + species_id + ' done')
 
     if not silent and len(species_ids) >= 1:
-        print 'All species completed'
+        print('All species completed')
 
 
 
@@ -262,8 +262,8 @@ def error(Star_in, species_id, Ref=object, silent=True):
     s.__dict__ = Star_in.__dict__.copy()
 
     if not silent:
-        print '-----------------------------'
-        print 'Error propagation for '+species_id+':'
+        print('-----------------------------')
+        print('Error propagation for '+species_id+':')
 
     try:
         Ref.model_atmosphere_grid
@@ -349,14 +349,14 @@ def error(Star_in, species_id, Ref=object, silent=True):
 
     a_tot = np.sqrt(a_teff**2+a_logg**2+a_feh**2+a_vt**2+l2l_sct**2)
     if not silent:
-        print 'Line to line scatter:  {0:.3f}'.format(l2l_sct)
-        print 'Error from Teff:       {0:.3f}'.format(a_teff)
-        print 'Error from logg:       {0:.3f}'.format(a_logg)
-        print 'Error from [Fe/H]:     {0:.3f}'.format(a_feh)
-        print 'Error from vt:         {0:.3f}'.format(a_vt)
-        print '                      -------'
-        print 'Total abundance error: {0:.3f}'.format(a_tot)
-        print '-----------------------------'
+        print('Line to line scatter:  {0:.3f}'.format(l2l_sct))
+        print('Error from Teff:       {0:.3f}'.format(a_teff))
+        print('Error from logg:       {0:.3f}'.format(a_logg))
+        print('Error from [Fe/H]:     {0:.3f}'.format(a_feh))
+        print('Error from vt:         {0:.3f}'.format(a_vt))
+        print('                      -------')
+        print('Total abundance error: {0:.3f}'.format(a_tot))
+        print('-----------------------------')
 
     try:
         Ref.model_atmosphere_grid
@@ -502,13 +502,13 @@ def nlte_triplet(teff, logg, feh, ao, silent=True):
     x2 = x2 - 0.0000
     
     if not silent:
-        print 'Wavelength (A) | A(O) LTE | Correction | A(O) NLTE'
-        print "   7771.9      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".\
-              format(ao[0], x0, ao[0]-x0)
-        print "   7774.2      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".\
-              format(ao[1], x1, ao[1]-x1)
-        print "   7775.4      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".\
-              format(ao[2], x2, ao[2]-x2)
+        print('Wavelength (A) | A(O) LTE | Correction | A(O) NLTE')
+        print("   7771.9      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".\
+              format(ao[0], x0, ao[0]-x0))
+        print("   7774.2      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".\
+              format(ao[1], x1, ao[1]-x1))
+        print("   7775.4      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".\
+              format(ao[2], x2, ao[2]-x2))
     ax = [round(ao[0]-x0, 3),
           round(ao[1]-x1, 3),
           round(ao[2]-x2, 3)]
@@ -516,10 +516,10 @@ def nlte_triplet(teff, logg, feh, ao, silent=True):
     aon = np.ma.masked_array(ax,np.isnan(ax))
 
     if not silent:
-        print "A(O) LTE  = {0:6.3f} +/- {1:5.3f}".\
-              format(np.mean(ao), np.std(ao))
-        print "A(O) NLTE = {0:6.3f} +/- {1:5.3f}".\
-              format(np.mean(aon), np.std(aon))
+        print("A(O) LTE  = {0:6.3f} +/- {1:5.3f}".\
+              format(np.mean(ao), np.std(ao)))
+        print("A(O) NLTE = {0:6.3f} +/- {1:5.3f}".\
+              format(np.mean(aon), np.std(aon)))
 
     return aon
 
