@@ -19,13 +19,13 @@ Measure elemental abundances of a sample of stars with respect to the solar abud
 
 ```python
 species_ids = ['CI', 'OI', 'BaII']
-q2.abundances.all(data, species_ids, 'abundances.csv', 'Sun')
+q2.abundances.get_all(data, species_ids, 'abundances.csv', 'Sun')
 ```
 
 MOOG
 ----
 
-q2 needs a recent version of <a href="http://www.as.utexas.edu/~chris/moog.html">MOOGSILENT</a> (>2003) installed in your system.
+q2 needs a recent version of <a href="http://www.as.utexas.edu/~chris/moog.html">MOOGSILENT</a> (>2003) installed in your system. It has been fully tested only with the FEB 2017 version.
 
 Data
 ----
