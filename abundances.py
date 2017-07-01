@@ -14,7 +14,7 @@ from bokeh.models import HoverTool
 logger = logging.getLogger(__name__)
 
 
-def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
+def get_all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
         errors=False):
     print('------------------------------------------------------')
     print('Initializing ...')
@@ -34,7 +34,7 @@ def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
         ref.get_model_atmosphere(grid)
     else:
         ref = None
-    fout = open(output_file, 'wb')
+    fout = open(output_file, 'w')
     header = 'id'
     if species_ids == None:
         species_codes = sorted(set(Data.lines['species']))
@@ -50,7 +50,7 @@ def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
                       '],n_['+species_id+']'
         if errors:
             header += ',err_'+species_id
-    fout.write(header+'\n')
+    fout.write(header + '\n')
     for star_id in Data.star_data['id']:
         line = star_id
         print('')
@@ -72,7 +72,7 @@ def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
             fout.write(line+'\n')
             continue
         print('Using [Fe/H] = {0:6.3f} for the model atmosphere'.format(s.feh))
-        one(s, species_ids, ref, errors=errors)
+        get_one(s, species_ids, ref, errors=errors)
         for species_id in species_ids:
             print('\n'+species_id+'\n'+'-'*len(species_id))
             if not hasattr(s, species_id):
@@ -145,7 +145,7 @@ def all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
     print('')
 
 
-def one(Star, species_ids=None, Ref=object, silent=True, errors=False):
+def get_one(Star, species_ids=None, Ref=object, silent=True, errors=False):
     logger.info('Working on: '+Star.name)
     if species_ids == None:
         species_codes = sorted(set(Star.linelist['species']))
@@ -283,11 +283,11 @@ def error(Star_in, species_id, Ref=object, silent=True):
         if s.err_teff > 0:
             s.teff += s.err_teff
             s.get_model_atmosphere(s.model_atmosphere_grid)
-            one(s, [species_id], Ref=Ref)
+            get_one(s, [species_id], Ref=Ref)
             ap = np.mean(getattr(s, species_id)[abx])
             s.teff -= 2*s.err_teff
             s.get_model_atmosphere(s.model_atmosphere_grid)
-            one(s, [species_id], Ref=Ref)
+            get_one(s, [species_id], Ref=Ref)
             am = np.mean(getattr(s, species_id)[abx])
             a_teff = abs(ap-am)/2.
             s.teff += s.err_teff
@@ -300,11 +300,11 @@ def error(Star_in, species_id, Ref=object, silent=True):
         if s.err_logg > 0:
             s.logg += s.err_logg
             s.get_model_atmosphere(s.model_atmosphere_grid)
-            one(s, [species_id], Ref=Ref)
+            get_one(s, [species_id], Ref=Ref)
             ap = np.mean(getattr(s, species_id)[abx])
             s.logg -= 2*s.err_logg
             s.get_model_atmosphere(s.model_atmosphere_grid)
-            one(s, [species_id], Ref=Ref)
+            get_one(s, [species_id], Ref=Ref)
             am = np.mean(getattr(s, species_id)[abx])
             a_logg = abs(ap-am)/2.
             s.logg += s.err_logg
@@ -317,11 +317,11 @@ def error(Star_in, species_id, Ref=object, silent=True):
         if s.err_feh > 0:
             s.feh += s.err_feh
             s.get_model_atmosphere(s.model_atmosphere_grid)
-            one(s, [species_id], Ref=Ref)
+            get_one(s, [species_id], Ref=Ref)
             ap = np.mean(getattr(s, species_id)[abx])
             s.feh -= 2*s.err_feh
             s.get_model_atmosphere(s.model_atmosphere_grid)
-            one(s, [species_id], Ref=Ref)
+            get_one(s, [species_id], Ref=Ref)
             am = np.mean(getattr(s, species_id)[abx])
             a_feh = abs(ap-am)/2.
             s.feh += s.err_feh
@@ -334,11 +334,11 @@ def error(Star_in, species_id, Ref=object, silent=True):
         if s.err_vt > 0:
             s.vt += s.err_vt
             s.get_model_atmosphere(s.model_atmosphere_grid)
-            one(s, [species_id], Ref=Ref)
+            get_one(s, [species_id], Ref=Ref)
             ap = np.mean(getattr(s, species_id)[abx])
             s.vt -= 2*s.err_vt
             s.get_model_atmosphere(s.model_atmosphere_grid)
-            one(s, [species_id], Ref=Ref)
+            get_one(s, [species_id], Ref=Ref)
             am = np.mean(getattr(s, species_id)[abx])
             a_vt = abs(ap-am)/2.
             s.vt += s.err_vt
@@ -500,7 +500,7 @@ def nlte_triplet(teff, logg, feh, ao, silent=True):
     x0 = x0 - 0.0355
     x1 = x1 - 0.0180
     x2 = x2 - 0.0000
-    
+
     if not silent:
         print('Wavelength (A) | A(O) LTE | Correction | A(O) NLTE')
         print("   7771.9      |  {0:6.3f}  |    {1:5.3f}   | {2:6.3f}".\
@@ -525,7 +525,7 @@ def nlte_triplet(teff, logg, feh, ao, silent=True):
 
 def fancy_abund_plot(Star, species_id):
     """Makes bokeh hover-ing plots
-    
+
     Function written to look for outliers and investigate line-to-line scatter
     """
     if not hasattr(Star, species_id):

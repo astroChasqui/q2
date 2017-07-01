@@ -116,7 +116,7 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object, silent=True):
     if plot:
         logger.info('Making figure')
         plt.figure(figsize=(7, 9))
-        title = Star.name+' : '+str(Star.teff)+', '+str(Star.logg)+', ' \
+        title = Star.name+' : '+str(int(Star.teff))+', '+str(Star.logg)+', ' \
                 +str(round(Star.feh,3))+', '+str(Star.vt)
         if hasattr(Ref, 'name'):
             title += ' ['+Ref.name+']'
