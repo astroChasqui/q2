@@ -1,5 +1,6 @@
 import os
 import logging
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 
@@ -11,6 +12,16 @@ COLORTEFF_PATH  = os.path.join(path, 'ColorTeff')
 MODATM_PATH     = os.path.join(path, 'ModelAtmospheres')
 ISOCHRONES_PATH = os.path.join(path, 'Isochrones')
 OTHER_PATH      = os.path.join(path, 'Other')
+
+plt.rc("font", family='serif', serif='Ubuntu', monospace='Ubuntu Mono', \
+               size=14)
+plt.rc("axes", labelsize=15, titlesize=12)
+plt.rc("xtick", top=True, direction='in', labelsize=14)
+plt.rc("xtick.major", size=8, width=1)
+plt.rc("ytick", right=True, direction='in', labelsize=14)
+plt.rc("ytick.major", size=8, width=1)
+plt.rc("lines", markersize=10, markeredgewidth=2)
+plt.rc("lines", linewidth=3)
 
 def moog_is_available():
     """You should be able to run MOOGSILENT from the command line in order

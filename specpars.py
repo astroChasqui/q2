@@ -125,13 +125,6 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object, silent=True):
                 title = PlotPars.title
         plt.suptitle(title, fontsize=16)
         plt.subplots_adjust(hspace=0.35, top=0.93, left=0.2)
-        plt.rc("axes", labelsize=15, titlesize=12)
-        plt.rc("xtick", labelsize=14)
-        plt.rc("ytick", labelsize=14)
-        plt.rc("xtick.major", size=6, width=1)
-        plt.rc("ytick.major", size=6, width=1)
-        plt.rc("lines", markersize=10, markeredgewidth=2)
-        plt.rc("lines", linewidth=3)
 
         try:
             if PlotPars.afe[0] != -1000:
@@ -153,7 +146,7 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object, silent=True):
                          plt.ylim()[0]+0.85*(plt.ylim()[1]-plt.ylim()[0]),
                          PlotPars.title_inside,
                          horizontalalignment='center',
-                         size=15)
+                         size=16)
         panel_b = plt.subplot(312)
         plt.xlabel('REW = log (EW/$\lambda$)')
         plt.ylabel(ylabel)
@@ -162,7 +155,7 @@ def iron_stats(Star, Ref=object, plot=None, PlotPars=object, silent=True):
         plt.ylim(ylim)
 
         panel_c = plt.subplot(313)
-        plt.xlabel('Wavelength ($\AA$)')
+        plt.xlabel('Wavelength ($\mathrm{\AA}$)')
         plt.ylabel(ylabel)
         try:
             plt.xlim(PlotPars.wavelength_range[0], PlotPars.wavelength_range[1])
