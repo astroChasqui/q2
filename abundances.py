@@ -543,7 +543,9 @@ def fancy_abund_plot(Star, species_id):
     p1 = figure(title=Star.name, plot_width=650, plot_height=300,
                 x_axis_label='Wavelength (A)',
                 y_axis_label='A('+species_id+')',
-                tools=TOOLS)
+                tools=TOOLS, active_scroll = 'wheel_zoom')
+    p1.xaxis.axis_label_text_font_style = "normal"
+    p1.yaxis.axis_label_text_font_style = "normal"
 
     ws = [str(round(w, 1)) for w in ww]
 
@@ -557,8 +559,7 @@ def fancy_abund_plot(Star, species_id):
         )
     )
 
-    p1.scatter('ww', 'ab', size=10, source=source, marker='square',
-               color='blue')
+    p1.scatter('ww', 'ab', size=10, source=source, marker='square')
 
     hover = p1.select(dict(type=HoverTool))
     hover.tooltips = OrderedDict([
@@ -587,11 +588,12 @@ def fancy_abund_plot(Star, species_id):
                     plot_width=650, plot_height=300,
                     x_axis_label='Wavelength (A)',
                     y_axis_label='['+species_id+'/H]',
-                    tools=TOOLS
+                    tools=TOOLS, active_scroll = 'wheel_zoom'
                     )
+        p2.xaxis.axis_label_text_font_style = "normal"
+        p2.yaxis.axis_label_text_font_style = "normal"
 
-        p2.scatter('ww', 'difab', size=10, source=source, marker='square',
-                   color='blue')
+        p2.scatter('ww', 'difab', size=10, source=source, marker='square')
 
         hover = p2.select(dict(type=HoverTool))
         hover.tooltips = OrderedDict([

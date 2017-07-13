@@ -553,7 +553,9 @@ def fancy_ironstats_plot(Star):
     p1 = figure(title=title, plot_width=650, plot_height=300,
                 x_axis_label='EP (eV)',
                 y_axis_label=y_axis_label,
-                tools=TOOLS)
+                tools=TOOLS, active_scroll = 'wheel_zoom')
+    p1.xaxis.axis_label_text_font_style = "normal"
+    p1.yaxis.axis_label_text_font_style = "normal"
 
     abst = [str(round(xab, 3)) for xab in ab]
     source = ColumnDataSource(
@@ -569,7 +571,7 @@ def fancy_ironstats_plot(Star):
     )
 
     p1.scatter('ep', 'ab', size=10, color='colors',
-            source=source, marker='square')
+            source=source, marker='circle')
 
     hover = p1.select(dict(type=HoverTool))
     hover.tooltips = OrderedDict([
@@ -583,10 +585,12 @@ def fancy_ironstats_plot(Star):
     p2 = figure(title='', plot_width=650, plot_height=300,
                 x_axis_label='REW',
                 y_axis_label=y_axis_label,
-                tools=TOOLS)
+                tools=TOOLS, active_scroll = 'wheel_zoom')
+    p2.xaxis.axis_label_text_font_style = "normal"
+    p2.yaxis.axis_label_text_font_style = "normal"
 
     p2.scatter('rew', 'ab', size=10, color='colors',
-            source=source, marker='square')
+            source=source, marker='circle')
 
     hover = p2.select(dict(type=HoverTool))
     hover.tooltips = OrderedDict([
