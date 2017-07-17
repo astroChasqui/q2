@@ -246,13 +246,6 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
 
     if Star.isoage and PlotPars.make_age_plot:
         plt.figure(figsize=(7, 4))
-        plt.rc("axes", labelsize=15, titlesize=12)
-        plt.rc("xtick", labelsize=14)
-        plt.rc("ytick", labelsize=14)
-        plt.rc("lines", markersize=10, markeredgewidth=2)
-        plt.rc("lines", linewidth=2)
-        plt.rc("xtick.major", size=6, width=1)
-        plt.rc("ytick.major", size=6, width=1)
         plt.xlim([0,15])
         plt.xlabel('Age (Gyr)')
         if PlotPars.age_xlim:
@@ -285,14 +278,7 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
         plt.close()
 
     plt.figure(figsize=(6, 14))
-    plt.rc("axes", labelsize=15, titlesize=12)
-    plt.rc("xtick", labelsize=14)
-    plt.rc("ytick", labelsize=14)
-    plt.rc("lines", markersize=10, markeredgewidth=2)
-    plt.rc("lines", linewidth=2)
-    plt.rc("xtick.major", size=6, width=1)
-    plt.rc("ytick.major", size=6, width=1)
-    plt.subplots_adjust(hspace=0.4)
+    plt.subplots_adjust(hspace=0.6)
 
     npanels = 5
     if SolvePars.key_parameter_known == 'plx':
@@ -340,7 +326,7 @@ def solve_one(Star, SolvePars, PlotPars=PlotPars(), isochrone_points=None):
             pdf_x, pdf_y, pdf_y_smooth = \
               pdf_logg_x, pdf_logg_y, pdf_logg_y_smooth
             par = Star.isologg
-            ax.set_xlabel('$\log g$ [cgs]')
+            ax.set_xlabel('$\log\ g$ [cgs]')
             if PlotPars.logg_xlim:
                 ax.set_xlim(PlotPars.logg_xlim)
         if pdf_x is not None and pdf_y is not None:
@@ -657,20 +643,20 @@ def smooth(x, window_len=11, window='hanning'):
     if x.size < window_len:
         raise ValueError("Input vector needs to be bigger than window size.")
 
-    if window_len<3:
+    if window_len < 3:
         return x
 
     if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
         raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
 
-    s=np.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
+    s = np.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
     if window == 'flat': #moving average
-        w=np.ones(window_len,'d')
+        w = np.ones(window_len,'d')
     else:
-        w=eval('np.'+window+'(window_len)')
+        w = eval('np.'+window+'(window_len)')
 
-    y=np.convolve(w/w.sum(),s,mode='valid')
-    return y[(window_len/2):-(window_len/2)]
+    y = np.convolve(w/w.sum(), s, mode='valid')
+    return y[(window_len//2):-(window_len//2)]
 
 def get_isochrone(age, feh, db='yy02.sql3'):
     if os.path.exists(db):
