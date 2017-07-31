@@ -166,3 +166,19 @@ class Star:
         if x != None:
             self.model_atmosphere = x
             self.model_atmosphere_grid = grid
+
+    def get_absolute_magnitude(self, recalculate=False):
+        if hasattr(self, 'M_V') and hasattr(self, 'err_M_V') \
+           and not recalculate:
+            logger.warning('star already has M_V and err_M_V defined. '+\
+                           'Nothing changed. Use recalculate=True to overwrite')
+            return None
+        try:
+            self.M_V = self.v - 5 * np.log10(1000/self.plx) + 5.
+            self.err_M_V = np.sqrt(self.err_v**2 +\
+              (np.log10(np.exp(1))**2)*25*(self.err_plx/self.plx)**2)
+            logger.info('Absolute magnitude and error attributes '+\
+                        'added to star object')
+        except:
+            logger.warning('Could not calculate absolute magnitude. '+\
+                           'Star must have v and err_v attributes (vmag).')
