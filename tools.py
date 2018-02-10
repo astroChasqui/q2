@@ -87,7 +87,7 @@ def read_csv(csv_file, file_type=None):
                 xij = None
             if "teff" in key and xij != None:
                 xij = int(round(float(xij)))
-            if ("logg" in key or "feh" in key or "vt" in key)\
+            if ("logg" in key or "feh" in key or "vt" in key or "rho" in key)\
                and xij != None:
                 xij = float(xij)
             if (key == "v" or "err" in key or "plx" in key)\
