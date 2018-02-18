@@ -390,7 +390,7 @@ def solve_all(Data, SolvePars, PlotPars, output_file, isochrone_points=None):
     print('------------------------------------------------------')
     fout = open(output_file, 'w')
     pars = ['age', 'mass', 'logl', 'mv', 'r']
-    if SolvePars.key_parameter_known == 'plx':
+    if SolvePars.key_parameter_known != 'logg':
         pars.append('logg')
     values = ['mp', 'll1s', 'ul1s', 'll2s', 'ul2s', 'mean', 'std']
     hd = 'id'
