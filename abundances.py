@@ -79,9 +79,11 @@ def get_all(Data, output_file, species_ids=None, reference=None, grid='odfnew',
                 print('No data available')
                 logger.warning('There are no '+species_id+' abundances '+\
                                'for this star')
-                line += ',,'
+                line += ',,,'
                 if reference:
-                    line += ',,'
+                    line += ',,,'
+                if errors:
+                    line += ','
                 continue
             mab = np.mean(getattr(s, species_id)['ab'])
             sab = np.std(getattr(s, species_id)['ab'])
