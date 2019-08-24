@@ -30,7 +30,7 @@ q2 needs a recent version of <a href="http://www.as.utexas.edu/~chris/moog.html"
 Data
 ----
 
-You wont be able to use all the package features without the associated data, particularly the model atmospheres and isochrone grids. Use <a href="http://www.astrochasqui.com/projects/astro/share/q2Data.tar.gz">this link</a> to download the data and make sure it is extracted into the q2/Data folder.
+You wont be able to use all the package features without the associated data, particularly the model atmospheres and isochrone grids. Use <a href="http://www.astrochasqui.com/share/q2Data.zip">this link</a> to download the data and make sure it is extracted into the q2/Data folder.
 
 Preferred citation
 ------------------

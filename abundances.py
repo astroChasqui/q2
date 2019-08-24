@@ -228,7 +228,11 @@ def get_one(Star, species_ids=None, Ref=object, silent=True, errors=False):
                     ix += 1
                 else:
                     ax.append(None)
-            getattr(Star, species_id)['difab'] = ax
+
+            aa = np.array(ax, dtype=np.float) #convert None to np.nan
+            maa = np.ma.masked_array(aa, np.isnan(aa))
+
+            getattr(Star, species_id)['difab'] = maa
             getattr(Star, species_id)['ref'] = Ref.name
 
         if not silent:
