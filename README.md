@@ -73,6 +73,4 @@ archivePrefix = {arXiv},
        adsurl = {https://ui.adsabs.harvard.edu/abs/2014A&A...572A..48R},
       adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
-
-
 ```
