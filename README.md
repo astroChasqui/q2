@@ -42,13 +42,37 @@ species_ids = ['CI', 'OI', 'BaII']
 q2.abundances.get_all(data, species_ids, 'abundances.csv', 'Sun')
 ```
 
+Author
+------
+Ivan Ramirez (iramirez@tacomacc.edu)
+
+Maintainers
+-----------
+<a href="https://github.com/ramstojh">Jhon Yana</a>
+<a href="https://github.com/kaykeigh">Kayleigh Meneghini</a>
 
 Preferred citation
 ------------------
 
-<a href="https://doi.org/10.1051/0004-6361/201424244">Ramirez et al. 2014, A&A, 572, A48</a>
+If you make use of this code, please cite <a href="https://doi.org/10.1051/0004-6361/201424244">Ramirez et al. 2014, A&A, 572, A48</a>. The BibTeX entry for the paper is:
+```
+@ARTICLE{Ramirez2014,
+       author = {{Ram{\'\i}rez}, I. and {Mel{\'e}ndez}, J. and {Bean}, J. and {Asplund}, M. and {Bedell}, M. and {Monroe}, T. and {Casagrande}, L. and {Schirbel}, L. and {Dreizler}, S. and {Teske}, J. and {Tucci Maia}, M. and {Alves-Brito}, A. and {Baumann}, P.},
+        title = "{The Solar Twin Planet Search. I. Fundamental parameters of the stellar sample}",
+      journal = {\aap},
+     keywords = {stars: abundances, stars: fundamental parameters, planetary systems, Astrophysics - Solar and Stellar Astrophysics},
+         year = 2014,
+        month = dec,
+       volume = {572},
+          eid = {A48},
+        pages = {A48},
+          doi = {10.1051/0004-6361/201424244},
+archivePrefix = {arXiv},
+       eprint = {1408.4130},
+ primaryClass = {astro-ph.SR},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2014A&A...572A..48R},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
 
-Contact info
-------------
 
-Ivan Ramirez (iramirez@tacomacc.edu)
+```
