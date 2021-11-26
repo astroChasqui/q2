@@ -48,8 +48,7 @@ Ivan Ramirez (iramirez@tacomacc.edu)
 
 Maintainers
 -----------
-<a href="https://github.com/ramstojh">Jhon Yana</a>
-
+<a href="https://github.com/ramstojh">Jhon Yana</a> \\
 <a href="https://github.com/kaykeigh">Kayleigh Meneghini</a>
 
 Preferred citation
