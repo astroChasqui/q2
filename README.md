@@ -4,23 +4,24 @@ The `q2` code allows you to use the 2019 MOOG version (in its SILENT mode) to ca
 
 Installation
 ------------
-Note that the starry_process package requires Python 3.7 or later.
+Note that the `q2` package requires Python 3.7 or later.
 The new version of `q2` can only be installed via pip, simply try:
 
 ```bash
 pip install qoyllur-quipu
 ```
 
-If you have installed the old version of `q2`, you must delete it from your HOME directory and also remove its PATH from bashrc (.bash_profile for Mac OS).
+If you have installed the old version of `q2`, you must delete it from your HOME directory and also remove its PATH from bashrc (.bash_profile for Mac OS). Once you installed q2, .
+
+
 Future updates will be performed via:
 
 ```bash
 pip install qoyllur-quipu --upgrade
 ```
 
-Examples
---------
-
+Quickstart
+----------
 Find spectroscopic parameters of a sample of stars using the Sun as the reference star (strict line-by-line differential analysis):
 
 ```python
