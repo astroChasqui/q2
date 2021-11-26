@@ -18,7 +18,7 @@ import q2
 
 By importing `q2`, the latest version of <a href="http://www.as.utexas.edu/~chris/moog.html">MOOG</a> (2019) will begin to install. The only thing you need to do is declare the kind of machine you are using, i.e., 'pcl' for linux (Linux Mint, Ubuntu, etc) and 'mac' for Mac Os. That's all folks. This process is done only once. Note that the `q2` package requires Python 3.7 or later. 
 
-Future realises will be upgraded via:
+Future releases will be upgraded via:
 
 ```bash
 pip install qoyllur-quipu --upgrade
