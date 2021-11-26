@@ -44,7 +44,7 @@ q2.abundances.get_all(data, species_ids, 'abundances.csv', 'Sun')
 
 Author
 ------
-Ivan Ramirez (iramirez@tacomacc.edu)
+- Ivan Ramirez (iramirez@tacomacc.edu)
 
 Maintainers
 -----------
