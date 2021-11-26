@@ -1,7 +1,22 @@
-q2 Python package
-=================
+# q2 Python package
 
-q2 allows you to use MOOG (in its SILENT mode) to calculate elemental abundances of stars and/or determine their atmospheric parameters using the standard techniques of iron line excitation/ionization equilibrium. It also allows you to calculate other fundamental stellar parameters such as mass and age using isochrones. A tutorial is available <a href="https://github.com/astroChasqui/q2_tutorial">here</a>.
+The `q2` code allows you to use the 2019 MOOG version (in its SILENT mode) to calculate elemental abundances of stars and/or determine their atmospheric parameters using the standard techniques of iron line excitation/ionization equilibrium. It also allows you to calculate other fundamental stellar parameters such as mass and age using isochrones. A tutorial is available <a href="https://github.com/astroChasqui/q2_tutorial">here</a>.
+
+Installation
+------------
+Note that the starry_process package requires Python 3.7 or later.
+The new version of `q2` can only be installed via pip, simply try:
+
+```bash
+pip install qoyllur-quipu
+```
+
+If you have installed the old version of `q2`, you must delete it from your HOME directory and also remove its PATH from bashrc (.bash_profile for Mac OS).
+Future updates will be performed via:
+
+```bash
+pip install qoyllur-quipu --upgrade
+```
 
 Examples
 --------
