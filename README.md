@@ -5,6 +5,7 @@ The `q2` code allows you to use the 2019 MOOG version (in its SILENT mode) to ca
 Installation
 ------------
 Note that the `q2` package requires Python 3.7 or later.
+
 The new version of `q2` can only be installed via pip, simply try:
 
 ```bash
