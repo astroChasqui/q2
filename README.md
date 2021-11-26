@@ -1,21 +1,24 @@
 # q2 Python package
 
-The `q2` code allows you to use the 2019 MOOG version (in its SILENT mode) to calculate elemental abundances of stars and/or determine their atmospheric parameters using the standard techniques of iron line excitation/ionization equilibrium. It also allows you to calculate other fundamental stellar parameters such as mass and age using isochrones. A tutorial is available <a href="https://github.com/astroChasqui/q2_tutorial">here</a>.
+The `q2` code allows you to use the 2019 <a href="http://www.as.utexas.edu/~chris/moog.html">MOOG</a> version (in its SILENT mode) to calculate elemental abundances of stars and/or determine their atmospheric parameters using the standard techniques of iron line excitation/ionization equilibrium. It also allows you to calculate other fundamental stellar parameters such as mass and age using isochrones. A tutorial is available <a href="https://github.com/astroChasqui/q2_tutorial">here</a>.
 
 Installation
 ------------
-Note that the `q2` package requires Python 3.7 or later.
-
-The new version of `q2` can only be installed via pip, simply try:
+The new version of `q2` can only be installed via pip. Simply try:
 
 ```bash
 pip install qoyllur-quipu
 ```
 
-If you have installed the old version of `q2`, you must delete it from your HOME directory and also remove its PATH from bashrc (.bash_profile for Mac OS). Once you installed q2, .
+If you have installed the old version of `q2`, you must delete it from your HOME directory and also remove its PATH from bashrc (.bash_profile for Mac OS). Once you have installed `q2`, open a Jupyter Notebook Environment (or iPython) and import `q2`.
 
+```python
+import q2
+```
 
-Future updates will be performed via:
+By importing `q2`, the latest version of <a href="http://www.as.utexas.edu/~chris/moog.html">MOOG</a> (2019) will begin to install. The only thing you need to do is declare the kind of machine you are using, i.e., 'pcl' for linux (Linux Mint, Ubuntu, etc) and 'mac' for Mac Os. That's all folks. This process is done only once. Note that the `q2` package requires Python 3.7 or later. 
+
+Future realises will be upgraded via:
 
 ```bash
 pip install qoyllur-quipu --upgrade
@@ -39,15 +42,6 @@ species_ids = ['CI', 'OI', 'BaII']
 q2.abundances.get_all(data, species_ids, 'abundances.csv', 'Sun')
 ```
 
-MOOG
-----
-
-q2 needs a recent version of <a href="http://www.as.utexas.edu/~chris/moog.html">MOOGSILENT</a> (>2003) installed in your system. It has been fully tested only with the FEB 2017 version.
-
-Data
-----
-
-You wont be able to use all the package features without the associated data, particularly the model atmospheres and isochrone grids. Use <a href="http://www.astrochasqui.com/share/q2Data.zip">this link</a> to download the data and make sure it is extracted into the q2/Data folder.
 
 Preferred citation
 ------------------
