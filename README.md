@@ -69,9 +69,9 @@ Author
 
 Maintainers
 -----------
-- <a href="https://github.com/ramstojh">Jhon Yana Galarza</a> 
 - <a href="https://github.com/kaykeigh">Kayleigh Meneghini</a>
-
+- <a href="https://github.com/ramstojh">Jhon Yana Galarza</a> 
+    
 Preferred citation
 ------------------
 
