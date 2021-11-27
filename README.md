@@ -55,7 +55,7 @@ Preferred citation
 ------------------
 
 If you make use of this code, please cite <a href="https://doi.org/10.1051/0004-6361/201424244">Ramirez et al. 2014, A&A, 572, A48</a>. The BibTeX entry for the paper is:
-```
+```bibtex
 @ARTICLE{Ramirez2014,
        author = {{Ram{\'\i}rez}, I. and {Mel{\'e}ndez}, J. and {Bean}, J. and {Asplund}, M. and {Bedell}, M. and {Monroe}, T. and {Casagrande}, L. and {Schirbel}, L. and {Dreizler}, S. and {Teske}, J. and {Tucci Maia}, M. and {Alves-Brito}, A. and {Baumann}, P.},
         title = "{The Solar Twin Planet Search. I. Fundamental parameters of the stellar sample}",
