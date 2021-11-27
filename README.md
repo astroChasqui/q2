@@ -1,5 +1,23 @@
 # q2 Python package
 
+<a href="http://www.as.utexas.edu/~chris/moog.html">
+    <img src="https://img.shields.io/badge/powered%20by-MOOG-orange"/>
+</a>
+<a href="https://matplotlib.org/3.1.1/index.html">
+    <img src="https://img.shields.io/badge/powered%20by-matplotlib-orange"/>
+</a>
+<a href="https://docs.python.org/3/library/os.html">
+    <img src="https://img.shields.io/badge/powered%20by-os-orange"/>
+</a>
+<a href="https://numpy.org/">
+    <img src="https://img.shields.io/badge/powered%20by-numpy-orange"/>
+</a>
+<a href="https://scipy.org/">
+    <img src="https://img.shields.io/badge/powered%20by-scipy-orange"/>
+</a>
+<a href="https://bokeh.org/">
+    <img src="https://img.shields.io/badge/powered%20by-bokeh-orange"/>
+       
 The `q2` code allows you to use the 2019 <a href="http://www.as.utexas.edu/~chris/moog.html">MOOG</a> version (in its SILENT mode) to calculate elemental abundances of stars and/or determine their atmospheric parameters using the standard techniques of iron line excitation/ionization equilibrium. It also allows you to calculate other fundamental stellar parameters such as mass and age using isochrones. A tutorial is available <a href="https://github.com/astroChasqui/q2_tutorial">here</a>.
 
 Installation
