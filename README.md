@@ -20,6 +20,7 @@
 <br/>
 <a href="https://ui.adsabs.harvard.edu/abs/2014A&A...572A..48R">
     <img src="https://img.shields.io/badge/read-paper-blue"/>
+</a>
 
 The `q2` code allows you to use the 2019 <a href="http://www.as.utexas.edu/~chris/moog.html">MOOG</a> version (in its SILENT mode) to calculate elemental abundances of stars and/or determine their atmospheric parameters using the standard techniques of iron line excitation/ionization equilibrium. It also allows you to calculate other fundamental stellar parameters such as mass and age using isochrones. A tutorial is available <a href="https://github.com/astroChasqui/q2_tutorial">here</a>.
 
