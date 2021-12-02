@@ -186,6 +186,7 @@ def abfind(Star, species, species_id):
     s.fe2 #shows result from abfind
     MD is the moog driver object
     """
+    moogpath = os.path.expanduser("~") + '/q2-tools/MOOG-for-q2'
     k = Star.linelist['species'] == species
     negs = [wx for wx in Star.linelist['wavelength'][k] if wx < 0]
     if len(negs) == 0:
@@ -193,21 +194,23 @@ def abfind(Star, species, species_id):
     else:
         MD = Driver() #hfs
         MD.hfs_species = str(round(species))
+        
     if not os.path.exists('.q2'):
         os.mkdir('.q2')
+        
     MD.standard_out = os.path.join('.q2', 'moog.std')
     MD.summary_out = os.path.join('.q2', 'moog.sum')
     MD.model_in = os.path.join('.q2', 'model.in')
     MD.lines_in = os.path.join('.q2', 'lines.in')
     MD.create_file('batch.par')
-
     create_model_in(Star, file_name=MD.model_in)
     found_lines = create_lines_in(Star, species=species, file_name=MD.lines_in)
     if not found_lines:
         logger.warning('Did not run abfind (no lines found)')
         return False
+
     logfile = os.path.join('.q2', 'moog.log')
-    os.system('MOOGSILENT > '+logfile+' 2>&1')
+    os.system(moogpath+'/MOOGSILENT > '+logfile+' 2>&1')
     f = open(MD.summary_out, 'r')
     line, stop = '', False
     while line[0:10] != 'wavelength':
@@ -269,6 +272,7 @@ def cog(Star, species, cog_id):
     s.cog_fe2 #shows result from cog
     MD is the moog driver object
     """
+    moogpath = os.path.expanduser("~") + '/q2-tools/MOOG-for-q2'
     k = Star.linelist['species'] == species
     #negs = [wx for wx in Star.linelist['wavelength'][k] if wx < 0]
     MD = Driver(mode='cog')
@@ -278,7 +282,7 @@ def cog(Star, species, cog_id):
     if not found_lines:
         logger.warning('Did not run cog (no lines found)')
         return False
-    os.system('MOOGSILENT > moog.log 2>&1')
+    os.system(moogpath+'/MOOGSILENT > moog.log 2>&1')
 
     f = open(MD.summary_out, 'r')
     line = f.readline()
