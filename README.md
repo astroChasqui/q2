@@ -20,7 +20,6 @@
 <br/>
 <a href="https://ui.adsabs.harvard.edu/abs/2014A&A...572A..48R">
     <img src="https://img.shields.io/badge/read-paper-blue"/>
-</a>
 
 The `q2` code allows you to use the 2019 <a href="http://www.as.utexas.edu/~chris/moog.html">MOOG</a> version (in its SILENT mode) to calculate elemental abundances of stars and/or determine their atmospheric parameters using the standard techniques of iron line excitation/ionization equilibrium. It also allows you to calculate other fundamental stellar parameters such as mass and age using isochrones. A tutorial is available <a href="https://github.com/astroChasqui/q2_tutorial">here</a>.
 
@@ -40,7 +39,7 @@ import q2
 
 By importing `q2`, the latest version of <a href="http://www.as.utexas.edu/~chris/moog.html">MOOG</a> (2019) will begin to install. The only thing you need to do is declare the kind of machine you are using, i.g., 'rh64' for 64-bit linux (Linux Mint, Ubuntu, etc), 'rh' for 32-bit linux system and 'maclap' for Mac Os. That's all folks. This process is done only once. Note that the `q2` package requires Python 3.7 or later. 
     
-Future releases will be upgraded via:
+The current version of q2 is 1.0.2, so please upgrade it via:
 
 ```bash
 pip install qoyllur-quipu --upgrade
@@ -70,9 +69,9 @@ Author
 
 Maintainers
 -----------
-- <a href="https://github.com/kaykeigh">Kayleigh Meneghini</a>
 - <a href="https://github.com/ramstojh">Jhon Yana Galarza</a> 
-    
+- <a href="https://github.com/kaykeigh">Kayleigh Meneghini</a>
+
 Preferred citation
 ------------------
 
@@ -96,3 +95,4 @@ archivePrefix = {arXiv},
       adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 ```
+
